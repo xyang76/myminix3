@@ -109,6 +109,8 @@ void bsp_finish_booting(void)
   kernel_may_alloc = 0;
 
   switch_to_user();
+  
+  printf("Student:Xincheng Yang, ID:A20352628\n");
   NOT_REACHABLE;
 }
 
