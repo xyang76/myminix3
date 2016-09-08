@@ -110,7 +110,7 @@ void bsp_finish_booting(void)
 
   switch_to_user();
   
-  printk("Student:Xincheng Yang, ID:A20352628\n");
+  printf("Student:Xincheng Yang, ID:A20352628\n");
   NOT_REACHABLE;
 }
 
@@ -123,7 +123,7 @@ void kmain(kinfo_t *local_cbi)
   struct boot_image *ip;	/* boot image pointer */
   register struct proc *rp;	/* process pointer */
   register int i, j;
-  printk("Student:Xincheng Yang, ID:A20352628[kmain]\n");
+  printf("Student:Xincheng Yang, ID:A20352628[kmain]\n");
   /* save a global copy of the boot parameters */
   memcpy(&kinfo, local_cbi, sizeof(kinfo));
   memcpy(&kmess, kinfo.kmess, sizeof(kmess));
@@ -308,7 +308,7 @@ void kmain(kinfo_t *local_cbi)
    */
   bsp_finish_booting();
 #endif
-  printk("Student:Xincheng Yang, ID:A20352628[unkown]\n");
+  printf("Student:Xincheng Yang, ID:A20352628[unkown]\n");
   NOT_REACHABLE;
 }
 
