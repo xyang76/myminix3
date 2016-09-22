@@ -6,6 +6,6 @@
 int main(int argc, char **argv)
 {
     printf("Executing...\n");
-    char *argv2[] = {"ls","-al", "", " ", "/etc", " ", NULL};
-    execvp("ls", argv2);
+    char *argv2[] = {"git", NULL};
+    execvp(argv2[0], argv2);
 }
