@@ -8,8 +8,11 @@ mshell.o: mshell.c
 mstack.o: mstack.c
 	cc -o mstack.o -c mstack.c
 
-myshell: mshell.o mstack.o
-	cc -o myshell mshell.o mstack.o -I.
+malias.o: malias.c
+	cc -o malias.o -c malias.c
+
+myshell: mshell.o mstack.o malias.o
+	cc -o myshell mshell.o mstack.o malias.o -I.
 
 clean:
-	rm myshell mshell.o mstack.o
+	rm myshell mshell.o mstack.o malias.o
