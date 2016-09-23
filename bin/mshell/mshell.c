@@ -1,6 +1,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "unistd.h"
 #include "mstack.h"
 #include "mshell.h"
 
@@ -113,7 +114,7 @@ void precedence_parser(char *cmd){
             j= -1;
         } else if(cmd[i] == ')'){
             str[j] = '\0';
-            pop(&value, stk);   //Pop item from stack
+            pop((char*)&value, stk);   //Pop item from stack
             splitcmd(str);
             free(str);
             str = value;
