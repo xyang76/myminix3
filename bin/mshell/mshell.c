@@ -12,10 +12,12 @@ int main(int argc, char **argv)
     printf("Welcome to my shell!\n");
     while(1){
         gets(cmd);
-        if(precedence_check(cmd) != -1){ 
-            precedence_parser(cmd);
-        } else {
-            printf("incorrect input");
+        if(fork() == 0){
+            if(precedence_check(cmd) != -1){ 
+                precedence_parser(cmd);
+            } else {
+                printf("incorrect input");
+            }
         }
     }
 }
