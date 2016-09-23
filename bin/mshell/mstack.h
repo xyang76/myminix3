@@ -1,5 +1,5 @@
 #define MSTACKSIZE 50
-#define MAXCOMMAND 100
+
 typedef struct {
     int size;
     void **list;

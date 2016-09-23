@@ -1,14 +1,15 @@
-mshell : mshell.o mstack.o
-gcc -o mshell mshell.o mstack.o
+CC=clang
+CFLAGS=-I.
+DEPS = 
 
-test :  test.o
-gcc -o test test.o
+mshell.o: mshell.c
+	cc -o mshell.o -c mshell.c
 
-mstack.o : mstack.c mstack.h
-	gcc -c mstack.c -I .
+mstack.o: mstack.c
+	cc -o mstack.o -c mstack.c
 
-mshell.o : mshell.c mshell.h
-	gcc -c mshell.c -I .
+myshell: mshell.o mstack.o
+	cc -o myshell mshell.o mstack.o -I.
 
-test.o : test.c 
-	gcc -c test.c -I .
+clean:
+	rm myshell mshell.o mstack.o

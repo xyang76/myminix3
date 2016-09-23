@@ -2,15 +2,20 @@
 #include "stdlib.h"
 #include "string.h"
 #include "mstack.h"
+#include "mshell.h"
 
 int main(int argc, char **argv)
 {
-    char *cmd = "aa(ls (a1)-l);((a4-(a2)1a5)(a3))as -l;";
-
-    if(precedence_check(cmd) != -1){ 
-        precedence_parser(cmd);
-    } else {
-        printf("incorrect input");
+    char cmd[MAXCOMMAND];
+    
+    printf("Welcome to my shell!\n");
+    while(1){
+        gets(cmd);
+        if(precedence_check(cmd) != -1){ 
+            precedence_parser(cmd);
+        } else {
+            printf("incorrect input");
+        }
     }
 }
 
@@ -29,30 +34,63 @@ int precedence_check(char *cmd){
     return tier==0 ? max:-1;
 }
 
-int evalcmd(char *cmd){
+int evalcmd(char *cmd, int argc){
+    char *argv[argc+2];
+    int i, j, k;
+    
     if(strlen(cmd) == 0){
         return 1;
     }
     
-    printf("%s\n", cmd);
+    argv[0] = (char*) malloc(strlen(cmd)*sizeof(char));
+    for(i=0, j=0, k=0; i<=strlen(cmd); i++, j++){
+        if(cmd[i] == ' '){
+            while(cmd[i+1] == ' '){
+                i++;
+            }
+            argv[k][j] = '\0';
+            j=-1;
+            if(strlen(argv[k]) > 0){
+                k++;
+                argv[k] = (char*) malloc(strlen(cmd)*sizeof(char));
+            } 
+        } else {
+            argv[k][j] = cmd[i];
+        }
+    }
+    if(strlen(argv[k]) == 0){
+        argv[k] = NULL;
+    } else {
+        argv[k+1] = NULL;
+    }
+    
+    execvp(argv[0], argv);  //Execute command
+    
+    for(i=0; argv[i] != NULL; i++){
+        free(argv[i]);
+    }
     return 1;
 }
 
 int splitcmd(char *cmd){
     char *str;
-    int i, j;
+    int i, j, argc;
     
     str = (char*) malloc(strlen(cmd)*sizeof(char) + 10);
-    for(i=0, j=0; i<=strlen(cmd); i++, j++){
+    for(i=0, j=0, argc=0; i<=strlen(cmd); i++, j++){
         if(cmd[i] == ';'){
             str[j] = '\0';
-            evalcmd(str);
+            evalcmd(str, argc);
+            argc = 0;
             j = -1;
         } else {
+            if(cmd[i] == ' '){
+                argc++;
+            }
             str[j] = cmd[i];
         }
     }
-    evalcmd(str);
+    evalcmd(str, argc);
     
     free(str);
     return 1;
