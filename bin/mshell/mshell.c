@@ -98,7 +98,8 @@ int splitcmd(char *cmd){
 }
 
 void precedence_parser(char *cmd){
-    char *str, *value;
+    char *str;
+    void *value;
     int i, j;
     mstack *stk;
     
@@ -114,11 +115,11 @@ void precedence_parser(char *cmd){
             j= -1;
         } else if(cmd[i] == ')'){
             str[j] = '\0';
-            pop((char*)&value, stk);   //Pop item from stack
+            pop(&value, stk);   //Pop item from stack
             splitcmd(str);
             free(str);
-            str = value;
-            j = strlen(value)-1;
+            str = (char *)value;
+            j = strlen(str)-1;
         } else {
             str[j] = cmd[i]; 
         }
