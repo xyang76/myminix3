@@ -6,6 +6,5 @@
 int main(int argc, char **argv)
 {
     printf("Executing...\n");
-    char *argv2[] = {"ls","-al", "/etc", " ", NULL};
-    execvp("ls", argv2);
+    chdir("/root");
 }

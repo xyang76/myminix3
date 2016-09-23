@@ -6,6 +6,5 @@
 int main(int argc, char **argv)
 {
     printf("Executing...\n");
-    char *argv2[] = {"mshell", NULL};
-    execvp(argv2[0], argv2);
+    chdir("");
 }
