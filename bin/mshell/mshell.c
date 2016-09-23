@@ -3,6 +3,7 @@
 #include "string.h"
 #include "unistd.h"
 #include "mstack.h"
+#include "malias.h"
 #include "mshell.h"
 
 int main(int argc, char **argv)
@@ -11,14 +12,14 @@ int main(int argc, char **argv)
     
     printf("Welcome to my shell!\n");
     while(1){
-        gets(cmd);
-        if(fork() == 0){
+//        if(fork() == 0){
+            gets(cmd);
             if(precedence_check(cmd) != -1){ 
                 precedence_parser(cmd);
             } else {
                 printf("incorrect input");
-            }
-        }
+            }            
+//        }
     }
 }
 
@@ -37,7 +38,7 @@ int precedence_check(char *cmd){
     return tier==0 ? max:-1;
 }
 
-int evalcmd(char *cmd, int argc){
+int build_argv(char *cmd, int argc){
     char *argv[argc+2];
     int i, j, k;
     
@@ -67,7 +68,7 @@ int evalcmd(char *cmd, int argc){
         argv[k+1] = NULL;
     }
     
-    execvp(argv[0], argv);  //Execute command
+    execcmd(cmd, argv);
     
     for(i=0; argv[i] != NULL; i++){
         free(argv[i]);
@@ -75,7 +76,20 @@ int evalcmd(char *cmd, int argc){
     return 1;
 }
 
-int splitcmd(char *cmd){
+int execcmd(char *cmd, char** argv){
+    strcpy(argv[0], lookupalias(argv[0]));
+    
+    if(fork() == 0){
+        if(strcmp(argv[0],"cd")==0){
+            return chdir(argv[1]);
+        } else {
+            return execvp(argv[0], argv);  //Execute command directly.
+        }
+    }
+    return 1;
+}
+
+int split_semicolon(char *cmd){
     char *str;
     int i, j, argc;
     
@@ -83,7 +97,7 @@ int splitcmd(char *cmd){
     for(i=0, j=0, argc=0; i<=strlen(cmd); i++, j++){
         if(cmd[i] == ';'){
             str[j] = '\0';
-            evalcmd(str, argc);
+            build_argv(str, argc);
             argc = 0;
             j = -1;
         } else {
@@ -93,7 +107,7 @@ int splitcmd(char *cmd){
             str[j] = cmd[i];
         }
     }
-    evalcmd(str, argc);
+    build_argv(str, argc);
     
     free(str);
     return 1;
@@ -118,7 +132,7 @@ void precedence_parser(char *cmd){
         } else if(cmd[i] == ')'){
             str[j] = '\0';
             pop(&value, stk);   //Pop item from stack
-            splitcmd(str);
+            split_semicolon(str);
             free(str);
             str = (char *)value;
             j = strlen(str)-1;
@@ -126,7 +140,7 @@ void precedence_parser(char *cmd){
             str[j] = cmd[i]; 
         }
     }
-    splitcmd(str);
+    split_semicolon(str);
     
     free(str);
     freestack(stk);

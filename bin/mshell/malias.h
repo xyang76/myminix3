@@ -1,0 +1,2 @@
+
+char *lookupalias(char *name);
