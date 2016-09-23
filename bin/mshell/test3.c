@@ -6,5 +6,5 @@
 int main(int argc, char **argv)
 {
     printf("Executing...\n");
-    chdir("/usr/src");
+    printf("value=%d", chdir("/usr/src"));
 }
