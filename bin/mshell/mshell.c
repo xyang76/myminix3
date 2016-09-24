@@ -82,14 +82,16 @@ build_argv(char *cmd, int argc){
 
 int 
 execcmd(char *cmd, char** argv){
-    int status, cpid;
+    int status, cpid, cdir;
     strcpy(argv[0], lookupalias(argv[0]));    
     
     if(strcmp(argv[0],"cd")==0){
         if(argv[1] == NULL || strcmp(argv[1],"~")==0 || strcmp(argv[1],"")==0){
-            return chdir("/root");
+            chdir("/root");
         } else {
-            return chdir(argv[1]);
+            if((cdir = chdir(argv[1])) != 0){
+                printf("Command [cd] execute fail, error num:%d\n", cdir);
+            }
         }
     } else {
         if((cpid=fork()) == 0){
