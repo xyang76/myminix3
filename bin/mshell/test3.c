@@ -5,8 +5,8 @@
 
 int main(int argc, char **argv)
 {
-    char * argv2[] ={"pwd",0};
+    char * argv2[] ={"test",0};
     printf("Executing...\n");
     printf("value=%d", chdir("~"));
-    execvp("pwd",argv2);
+    printf("end=%d\n", execvp("test",argv2));
 }
