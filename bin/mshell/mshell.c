@@ -46,12 +46,19 @@ build_argv(char *cmd, int argc){
     char *argv[argc+2];
     int i, j, k;
     
-    if(strlen(cmd) == 0){
+    // Check empty command, if command is empty, then return 1.
+    for(i=0; i<=strlen(cmd); i++){
+        if(cmd[i] != ' '){
+            break;
+        }
+    }
+    if(strlen(cmd) - i == 0){
         return 1;
     }
     
+    // Seperate command into argv array.
     argv[0] = (char*) malloc(strlen(cmd)*sizeof(char));
-    for(i=0, j=0, k=0; i<=strlen(cmd); i++, j++){
+    for(j=0, k=0; i<=strlen(cmd); i++, j++){
         if(cmd[i] == ' '){
             while(cmd[i+1] == ' '){
                 i++;
@@ -72,8 +79,10 @@ build_argv(char *cmd, int argc){
         argv[k+1] = NULL;
     }
     
+    // Execute.
     execcmd(cmd, argv);
     
+    // Free resources.
     for(i=0; argv[i] != NULL; i++){
         free(argv[i]);
     }
@@ -84,8 +93,6 @@ int
 execcmd(char *cmd, char** argv){
     int status, cpid, cdir;
     strcpy(argv[0], lookupalias(argv[0]));    
-    
-    printf("cmd=%s", cmd);
     
     if(strcmp(argv[0],"cd")==0){
         if(argv[1] == NULL || strcmp(argv[1],"~")==0 || strcmp(argv[1],"")==0){
@@ -170,4 +177,5 @@ precedence_parser(char *cmd){
     free(str);
     freestack(stk);
 }
+
 
