@@ -7,6 +7,6 @@ int main(int argc, char **argv)
 {
     char * argv2[] ={"pwd",0};
     printf("Executing...\n");
-    printf("value=%d", chdir(""));
+    printf("value=%d", chdir(".."));
     execvp("pwd",argv2);
 }
