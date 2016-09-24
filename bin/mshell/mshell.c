@@ -6,7 +6,8 @@
 #include "malias.h"
 #include "mshell.h"
 
-int main(int argc, char **argv)
+int 
+main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND];
     
@@ -21,7 +22,8 @@ int main(int argc, char **argv)
     }
 }
 
-int precedence_check(char *cmd){
+int 
+precedence_check(char *cmd){
     int i,tier,max;
     for(i=0, tier=0, max=0; i<strlen(cmd); i++){
         if(cmd[i] == '('){
@@ -36,7 +38,8 @@ int precedence_check(char *cmd){
     return tier==0 ? max:-1;
 }
 
-int build_argv(char *cmd, int argc){
+int 
+build_argv(char *cmd, int argc){
     char *argv[argc+2];
     int i, j, k;
     
@@ -74,7 +77,8 @@ int build_argv(char *cmd, int argc){
     return 1;
 }
 
-int execcmd(char *cmd, char** argv){
+int 
+execcmd(char *cmd, char** argv){
     strcpy(argv[0], lookupalias(argv[0]));    
     
     if(strcmp(argv[0],"cd")==0){
@@ -85,14 +89,19 @@ int execcmd(char *cmd, char** argv){
         }
     } else {
         if(fork() == 0){
-            return execvp(argv[0], argv);  //Execute command directly.
+            //Execute command directly.
+            if(execvp(argv[0], argv)<0){
+                perror("ERROR: exec failed ");
+                exit(1);
+            }
         }
     }
 
     return 1;
 }
 
-int split_semicolon(char *cmd){
+int 
+split_semicolon(char *cmd){
     char *str;
     int i, j, argc;
     
@@ -116,7 +125,8 @@ int split_semicolon(char *cmd){
     return 1;
 }
 
-void precedence_parser(char *cmd){
+void 
+precedence_parser(char *cmd){
     char *str;
     void *value;
     int i, j;
