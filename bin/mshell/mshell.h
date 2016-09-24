@@ -1,4 +1,5 @@
 #define MAXCOMMAND 500
+#define MAXPPATH 100
 
 int precedence_check(char *cmd);
 int build_argv(char *cmd, int argc);
