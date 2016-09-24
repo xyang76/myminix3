@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "unistd.h"
 #include "string.h"
+#include <errno.h>
 
 int main(int argc, char **argv)
 {
@@ -11,8 +12,10 @@ int main(int argc, char **argv)
     printf("value=%d\n", chdir(".."));
     if(fork() == 0){
     	if(execvp("test",argv2) <0){
-	    printf("Command not found\n");
+	    k = errno;
+	    printf("Command not found %d\n", k);
 	}
     }
+    k=errno;
     printf("rv=[%d]\n", k);
 }
