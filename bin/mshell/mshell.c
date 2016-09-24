@@ -3,6 +3,8 @@
 #include "string.h"
 #include "unistd.h"
 #include "errno.h"
+#include "sys/types.h" 
+#include "sys/wait.h"
 #include "mstack.h"
 #include "malias.h"
 #include "mshell.h"
