@@ -95,15 +95,17 @@ build_argv(char *cmd, int argc){
 
 int 
 execcmd(char *cmd, char** argv){
-    int status, cpid, cdir;
+    int status, cpid;
     strcpy(argv[0], lookupalias(argv[0]));    
     
-    if(strcmp(argv[0],"cd")==0){
+    if(strcmp(argv[0],"exit")==0){
+        exit(0);
+    } else if(strcmp(argv[0],"cd")==0){
         if(argv[1] == NULL || strcmp(argv[1],"~")==0 || strcmp(argv[1],"")==0){
             chdir("/root");
         } else {
-            if((cdir = chdir(argv[1])) != 0){
-                printf("Command [cd] execute fail, error num:%d\n", cdir);
+            if((status = chdir(argv[1])) != 0){
+                printf("[Error:%d]Command [%s] execute fail\n", status, cmd);
             }
         }
     } else {
@@ -115,7 +117,7 @@ execcmd(char *cmd, char** argv){
         } else {
             waitpid(cpid, &status, 0);
             if (status != 0){
-                printf("Command [%s] execute fail, error num:%d\n", cmd, status);
+                printf("[Error:%d]Command [%s] execute fail\n", status, cmd);
             } 
         }
     }
