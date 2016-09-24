@@ -6,7 +6,7 @@
 int main(int argc, char **argv)
 {
     char * argv2[] ={"test",0};
-    int k=-1;  
+    int k=-999;  
     printf("Executing...\n");
     printf("value=%d\n", chdir(".."));
     if(fork() == 0){
