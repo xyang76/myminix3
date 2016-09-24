@@ -10,8 +10,9 @@ int main(int argc, char **argv)
     printf("Executing...\n");
     printf("value=%d\n", chdir(".."));
     if(fork() == 0){
-    	k = execvp("test",argv2);
-	printf("rv=%d\n", k);
+    	if(execvp("test",argv2) <0){
+	    printf("Command not found\n");
+	}
     }
     printf("rv=[%d]\n", k);
 }
