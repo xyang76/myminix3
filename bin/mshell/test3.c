@@ -6,7 +6,12 @@
 int main(int argc, char **argv)
 {
     char * argv2[] ={"test",0};
+    int k=0;  
     printf("Executing...\n");
     printf("value=%d", chdir("~"));
-    printf("end=%d\n", execvp("test",argv2));
+    if(fork() == 0){
+    	k = execvp("test",argv2);
+	printf("rv=%d", k);
+    }
+    printf("rv=[%d]", k);
 }
