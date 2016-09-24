@@ -11,11 +11,14 @@ int main(int argc, char **argv)
     printf("Executing...\n");
     printf("value=%d\n", chdir(".."));
     if(fork() == 0){
-    	if(execvp("test",argv2) <0){
-	    k = errno;
-	    printf("Command not found %d\n", k);
+    	if(execvp("test",argv2)<0){
+	    perror("ERROR1: exec failed ");
 	}
+	
+	k = errno;
+	errno = k;
     }
     k=errno;
+    perror("ERROR2: exec failed ");
     printf("rv=[%d]\n", k);
 }
