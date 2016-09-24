@@ -2,13 +2,13 @@
 #include "stdlib.h"
 #include "unistd.h"
 #include "string.h"
-#include "eval.h"
 
 char *
 padvance(char **path, char *name)
 {
 	char *p, *q;
 	char *start;
+	char *pathopt;
 	int len;
 
 	if (*path == NULL)
@@ -25,7 +25,7 @@ padvance(char **path, char *name)
 		*q++ = '/';
 	}
 	strcpy(q, name);
-	
+	pathopt = NULL;
 	if (*p == '%') {
 		pathopt = ++p;
 		while (*p && *p != ':')  p++;
