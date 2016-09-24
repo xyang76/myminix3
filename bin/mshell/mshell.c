@@ -12,12 +12,13 @@
 int 
 main(int argc, char **argv)
 {
-    char cmd[MAXCOMMAND];
+    char cmd[MAXCOMMAND], path[MAXPPATH];
     
     printf("Welcome to my shell!\n");
     while(1){
         gets(cmd);
-        printf("\n%s> $ ", getcwd());
+        getcwd(path, MAXPPATH);
+        printf("\n%s> $ ", path);
         if(precedence_check(cmd) != -1){ 
             precedence_parser(cmd);
         } else {
