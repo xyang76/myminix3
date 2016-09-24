@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "unistd.h"
 #include "string.h"
+#include "eval.h"
 
 int main(int argc, char **argv)
 {
@@ -9,5 +10,5 @@ int main(int argc, char **argv)
     char *envp[]={"PATH=/bin", NULL};   
     printf("Executing...\n");
     printf("value=%d", chdir(".."));
-    execve("ls",argv2, envp);
+    evalcmd(1,argv2);
 }
