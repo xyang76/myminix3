@@ -12,14 +12,12 @@ int main(int argc, char **argv)
     
     printf("Welcome to my shell!\n");
     while(1){
-//        if(fork() == 0){
-            gets(cmd);
-            if(precedence_check(cmd) != -1){ 
-                precedence_parser(cmd);
-            } else {
-                printf("incorrect input");
-            }            
-//        }
+        gets(cmd);
+        if(precedence_check(cmd) != -1){ 
+            precedence_parser(cmd);
+        } else {
+            printf("incorrect input");
+        }            
     }
 }
 
@@ -77,15 +75,20 @@ int build_argv(char *cmd, int argc){
 }
 
 int execcmd(char *cmd, char** argv){
-    strcpy(argv[0], lookupalias(argv[0]));
+    strcpy(argv[0], lookupalias(argv[0]));    
     
-    if(fork() == 0){
-        if(strcmp(argv[0],"cd")==0){
-            return chdir(argv[1]);
+    if(strcmp(argv[0],"cd")==0){
+        if(argv[1] == NULL || strcmp(argv[1],"~")==0 || strcmp(argv[1],"")==0){
+            return chdir("/root");
         } else {
+            return chdir(argv[1]);
+        }
+    } else {
+        if(fork() == 0){
             return execvp(argv[0], argv);  //Execute command directly.
         }
     }
+
     return 1;
 }
 
