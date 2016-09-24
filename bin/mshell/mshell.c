@@ -82,7 +82,7 @@ build_argv(char *cmd, int argc){
 
 int 
 execcmd(char *cmd, char** argv){
-    int status, cpid, k;
+    int status, cpid;
     strcpy(argv[0], lookupalias(argv[0]));    
     
     if(strcmp(argv[0],"cd")==0){
@@ -94,16 +94,14 @@ execcmd(char *cmd, char** argv){
     } else {
         if((cpid=fork()) == 0){
             //Execute command directly.
-            if((k=execvp(argv[0], argv))<0){
-//                errorno=k;
-                exit(-3);
+            if(execvp(argv[0], argv)<0){
+                exit(1);
             }
         } else {
             waitpid(cpid, &status, 0);
-            if (!WIFEXITED(status)){
-                printf("ERROR: 1 %d", status);
+            if (status != 0){
+                printf("Command [%s] execute fail, error num:%d\n", cmd, status);
             } 
-            printf("Status: 1 %d\n", status);
         }
     }
 
