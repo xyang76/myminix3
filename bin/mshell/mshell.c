@@ -14,10 +14,10 @@ main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH];
     
-    printf("Welcome to my shell!\n");
+    printf("Welcome to my shell!");
     while(1){
         getcwd(path, MAXPPATH);
-        printf("\n%s> $ ", path);
+        printf("\n%s> ", path);
         
         gets(cmd);
 
