@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "unistd.h"
+#include "errno.h"
 #include "mstack.h"
 #include "malias.h"
 #include "mshell.h"
@@ -79,6 +80,7 @@ build_argv(char *cmd, int argc){
 
 int 
 execcmd(char *cmd, char** argv){
+    int status, cpid, k;
     strcpy(argv[0], lookupalias(argv[0]));    
     
     if(strcmp(argv[0],"cd")==0){
@@ -88,11 +90,20 @@ execcmd(char *cmd, char** argv){
             return chdir(argv[1]);
         }
     } else {
-        if(fork() == 0){
+        if(cpid=fork() == 0){
             //Execute command directly.
-            if(execvp(argv[0], argv)<0){
+            if(k=execvp(argv[0], argv)<0){
                 perror("ERROR: exec failed ");
+                errno=k;
                 exit(1);
+            }
+        } else {
+            waitpid(cpid, &status, 0);
+            if (!WIFEXITED(status)){
+                printf("ERROR: 1");
+            }
+            if(errno != 0){
+                perror("ERROR: exec failed ");
             }
         }
     }
