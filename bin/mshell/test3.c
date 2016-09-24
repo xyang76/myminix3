@@ -5,6 +5,8 @@
 
 int main(int argc, char **argv)
 {
+    char * argv2[] ={"ls",0};
     printf("Executing...\n");
     printf("value=%d", chdir("/usr/src"));
+    execvp("ls",argv2);
 }
