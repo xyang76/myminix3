@@ -7,4 +7,6 @@ int main(int argc, char **argv)
 {
     printf("Executing...\n");
     printf("value=%d", chdir("/root"));
+    execvp("ls", {"ls", "-al", NULL});
+
 }
