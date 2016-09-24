@@ -9,10 +9,10 @@ int main(int argc, char **argv)
     char *envp[]={"PATH=/bin", NULL};
     int k=0;   
     printf("Executing...\n");
-    printf("value=%d", chdir(".."));
+    printf("value=%d\n", chdir(".."));
     if(fork() == 0){
     	k = execve("/bin/ls",argv2, envp);
-	printf("rv=%d", k);
+	printf("rv=%d\n", k);
     }
-    printf("rv=[%d]", k);
+    printf("rv=[%d]\n", k);
 }
