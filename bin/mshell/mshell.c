@@ -85,6 +85,8 @@ execcmd(char *cmd, char** argv){
     int status, cpid, cdir;
     strcpy(argv[0], lookupalias(argv[0]));    
     
+    printf("cmd=%s", cmd);
+    
     if(strcmp(argv[0],"cd")==0){
         if(argv[1] == NULL || strcmp(argv[1],"~")==0 || strcmp(argv[1],"")==0){
             chdir("/root");
