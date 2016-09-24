@@ -92,21 +92,18 @@ execcmd(char *cmd, char** argv){
             return chdir(argv[1]);
         }
     } else {
-        if(cpid=fork() == 0){
+        if((cpid=fork()) == 0){
             //Execute command directly.
-            if(k=execvp(argv[0], argv)<0){
-                perror("ERROR: exec failed ");
-                errno=k;
-                exit(1);
+            if((k=execvp(argv[0], argv))<0){
+//                errorno=k;
+                exit(-3);
             }
         } else {
             waitpid(cpid, &status, 0);
             if (!WIFEXITED(status)){
-                printf("ERROR: 1");
-            }
-            if(errno != 0){
-                perror("ERROR: exec failed ");
-            }
+                printf("ERROR: 1 %d", status);
+            } 
+            printf("Status: 1 %d\n", status);
         }
     }
 
