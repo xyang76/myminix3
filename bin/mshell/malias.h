@@ -7,7 +7,7 @@ struct malias{
     struct malias *next;
 };
 
-//char *getaliascmd(char *cmd);
+char *getaliascmd(char *cmd);
 char *lookupmalias(char *name);
 int set(char *name, char *aliasname);
 int setmalias(char *cmd);
