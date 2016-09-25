@@ -4,6 +4,7 @@
 #include "string.h"
 #include "unistd.h"
 
+static char default_profile[]="/usr/src/profile";  
 static char *profile="profile";
 
 int load_profile(char *name){
@@ -16,7 +17,7 @@ int read_profile(){
     FILE *fp;
 	char buff[ENVSIZE];
 
-	if(((fp=fopen(profile, "r")) == NULL)){
+	if(((fp=fopen(profile, "r")) == NULL) && ((fp=fopen(default_profile, "r")) == NULL)){
     	perror("Cant read profile.");
 		return -1;
 	}

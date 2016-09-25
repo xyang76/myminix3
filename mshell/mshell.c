@@ -20,8 +20,8 @@ main(int argc, char **argv)
     printf("Welcome to my shell!\n");
     printf("Author: Xincheng Yang, Yanqing Gong\n");
     printf("HOME:/usr/src\n");
-    printf("You also can change profile path by command 'loadprofile'\n");
-    printf("Eg: > loadprofile /etc/.profile\n");
+    printf("You also can change home env by command 'loadprofile'\n");
+    printf("Eg: > loadprofile /etc\n");
     printf("-------------------------------\n");
     
     signal(SIGINT,  sigint_handler);
