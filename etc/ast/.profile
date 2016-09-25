@@ -13,3 +13,6 @@ esac
 
 # Shell configuration.
 unset EDITOR; . $HOME/.ashrc
+
+export PATH="usr/src/bin/mshell:$PATH"
+myshell
