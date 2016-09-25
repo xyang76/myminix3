@@ -9,7 +9,7 @@ struct malias *current = NULL;
 int
 getaliascmd(char **cmd){
     int i=0;
-    char *p, *c, aliascmd[strlen(cmd)+MAXALIASSIZE];
+    char *p, *c, aliascmd[strlen(*cmd)+MAXALIASSIZE];
     
     p = aliascmd;
     c = *cmd;
