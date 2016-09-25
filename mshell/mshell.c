@@ -43,13 +43,13 @@ main(int argc, char **argv)
 
 void sigint_handler(int signal) 
 {
-    char c;
+    char rv[20];
     
     printf("Are you sure? (Y/N) :");
-    c=getc(stdout);
+    gets(rv);
     fflush(stdout);
     
-    if (c=='Y'){
+    if (rv[0]=='Y'){
         exit(0);
     }
 }
