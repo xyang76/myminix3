@@ -16,7 +16,11 @@ main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH];
     
-    printf("Welcome to my shell!");
+    printf("Welcome to my shell!\n");
+    printf("Author: Xincheng Yang, Yanqing Gong\n");
+    printf("HOME:/usr/src\n");
+    printf("You also can change home env by command 'loadprofile'\n");
+    printf("Eg: > loadprofile /etc\n");
     
     signal(SIGINT,  sigint_handler);
     read_profile();
