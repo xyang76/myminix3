@@ -59,7 +59,7 @@ build_argv(char *cmd, int argc){
     }
     
     // Check alias
-    strcpy(cmd, getaliascmd(cmd));
+    getaliascmd(&cmd);
     
     // Seperate command into argv array.
     argv[0] = (char*) malloc(strlen(cmd)*sizeof(char));

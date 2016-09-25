@@ -6,27 +6,29 @@
 
 struct malias *current = NULL;
 
-char *
-getaliascmd(char *cmd){
+int
+getaliascmd(char **cmd){
     int i=0;
-    char *p, *b, aliascmd[strlen(cmd)+MAXALIASSIZE];
+    char *p, *c, aliascmd[strlen(cmd)+MAXALIASSIZE];
     
-    while(*cmd==' '){
-        cmd++;
-    }
     p = aliascmd;
-    for(; *cmd != '\0' && *cmd != ' '; cmd++, p++){
-        *p = *cmd;
+    c = *cmd;
+    while(*c==' '){
+        c++;
+    }
+    
+    for(; *c != '\0' && *c != ' '; c++, p++){
+        *p = *c;
     }
     *p = '\0';
     strcpy(aliascmd, lookupmalias(aliascmd));
     p = aliascmd + strlen(aliascmd);
-    for(; *cmd != '\0'; cmd++, p++){
-        *p = *cmd;
+    for(; *c != '\0'; c++, p++){
+        *p = *c;
     }
     *p = '\0';
-    
-    return aliascmd;
+    strcpy(*cmd, aliascmd);
+    return 0;
 }
 
 char *
