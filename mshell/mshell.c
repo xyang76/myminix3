@@ -38,7 +38,7 @@ void sigint_handler(int signal)
     char c;
     
     printf("Are you sure? (Y/N) :");
-    getc(c);
+    c=getc(stdout);
     fflush(stdout);
     
     if (c=='Y'){
