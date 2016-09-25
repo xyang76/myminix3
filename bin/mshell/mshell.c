@@ -47,22 +47,23 @@ precedence_check(char *cmd){
 
 int 
 build_argv(char *cmd, int argc){
-    char *argv[argc+2];
+    char *argv[argc+10];
     int i, j, k;
     
     // Check empty command, if command is empty, then return 1.
-    for(i=0; i<=strlen(cmd); i++){
-        if(cmd[i] != ' '){
-            break;
-        }
+    while(*cmd == ' '){
+        cmd++;
     }
-    if(strlen(cmd) - i == 0){
+    if(strlen(cmd)== 0){
         return 1;
     }
     
+    // Check alias
+    strcpy(cmd, getaliascmd(cmd));
+    
     // Seperate command into argv array.
     argv[0] = (char*) malloc(strlen(cmd)*sizeof(char));
-    for(j=0, k=0; i<=strlen(cmd); i++, j++){
+    for(i=0, j=0, k=0; i<=strlen(cmd); i++, j++){
         if(cmd[i] == ' '){
             while(cmd[i+1] == ' '){
                 i++;
@@ -90,16 +91,23 @@ build_argv(char *cmd, int argc){
     for(i=0; argv[i] != NULL; i++){
         free(argv[i]);
     }
-    return 1;
+    return 0;
 }
 
 int 
 execcmd(char *cmd, char** argv){
-    int status, cpid;
-    strcpy(argv[0], lookupalias(argv[0]));    
+    int status, cpid;  
     
     if(strcmp(argv[0],"exit")==0){
         exit(0);
+    } else if(strcmp(argv[0],"alias")==0){
+        setmalias(cmd);
+    } else if(strcmp(argv[0],"unalias")==0){
+        if(argv[1]!=NULL){
+            unmalias(argv[1]);
+        } else {
+            printf("[Error:1]Command [unalias] execute fail\n");
+        }
     } else if(strcmp(argv[0],"cd")==0){
         if(argv[1] == NULL || strcmp(argv[1],"~")==0 || strcmp(argv[1],"")==0){
             chdir("/root");
@@ -122,7 +130,7 @@ execcmd(char *cmd, char** argv){
         }
     }
 
-    return 1;
+    return 0;
 }
 
 int 
@@ -147,7 +155,7 @@ split_semicolon(char *cmd){
     build_argv(str, argc);
     
     free(str);
-    return 1;
+    return 0;
 }
 
 void 
