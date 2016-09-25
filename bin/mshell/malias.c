@@ -27,6 +27,7 @@ getaliascmd(char **cmd){
         *p = *c;
     }
     *p = '\0';
+    printf("SET[%s] ", aliascmd);
     strcpy(*cmd, aliascmd);
     return 0;
 }
@@ -76,6 +77,7 @@ setmalias(char *cmd){
         *b=*p;
     }
     *b='\0';
+    printf("ali: %s", aliname);
     return set(name, aliname);
 }
 
