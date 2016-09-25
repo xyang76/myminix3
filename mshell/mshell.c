@@ -3,9 +3,9 @@
 #include "string.h"
 #include "unistd.h"
 #include "errno.h"
-#include "sys/types.h"
-#include "signal.h" 
+#include "sys/types.h" 
 #include "sys/wait.h"
+#include "signal.h"
 #include "mstack.h"
 #include "malias.h"
 #include "mshell.h"
@@ -19,6 +19,7 @@ main(int argc, char **argv)
     printf("Welcome to my shell!");
     
     signal(SIGINT,  sigint_handler);
+    read_profile();
     
     while(1){
         getcwd(path, MAXPPATH);

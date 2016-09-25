@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
+#include "unistd.h"
 
 static char default_profile[]="/usr/src/profile";  
 static char *profile="profile";
@@ -9,9 +10,10 @@ static char *profile="profile";
 int load_profile(char *name){
     profile = name;
     read_profile(profile);
+    return 0;
 }
 
-int read_profile(char *profile){
+int read_profile(){
     FILE *fp;
 	char buff[ENVSIZE];
 
@@ -24,7 +26,7 @@ int read_profile(char *profile){
     {
         set_menv(buff);
     }
-    
+    return 0;
 }
 
 int set_menv(char *buff){
@@ -60,4 +62,5 @@ int set_menv(char *buff){
         }
     }
     setenv(name, envvalue, 1);
+    return 0;
 }
