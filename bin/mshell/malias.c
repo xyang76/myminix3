@@ -75,6 +75,7 @@ setmalias(char *cmd){
     for(e++;p != e; p++, b++){
         *b=*p;
     }
+    *b='\0';
     return set(name, aliname);
 }
 
