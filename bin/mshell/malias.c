@@ -77,7 +77,7 @@ setmalias(char *cmd){
         *b=*p;
     }
     *b='\0';
-    printf("ali: %s", aliname);
+    printf("ali: %s\n", aliname);
     return set(name, aliname);
 }
 
@@ -96,9 +96,9 @@ set(char *name, char *aliasname){
     al->prev = current;
     current = al;
     if(current->prev==NULL){
-        printf("Set %s,%s\n", current->name, current->aliasname);
+        printf("\n%s\nSet %s,%s\n", aliasname, current->name, current->aliasname);
     } else {
-        printf("Set %s,%s[/NULL]\n", current->name, current->aliasname);
+        printf("\n%s\nSet %s,%s[/NULL]\n", aliasname, current->name, current->aliasname);
     }
     return 0;
 }
