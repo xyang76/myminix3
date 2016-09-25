@@ -8,6 +8,7 @@
 #include "mstack.h"
 #include "malias.h"
 #include "mshell.h"
+#include "mprofile.h"
 
 int 
 main(int argc, char **argv)
@@ -100,6 +101,8 @@ execcmd(char *cmd, char** argv){
     
     if(strcmp(argv[0],"exit")==0){
         exit(0);
+    } else if(strcmp(argv[0],"loadprofile")==0 && argv[1] != NULL){
+        load_profile(argv[1]);
     } else if(strcmp(argv[0],"alias")==0){
         setmalias(cmd);
     } else if(strcmp(argv[0],"unalias")==0){
@@ -129,7 +132,7 @@ execcmd(char *cmd, char** argv){
             } 
         }
     }
-
+    
     return 0;
 }
 
