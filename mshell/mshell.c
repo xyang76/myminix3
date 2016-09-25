@@ -49,7 +49,7 @@ void sigint_handler(int signal)
     gets(rv);
     fflush(stdout);
     
-    if (rv[0]=='Y'){
+    if (rv[0]=='Y' || rv[0] == 'y'){
         exit(0);
     }
 }
