@@ -27,7 +27,6 @@ getaliascmd(char **cmd){
         *p = *c;
     }
     *p = '\0';
-    printf("SET[%s] ", aliascmd);
     strcpy(*cmd, aliascmd);
     return 0;
 }
@@ -82,7 +81,6 @@ setmalias(char *cmd){
     }
     *b='\0';
     
-    printf("ali: %s\n", aliname);
     return set(name, aliname);
 }
 
@@ -100,11 +98,6 @@ set(char *name, char *aliasname){
     } 
     al->prev = current;
     current = al;
-    if(current->prev==NULL){
-        printf("\n%s\nSet %s,%s\n", aliasname, current->name, current->aliasname);
-    } else {
-        printf("\n%s\nSet %s,%s[/NULL]\n", aliasname, current->name, current->aliasname);
-    }
     return 0;
 }
 
