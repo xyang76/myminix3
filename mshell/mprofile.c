@@ -1,6 +1,7 @@
 #include "mprofile.h"
 #include "stdio.h"
 #include "stdlib.h"
+#include "string.h"
 
 static char default_profile[]="/usr/src/profile";  
 static char *profile="profile";

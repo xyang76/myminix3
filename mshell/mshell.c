@@ -16,6 +16,9 @@ main(int argc, char **argv)
     char cmd[MAXCOMMAND], path[MAXPPATH];
     
     printf("Welcome to my shell!");
+    
+    signal(SIGINT,  sigint_handler);
+    
     while(1){
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
@@ -27,6 +30,19 @@ main(int argc, char **argv)
         } else {
             printf("incorrect input");
         }            
+    }
+}
+
+void sigint_handler(int signal) 
+{
+    char c;
+    
+    printf("Are you sure? (Y/N) :");
+    getc(c);
+    fflush(stdout);
+    
+    if (c=='Y'){
+        exit(0);
     }
 }
 
