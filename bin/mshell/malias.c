@@ -59,10 +59,15 @@ setmalias(char *cmd){
     while(*p==' '){
         p++;
     }
+    
+    // Get name
     b=name;
     for(;*p != '=';b++,p++){
         *b = *p;
     }
+    *b='\0';
+    
+    // Get alias name
     b=aliname;
     p++;
     if(*p == '\'' || *p == '"'){
@@ -72,11 +77,11 @@ setmalias(char *cmd){
     while(*e == ' ' || *e == '\'' || *e == '"' || *e=='\0'){
         e--;
     }
-    
     for(e++;p != e; p++, b++){
         *b=*p;
     }
     *b='\0';
+    
     printf("ali: %s\n", aliname);
     return set(name, aliname);
 }
