@@ -163,7 +163,7 @@ int split_semicolon(char *cmd){
     
     str = (char*) malloc(strlen(cmd)*sizeof(char) + 10);
     for(i=0, j=0, argc=0; i<=strlen(cmd); i++, j++){
-        if(cmd[i] == ';'){
+        if(cmd[i] == ';' || cmd[i] == ','){
             str[j] = '\0';
             build_argv(str, argc);
             argc = 0;
