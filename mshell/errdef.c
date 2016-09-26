@@ -53,23 +53,6 @@ void print_error(int ecode, ...){
         case COMMAND_EXECUTE_FAIL:
             printf("Command [%s][return value:%d] execute fail.\n", va_arg(ap, char*), va_arg(ap, int));
             break;
-        case REDIRECT_HOME_FAIL:
-            printf("Redirect HOME %s[return value:%d] fail.n", va_arg(ap, char*), va_arg(ap, int));
-            break;
-        default:
-            printf("Undefined error occur, error code: %d.\n", ecode);
-            break;
     }
     va_end(ap);
-}
-
-/*
- * For test result.
- */
-void TEST(int result, int expect){
-    if(result == expect){
-        printf("TEST OK.\n");
-    } else {
-        panic("TEST Error.\n");
-    }
 }
