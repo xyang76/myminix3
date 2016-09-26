@@ -2,7 +2,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "malias.h"
-
+#include "errdef.h"
 
 struct malias *current = NULL;
 
@@ -52,7 +52,7 @@ setmalias(char *cmd){
     
     p=strstr(cmd, "alias");
     if((p=strchr(p, ' ')) == NULL || strchr(p, '=') == NULL){
-        printf("Incorrect input");
+        print_error(SET_ALIAS_ERR);
         return 1;
     }
     while(*p==' '){
@@ -127,5 +127,7 @@ unmalias(char*name){
             return 0;
         }
     }
+    
+    set_error(ALIAS_NOT_EXIST);
     return 1;
 }

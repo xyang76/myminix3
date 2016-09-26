@@ -3,6 +3,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "unistd.h"
+#include "errdef.h"
 
 static char *profile="profile";
 
@@ -17,7 +18,7 @@ int read_profile(){
 	char buff[ENVSIZE];
 
 	if(((fp=fopen(profile, "r")) == NULL)){
-    	perror("Cant read profile.");
+        print_error(OPEN_PROFILE_ERR, profile);
 		return -1;
 	}
     
@@ -25,6 +26,8 @@ int read_profile(){
     {
         set_menv(buff);
     }
+    
+    fclose(fp);
     return 0;
 }
 
@@ -60,6 +63,6 @@ int set_menv(char *buff){
             return -1;
         }
     }
-    setenv(name, envvalue, 1);
+    if_error(setenv(name, envvalue, 1), SET_ENV_ERR);
     return 0;
 }

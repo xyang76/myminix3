@@ -11,36 +11,6 @@
 #include "mshell.h"
 #include "mprofile.h"
 
-int 
-main(int argc, char **argv)
-{
-    char cmd[MAXCOMMAND], path[MAXPPATH];
-    
-    printf("\n-------------------------------\n");
-    printf("Welcome to my shell!\n");
-    printf("Author: Xincheng Yang, Yanqing Gong\n");
-    printf("HOME:/usr/src\n");
-    printf("You also can change profile path by command 'loadprofile'\n");
-    printf("Eg: > loadprofile /etc/.profile\n");
-    printf("-------------------------------\n");
-    
-    signal(SIGINT,  sigint_handler);
-    read_profile();
-    
-    while(1){
-        getcwd(path, MAXPPATH);
-        printf("\n%s> ", path);
-        
-        gets(cmd);
-
-        if(precedence_check(cmd) != -1){ 
-            precedence_parser(cmd);
-        } else {
-            printf("incorrect input");
-        }            
-    }
-}
-
 void sigint_handler(int signal) 
 {
     char rv[20];
@@ -80,6 +50,7 @@ build_argv(char *cmd, int argc){
         cmd++;
     }
     if(strlen(cmd)== 0){
+        set_error(EMPTY_COMMAND);
         return 1;
     }
     
@@ -133,14 +104,14 @@ execcmd(char *cmd, char** argv){
         if(argv[1]!=NULL){
             unmalias(argv[1]);
         } else {
-            printf("[Error:1]Command [unalias] execute fail\n");
+            print_error(COMMAND_INCORRECT, cmd);
         }
     } else if(strcmp(argv[0],"cd")==0){
         if(argv[1] == NULL || strcmp(argv[1],"~")==0 || strcmp(argv[1],"")==0){
             chdir("/root");
         } else {
             if((status = chdir(argv[1])) != 0){
-                printf("[Error:%d]Command [%s] execute fail\n", status, cmd);
+                print_error(COMMAND_EXECUTE_FAIL, cmd, status);
             }
         }
     } else {
@@ -152,7 +123,7 @@ execcmd(char *cmd, char** argv){
         } else {
             waitpid(cpid, &status, 0);
             if (status != 0){
-                printf("[Error:%d]Command [%s] execute fail\n", status, cmd);
+                print_error(COMMAND_EXECUTE_FAIL, cmd, status);
             } 
         }
     }
