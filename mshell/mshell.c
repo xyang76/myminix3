@@ -10,6 +10,7 @@
 #include "malias.h"
 #include "mshell.h"
 #include "mprofile.h"
+#include "errdef.h"
 
 void sigint_handler(int signal) 
 {
