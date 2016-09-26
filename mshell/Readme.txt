@@ -43,3 +43,7 @@
 #define EMPTY_COMMAND 6
 #define COMMAND_INCORRECT 7
 #define COMMAND_EXECUTE_FAIL 8
+
+-----------------------git repository----------------------------------------
+minix src: https://github.com/xyang76/myminix3
+shellpath: https://github.com/xyang76/myminix3/tree/master/mshell
