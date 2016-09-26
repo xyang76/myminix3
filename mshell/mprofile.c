@@ -68,8 +68,8 @@ int set_menv(char *buff){
     
     if(strcmp(name, "HOME") == 0 || strcmp(name, "home") == 0){
         if((rv = chdir(envvalue)) != 0){
-            printf("[Error:%d]Can not change dir to HOME\n", rv);
-            return -1;
+            print_error(REDIRECT_HOME_FAIL, envvalue, rv);
+            return REDIRECT_HOME_FAIL;
         }
     }
     if_error(setenv(name, envvalue, 1), SET_ENV_ERR);
