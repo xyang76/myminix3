@@ -54,7 +54,7 @@ int build_argv(char *cmd, int argc){
     int i, j, k;
     
     // Check empty command, if command is empty, then return 1.
-    while(*cmd == ' '){
+    while(*cmd == ' ' || *cmd == ','){
         cmd++;
     }
     if(strlen(cmd)== 0){
