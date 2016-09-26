@@ -13,6 +13,16 @@
 #include "errdef.h"
 
 /*
+ * precompile cmd.
+ */ 
+void precompile(char *cmd){
+    if(precedence_check(cmd) != -1){ 
+        precedence_parser(cmd);
+    } else {
+        print_error(PARENTHESIS_UNMATCH);
+    }    
+}
+/*
  * handler for Control+C.
  */
 void sigint_handler(int signal) 
@@ -174,7 +184,7 @@ int split_semicolon(char *cmd){
 /*
  * parse command into command list based on parenthesis.
  */
-void precedence_parser(char *cmd){
+int precedence_parser(char *cmd){
     char *str;
     void *value;
     int i, j;
@@ -205,6 +215,7 @@ void precedence_parser(char *cmd){
     
     free(str);
     freestack(stk);
+    return 0;
 }
 
 

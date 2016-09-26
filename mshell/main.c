@@ -28,12 +28,7 @@ int main(int argc, char **argv)
         printf("\n%s> ", path);
         
         gets(cmd);
-
-        if(precedence_check(cmd) != -1){ 
-            precedence_parser(cmd);
-        } else {
-            print_error(PARENTHESIS_UNMATCH);
-        }            
+        precompile(cmd);        
     }
 }
 
