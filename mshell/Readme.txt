@@ -8,7 +8,7 @@
 3.Run myshell (if you do not finish step2, you can use ./myshell command) 
 # myshell
 
-4.Set profile
+4.Set profile (optional)
 > loadprofile [path of profile, eg, > loadprofile /etc/profile]
 
 5.See environment of myshell
