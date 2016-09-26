@@ -55,7 +55,7 @@ void print_error(int ecode, ...){
             printf("Command [%s][return value:%d] execute fail.\n", va_arg(ap, char*), va_arg(ap, int));
             break;
         case REDIRECT_HOME_FAIL:
-            printf("Redirect HOME %s[return value:%d] fail.n", va_arg(ap, char*), va_arg(ap, int));
+            printf("Redirect HOME %s[return value:%d] fail.\n", va_arg(ap, char*), va_arg(ap, int));
             break;
         default:
             printf("Undefined error occur, error code: %d.\n", ecode);
