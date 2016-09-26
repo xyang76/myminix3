@@ -33,7 +33,7 @@ main(int argc, char **argv)
         if(precedence_check(cmd) != -1){ 
             precedence_parser(cmd);
         } else {
-            print_error(PRECEDENCE_UNMATCH);
+            print_error(PARENTHESIS_UNMATCH);
         }            
     }
 }
