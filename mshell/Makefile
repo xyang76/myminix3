@@ -2,6 +2,9 @@ CC=clang
 CFLAGS=-I.
 DEPS = 
 
+main.o: main.c
+	cc -o main.o -c main.c
+
 mshell.o: mshell.c
 	cc -o mshell.o -c mshell.c
 
@@ -14,8 +17,11 @@ malias.o: malias.c
 mprofile.o: mprofile.c
 	cc -o mprofile.o -c mprofile.c
 
-myshell: mshell.o mstack.o malias.o mprofile.o
-	cc -o myshell mshell.o mstack.o malias.o mprofile.o -I.
+errdef.o: errdef.c
+	cc -o errdef.o -c errdef.c
+
+myshell: main.o mshell.o mstack.o malias.o mprofile.o errdef.o
+	cc -o myshell main.o mshell.o mstack.o malias.o mprofile.o errdef.o -I.
 
 clean:
-	rm myshell mshell.o mstack.o malias.o mprofile.o
+	rm myshell main.o mshell.o mstack.o malias.o mprofile.o errdef.o
