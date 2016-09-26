@@ -9,4 +9,4 @@
 
 void if_error(int rv, int ecode);
 void set_error(int ecode);
-void print_error(int ecode);
+void print_error(int ecode, ...);
