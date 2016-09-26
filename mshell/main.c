@@ -17,7 +17,7 @@ int main(int argc, char **argv)
     printf("Author: Xincheng Yang, Yanqing Gong\n");
     printf("HOME:/usr/src\n");
     printf("You also can change profile path by command 'loadprofile'\n");
-    printf("Eg: > loadprofile /etc/.profile\n");
+    printf("Eg: > loadprofile /etc/profile\n");
     printf("-------------------------------\n");
     
     signal(SIGINT,  sigint_handler);        // Handler for ctrl+c interrupt.
