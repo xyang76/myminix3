@@ -53,7 +53,7 @@ setmalias(char *cmd){
     p=strstr(cmd, "alias");
     if((p=strchr(p, ' ')) == NULL || strchr(p, '=') == NULL){
         print_error(SET_ALIAS_ERR);
-        return 1;
+        return SET_ALIAS_ERR;
     }
     while(*p==' '){
         p++;
@@ -129,5 +129,5 @@ unmalias(char*name){
     }
     
     set_error(ALIAS_NOT_EXIST);
-    return 1;
+    return ALIAS_NOT_EXIST;
 }

@@ -52,7 +52,7 @@ build_argv(char *cmd, int argc){
     }
     if(strlen(cmd)== 0){
         set_error(EMPTY_COMMAND);
-        return 1;
+        return EMPTY_COMMAND;
     }
     
     // Check alias
@@ -106,6 +106,7 @@ execcmd(char *cmd, char** argv){
             unmalias(argv[1]);
         } else {
             print_error(COMMAND_INCORRECT, cmd);
+            return COMMAND_INCORRECT;
         }
     } else if(strcmp(argv[0],"cd")==0){
         if(argv[1] == NULL || strcmp(argv[1],"~")==0 || strcmp(argv[1],"")==0){
@@ -113,6 +114,7 @@ execcmd(char *cmd, char** argv){
         } else {
             if((status = chdir(argv[1])) != 0){
                 print_error(COMMAND_EXECUTE_FAIL, cmd, status);
+                return COMMAND_EXECUTE_FAIL;
             }
         }
     } else {
@@ -125,6 +127,7 @@ execcmd(char *cmd, char** argv){
             waitpid(cpid, &status, 0);
             if (status != 0){
                 print_error(COMMAND_EXECUTE_FAIL, cmd, status);
+                return COMMAND_EXECUTE_FAIL;
             } 
         }
     }
