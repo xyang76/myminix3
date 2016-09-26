@@ -11,4 +11,4 @@
 void if_error(int rv, int ecode);
 void set_error(int ecode);
 void print_error(int ecode, ...);
-void TEST(int result, int expect);
+void TEST(int result, int expect, char *msg);

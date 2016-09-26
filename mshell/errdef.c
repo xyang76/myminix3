@@ -66,10 +66,11 @@ void print_error(int ecode, ...){
 /*
  * For test result.
  */
-void TEST(int result, int expect){
+void TEST(int result, int expect, char *msg){
     if(result == expect){
-        printf("TEST OK.\n");
+        printf("TEST %s OK.\n", msg);
     } else {
-        panic("TEST Error.\n");
+        printf("TEST %s Error, expect %d, result %d\n", msg, expect, result);
+        exit(1);
     }
 }
