@@ -23,6 +23,7 @@ void print_error(int ecode, ...){
         errcode = ecode;
     }
     
+    va_start(ap, ecode); 
     switch(ecode){
         case PARENTHESIS_UNMATCH:
             printf("Parenthesis not match, please check parenthesis of command.\n");
@@ -33,11 +34,6 @@ void print_error(int ecode, ...){
         case SET_ENV_ERR:
             printf("Set environment error, please modify profile.\n");
             break;
-    }
-    
-    // print more msg.
-    va_start(ap, ecode); 
-    switch(ecode){
         case OPEN_PROFILE_ERR:
             printf("Can not open profile %s.\n", va_arg(ap, char*));
             break;
