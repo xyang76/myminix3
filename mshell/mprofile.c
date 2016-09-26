@@ -15,12 +15,12 @@ int load_profile(char *name){
 
 int read_profile(){
     FILE *fp;
-	char buff[ENVSIZE];
+    char buff[ENVSIZE];
 
-	if(((fp=fopen(profile, "r")) == NULL)){
+    if(((fp=fopen(profile, "r")) == NULL)){
         print_error(OPEN_PROFILE_ERR, profile);
-		return -1;
-	}
+        return OPEN_PROFILE_ERR;
+    }
     
     while(fgets(buff,sizeof(buff),fp) != NULL)
     {
