@@ -12,6 +12,9 @@
 #include "mprofile.h"
 #include "errdef.h"
 
+/*
+ * handler for Control+C.
+ */
 void sigint_handler(int signal) 
 {
     char rv[20];
@@ -25,8 +28,10 @@ void sigint_handler(int signal)
     }
 }
 
-int 
-precedence_check(char *cmd){
+/*
+ * check command precedence, eg, parenthesized cmd have higer precedence.
+ */
+int precedence_check(char *cmd){
     int i,tier,max;
     for(i=0, tier=0, max=0; i<strlen(cmd); i++){
         if(cmd[i] == '('){
@@ -41,8 +46,10 @@ precedence_check(char *cmd){
     return tier==0 ? max:-1;
 }
 
-int 
-build_argv(char *cmd, int argc){
+/*
+ * Build command into argv list.
+ */
+int build_argv(char *cmd, int argc){
     char *argv[argc+10];
     int i, j, k;
     
@@ -91,8 +98,10 @@ build_argv(char *cmd, int argc){
     return 0;
 }
 
-int 
-execcmd(char *cmd, char** argv){
+/*
+ * Execute a command.
+ */
+int execcmd(char *cmd, char** argv){
     int status, cpid;  
     
     if(strcmp(argv[0],"exit")==0){
@@ -135,8 +144,10 @@ execcmd(char *cmd, char** argv){
     return 0;
 }
 
-int 
-split_semicolon(char *cmd){
+/*
+ * split semicolon of a command.
+ */
+int split_semicolon(char *cmd){
     char *str;
     int i, j, argc;
     
@@ -160,8 +171,10 @@ split_semicolon(char *cmd){
     return 0;
 }
 
-void 
-precedence_parser(char *cmd){
+/*
+ * parse command into command list based on parenthesis.
+ */
+void precedence_parser(char *cmd){
     char *str;
     void *value;
     int i, j;

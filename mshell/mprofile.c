@@ -7,12 +7,18 @@
 
 static char *profile="profile";
 
+/*
+ * load profile by name.
+ */
 int load_profile(char *name){
     profile = name;
     read_profile(profile);
     return 0;
 }
 
+/*
+ * read profile.
+ */
 int read_profile(){
     FILE *fp;
     char buff[ENVSIZE];
@@ -31,6 +37,9 @@ int read_profile(){
     return 0;
 }
 
+/*
+ * set environment. check it by command # env.
+ */
 int set_menv(char *buff){
     char name[strlen(buff)], envvalue[strlen(buff)], *p;
     int rv;

@@ -4,16 +4,26 @@
 
 static int errcode;
 
+/*
+ * Set error code, then we can check out last error by error code.
+ */
 void set_error(int ecode){
     errcode = ecode;
 }
 
+
+/*
+ * If errorcode equals 0, then print error.
+ */
 void if_error(int rv, int ecode){
     if(rv != 0){
         print_error(ecode);
     }
 }
 
+/*
+ * Print information base on error code.
+ */
 void print_error(int ecode, ...){
     va_list ap;
     

@@ -6,8 +6,10 @@
 
 struct malias *current = NULL;
 
-int
-getaliascmd(char **cmd){
+/*
+ * get alias cmd, eg, if we have alias hello='ls -l', then getalisacmd("hello /etc") return "ls -l /etc".
+ */
+int getaliascmd(char **cmd){
     int i=0;
     char *p, *c, aliascmd[strlen(*cmd)+MAXALIASSIZE];
     
@@ -31,8 +33,10 @@ getaliascmd(char **cmd){
     return 0;
 }
 
-char *
-lookupmalias(char *name){
+/*
+ * lookup alias by name.
+ */
+char *lookupmalias(char *name){
     struct malias *al;
     char *aliasname;
     
@@ -45,8 +49,10 @@ lookupmalias(char *name){
     return aliasname;
 }
 
-int 
-setmalias(char *cmd){
+/*
+ * set alias by cmd, eg, # alias hello='ls -l'.
+ */
+int setmalias(char *cmd){
     int len = strlen(cmd);
     char *p, *b, *e, name[len], aliname[len];
     
@@ -84,8 +90,10 @@ setmalias(char *cmd){
     return set(name, aliname);
 }
 
-int 
-set(char *name, char *aliasname){
+/*
+ * set alias by name and value.
+ */
+int set(char *name, char *aliasname){
     struct malias *al;
     
     al = (struct malias *)malloc(sizeof(struct malias));
@@ -101,8 +109,10 @@ set(char *name, char *aliasname){
     return 0;
 }
 
-int 
-unmalias(char*name){
+/*
+ * unalias by its name.
+ */
+int unmalias(char*name){
     char *p;
     struct malias *al;
     

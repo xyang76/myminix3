@@ -8,8 +8,7 @@
 #include "mprofile.h"
 #include "errdef.h"
 
-int 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH];
     
@@ -21,8 +20,8 @@ main(int argc, char **argv)
     printf("Eg: > loadprofile /etc/.profile\n");
     printf("-------------------------------\n");
     
-    signal(SIGINT,  sigint_handler);
-    read_profile();
+    signal(SIGINT,  sigint_handler);        // Handler for ctrl+c interrupt.
+    read_profile();                         // Read profile from default profile
     
     while(1){
         getcwd(path, MAXPPATH);
