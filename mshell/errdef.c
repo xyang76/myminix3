@@ -1,3 +1,4 @@
+#include "stdio.h"
 #include "errdef.h"
 #include "stdarg.h"
 
@@ -45,6 +46,7 @@ void print_error(int ecode, ...){
             break;
         case COMMAND_EXECUTE_FAIL:
             printf("Command [%s][return value:%d] execute fail.\n", va_arg(ap, char*), va_arg(ap, int));
+            break;
     }
     va_end(ap);
 }
