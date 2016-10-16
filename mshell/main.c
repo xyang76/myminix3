@@ -24,9 +24,9 @@ int main(int argc, char **argv)
     
     signal(SIGINT,  sigint_handler);        // Handler for ctrl+c interrupt.
     sigfillset(&mask);
-    sigdelset(&mask,SIGQUIT);
-    sigdelset(&mask,SIGKILL);
-    sigdelset(&mask,SIGTERM);
+//    sigdelset(&mask,SIGQUIT);
+//    sigdelset(&mask,SIGKILL);
+//    sigdelset(&mask,SIGTERM);
     sigdelset(&mask,SIGINT);
     sigprocmask(SIG_BLOCK ,&mask, NULL);
     
