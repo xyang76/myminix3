@@ -40,7 +40,7 @@ void sigint_handler(int signal)
     sigprocmask(SIG_UNBLOCK,&mask,NULL);
     
     printf("%s\n", rv);
-    if (rv[0]=='Y' || rv[0] == 'y'){
+    if (rv != NULL &&  (rv[0]=='Y' || rv[0] == 'y')){
         exit(0);
     }
     fflush(stdin);
