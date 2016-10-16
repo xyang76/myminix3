@@ -16,6 +16,10 @@
  * precompile cmd.
  */ 
 void precompile(char *cmd){
+    if(cmd[strlen(cmd)-1] == '\n'){       // = '\n'
+        cmd[strlen(cmd)-1] = '\0';
+    }
+    
     if(precedence_check(cmd) != -1){ 
         precedence_parser(cmd);
     } else {
