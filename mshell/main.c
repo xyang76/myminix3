@@ -31,11 +31,11 @@ int main(int argc, char **argv)
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
         
-        c = getc(stdout);
+//        c = getc(stdout);
         gets(cmd);
-        if(c == EOF || c == '\04' || cmd[0] == '\04'){
-            k=95;
+        if(cmd[0] == '\04'){
             printf("CMD = %d\n", k);
+            break;
         }
         
         precompile(cmd);  
