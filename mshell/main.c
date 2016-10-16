@@ -33,24 +33,18 @@ int main(int argc, char **argv)
         
         
         gets(cmd);
-        
-        if(cmd[0] == '\04' || cmd == "EOF"){
-            k = cmd[0] == '\04' ? 96 : 95;
-            printf("CMD = %s and k=%d\n", cmd, k);
-            break;
-        }
         c = getc(stdout);
-        if(c == '\04' || c == EOF){
-            k = c == EOF ? 94 : 95;
-            printf("C = %s and k=%d\n", cmd, k);
-            break;
-        }
+//        if(c == '\04' || c == EOF){
+//            k = c == EOF ? 94 : 95;
+//            printf("C = %s and k=%d\n", cmd, k);
+//            break;
+//        }
         printf("Current = %s\n", cmd);
         precompile(cmd);  
         
         fflush(stdout);    
         k++;
-        if(k>100){
+        if(k>20){
             printf("Infinity\n");
             break;
         }
