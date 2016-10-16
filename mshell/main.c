@@ -50,7 +50,7 @@ int main(int argc, char **argv)
         
 //        fflush(stdout);    
         k++;
-        if(k>20){
+        if(k>5){
             printf("Infinity\n");
             break;
         }
