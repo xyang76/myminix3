@@ -33,7 +33,7 @@ int main(int argc, char **argv)
         
         c = getc(stdout);
         gets(cmd);
-        if(c == EOF || cmd[0] == '\04'){
+        if(c == EOF || c == '\04' || cmd[0] == '\04'){
             k=95;
             printf("CMD = %d\n", k);
         }
