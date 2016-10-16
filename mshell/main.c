@@ -31,24 +31,11 @@ int main(int argc, char **argv)
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
         
-        
-//        gets(cmd);
-        i=0;
-        while((c = getc(stdin)) != EOF){
-            if(c == '\04'){
-                printf("NONOON\n");
-            }
-//            cmd[i] = c;
-            printf("%d ", c);
+        if (fgets(cmd, MAXCOMMAND, stdin) == NULL){
+            printf("NONOON\n");
         }
-        printf("\n");
-        
-//        if(c == '\04' || c == EOF){
-//            k = c == EOF ? 94 : 95;
-//            printf("C = %s and k=%d\n", cmd, k);
-//            break;
-//        }
-//        printf("Current = %s\n", cmd);
+
+        printf("Current = %s\n", cmd);
 //        precompile(cmd);  
         
         fflush(stdin);    
