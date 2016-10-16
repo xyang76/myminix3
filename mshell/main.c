@@ -34,21 +34,21 @@ int main(int argc, char **argv)
         
 //        gets(cmd);
         i=0;
-        while((c = getc(stdout)) != EOF){
+        while((c = getc(stdin)) != EOF){
 //            cmd[i] = c;
             printf("%d ", c);
         }
         printf("\n");
-        break;
+        
 //        if(c == '\04' || c == EOF){
 //            k = c == EOF ? 94 : 95;
 //            printf("C = %s and k=%d\n", cmd, k);
 //            break;
 //        }
-        printf("Current = %s\n", cmd);
-        precompile(cmd);  
+//        printf("Current = %s\n", cmd);
+//        precompile(cmd);  
         
-        fflush(stdout);    
+//        fflush(stdout);    
         k++;
         if(k>20){
             printf("Infinity\n");
