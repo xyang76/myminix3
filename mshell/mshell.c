@@ -28,10 +28,13 @@ void precompile(char *cmd){
 void sigint_handler(int signal) 
 {
     char rv[20];
-    
+    sigset_t mask;
+
+    sigfillset(&mask);
+    sigprocmask(SIG_BLOCK,&mask,NULL);
     printf("Are you sure? (Y/N) :");
     gets(rv);
-//    fflush(stdout);
+    sigprocmask(SIG_UNBLOCK,&mask,NULL);
     
     if (rv[0]=='Y' || rv[0] == 'y'){
         exit(0);
