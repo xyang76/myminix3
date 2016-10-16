@@ -32,8 +32,8 @@ int main(int argc, char **argv)
         printf("\n%s> ", path);
         
         gets(cmd);
-        if(cmd == EOF || cmd == VEOF){
-            cmd == EOF ? k=102: k=103;
+        if(cmd[0] == EOF){
+            k=95;
             printf("CMD = %d\n", k);
         }
         
