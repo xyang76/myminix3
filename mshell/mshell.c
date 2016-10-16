@@ -28,18 +28,15 @@ void precompile(char *cmd){
 void sigint_handler(int signal) 
 {
     char rv[20];
-    sigset_t mask;
+    sigset_t mask, oldmask;
 
     sigfillset(&mask);
-//    sigdelset(&mask,SIGKILL);
-//    sigdelset(&mask,SIGSTOP);
-//    sigdelset(&mask,SIGQUIT);
-    sigprocmask(SIG_BLOCK,&mask,NULL);
+    sigprocmask(SIG_BLOCK ,&mask, &oldmask);
     printf("Are you sure? (Y/N) :");
     if (fgets(rv, 20, stdin) == NULL){
         printf("NULL!\n");    
     }
-//    sigprocmask(SIG_UNBLOCK,&mask,NULL);
+    sigprocmask(SIG_SETMASK, &oldmask, NULL);
     
     printf("%s\n", rv);
     if (rv != NULL &&  (rv[0]=='Y' || rv[0] == 'y')){
