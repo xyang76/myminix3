@@ -34,8 +34,8 @@ int main(int argc, char **argv)
         c = getc(stdout);
         gets(cmd);
         if(c == EOF || c == '\04' || cmd[0] == '\04'){
-            c == EOF ? k = 94 : k = 95;
-            cmd[0] == '\04' ? k = 96 : k = 95;
+            k = c == EOF ? 94 : 95;
+            k = cmd[0] == '\04' ? 96 : 95;
             printf("CMD = %s and k=%d\n", cmd, k);
             break;
         }
