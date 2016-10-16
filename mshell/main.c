@@ -10,7 +10,7 @@
 
 int main(int argc, char **argv)
 {
-    char cmd[MAXCOMMAND], path[MAXPPATH];
+    char cmd[MAXCOMMAND], path[MAXPPATH], c;
     struct sigaction sa;
     int k=0;
     
@@ -31,8 +31,9 @@ int main(int argc, char **argv)
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
         
+        c = getc(stdout);
         gets(cmd);
-        if(cmd[0] == EOF){
+        if(c == EOF || cmd[0] == '\04'){
             k=95;
             printf("CMD = %d\n", k);
         }
