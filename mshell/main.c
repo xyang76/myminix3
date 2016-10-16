@@ -11,6 +11,7 @@
 int main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH];
+    struct sigaction sa;
     
     printf("\n-------------------------------\n");
     printf("Welcome to my shell!\n");
@@ -20,7 +21,9 @@ int main(int argc, char **argv)
     printf("Eg: > loadprofile /etc/profile\n");
     printf("-------------------------------\n");
     
-    sigaction(SIGINT,  sigint_handler);	    // Handler for ctrl+c interrupt.
+    sa.sa_flags = 0;
+    sa.sa_handler = sigint_handler;
+    sigaction(SIGINT,  &sa, NULL);	        // Handler for ctrl+c interrupt.
     read_profile();                         // Read profile from default profile
     
     while(1){
