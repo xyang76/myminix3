@@ -31,7 +31,7 @@ void sigint_handler(int signal)
     
     printf("Are you sure? (Y/N) :");
     gets(rv);
-    fflush(stdout);
+//    fflush(stdout);
     
     if (rv[0]=='Y' || rv[0] == 'y'){
         exit(0);
