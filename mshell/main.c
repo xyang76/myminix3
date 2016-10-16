@@ -20,7 +20,7 @@ int main(int argc, char **argv)
     printf("Eg: > loadprofile /etc/profile\n");
     printf("-------------------------------\n");
     
-    signal(SIGINT,  sigint_handler);        // Handler for ctrl+c interrupt.
+    sigaction(SIGINT,  sigint_handler);	    // Handler for ctrl+c interrupt.
     read_profile();                         // Read profile from default profile
     
     while(1){
