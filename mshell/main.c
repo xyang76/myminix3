@@ -21,7 +21,7 @@ int main(int argc, char **argv)
     printf("Eg: > loadprofile /etc/profile\n");
     printf("-------------------------------\n");
     
-    sa.sa_flags = SA_RESTART;
+    sa.sa_flags = SA_NODEFER;
     sa.sa_handler = sigint_handler;
     sigaction(SIGINT,  &sa, NULL);	        // Handler for ctrl+c interrupt.
     read_profile();                         // Read profile from default profile
