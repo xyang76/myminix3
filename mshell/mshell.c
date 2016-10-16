@@ -39,7 +39,7 @@ void sigint_handler(int signal)
     if (fgets(rv, 20, stdin) == NULL){
         printf("NULL!\n");    
     }
-    sigprocmask(SIG_UNBLOCK,&mask,NULL);
+//    sigprocmask(SIG_UNBLOCK,&mask,NULL);
     
     printf("%s\n", rv);
     if (rv != NULL &&  (rv[0]=='Y' || rv[0] == 'y')){
