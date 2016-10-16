@@ -35,7 +35,9 @@ int main(int argc, char **argv)
 //        gets(cmd);
         i=0;
         while((c = getc(stdin)) != EOF){
-//            if
+            if(c == '\04'){
+                printf("NONOON\n");
+            }
 //            cmd[i] = c;
             printf("%d ", c);
         }
