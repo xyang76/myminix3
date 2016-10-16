@@ -31,12 +31,18 @@ int main(int argc, char **argv)
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
         
-        c = getc(stdout);
+        
         gets(cmd);
-        if(c == EOF || c == '\04' || cmd[0] == '\04'){
-            k = c == EOF ? 94 : 95;
+        
+        if(cmd[0] == '\04' || cmd == "EOF"){
             k = cmd[0] == '\04' ? 96 : 95;
             printf("CMD = %s and k=%d\n", cmd, k);
+            break;
+        }
+        c = getc(stdout);
+        if(c == '\04' || c == EOF){
+            k = c == EOF ? 94 : k = 95;
+            printf("C = %s and k=%d\n", cmd, k);
             break;
         }
         printf("Current = %s\n", cmd);
