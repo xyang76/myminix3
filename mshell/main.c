@@ -11,6 +11,7 @@
 int main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH];
+    sigset_t mask;
     int k=0;
     
     printf("\n-------------------------------\n");
@@ -22,6 +23,12 @@ int main(int argc, char **argv)
     printf("-------------------------------\n");
     
     signal(SIGINT,  sigint_handler);        // Handler for ctrl+c interrupt.
+    sigfillset(&mask);
+    sigdelset(&mask,SIGQUIT);
+    sigdelset(&mask,SIGKILL);
+    sigdelset(&mask,SIGTERM);
+    sigprocmask(SIG_BLOCK ,&mask, NULL);
+    
     read_profile();                         // Read profile from default profile
     
     while(1){
