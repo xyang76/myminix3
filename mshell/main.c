@@ -35,7 +35,7 @@ int main(int argc, char **argv)
 //        gets(cmd);
         i=0;
         while((c = getc(stdin)) != EOF){
-            if
+//            if
 //            cmd[i] = c;
             printf("%d ", c);
         }
