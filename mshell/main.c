@@ -35,6 +35,7 @@ int main(int argc, char **argv)
 //        gets(cmd);
         i=0;
         while((c = getc(stdin)) != EOF){
+            if
 //            cmd[i] = c;
             printf("%d ", c);
         }
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
 //        printf("Current = %s\n", cmd);
 //        precompile(cmd);  
         
-//        fflush(stdout);    
+        fflush(stdin);    
         k++;
         if(k>5){
             printf("Infinity\n");
