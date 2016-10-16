@@ -34,7 +34,9 @@ int main(int argc, char **argv)
         c = getc(stdout);
         gets(cmd);
         if(c == EOF || c == '\04' || cmd[0] == '\04'){
-            printf("CMD = %s\n", cmd);
+            c == EOF ? k = 94 : k = 95;
+            cmd[0] == '\04' ? k = 96 : k = 95;
+            printf("CMD = %s and k=%d\n", cmd, k);
             break;
         }
         printf("Current = %s\n", cmd);
