@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         }
         c = getc(stdout);
         if(c == '\04' || c == EOF){
-            k = c == EOF ? 94 : k = 95;
+            k = c == EOF ? 94 : 95;
             printf("C = %s and k=%d\n", cmd, k);
             break;
         }
