@@ -11,6 +11,7 @@
 int main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH];
+    int k=0;
     
     printf("\n-------------------------------\n");
     printf("Welcome to my shell!\n");
@@ -27,9 +28,12 @@ int main(int argc, char **argv)
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
         
-	fflush(stdin);
-        gets(cmd);
-        precompile(cmd);        
+        if (fgets(cmd, MAXCOMMAND, stdin) == NULL){
+            printf("cant get message from stdin!\n");
+            break;
+        }
+        precompile(cmd);  
+        fflush(stdin);
     }
 }
 
