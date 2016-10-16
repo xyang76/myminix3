@@ -31,7 +31,8 @@ void sigint_handler(int signal)
     sigset_t mask, oldmask;
 
     sigfillset(&mask);
-    sigprocmask(SIG_BLOCK ,&mask, &oldmask);
+    sigprocmask(SIG_SETMASK, &mask, &oldmask);
+    sigprocmask(SIG_BLOCK ,&mask, NULL);
     printf("Are you sure? (Y/N) :");
     if (fgets(rv, 20, stdin) == NULL){
         printf("NULL!\n");    
