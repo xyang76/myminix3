@@ -31,14 +31,19 @@ void sigint_handler(int signal)
     sigset_t mask;
 
     sigfillset(&mask);
+    sigdelset(&mask,SIGKILL);
+    sigdelset(&mask,SIGSTOP);
+    sigdelset(&mask,SIGQUIT);
     sigprocmask(SIG_BLOCK,&mask,NULL);
     printf("Are you sure? (Y/N) :");
     gets(rv);
     sigprocmask(SIG_UNBLOCK,&mask,NULL);
     
+    printf("%s\n", rv);
     if (rv[0]=='Y' || rv[0] == 'y'){
         exit(0);
     }
+    fflush(stdin);
 }
 
 /*
