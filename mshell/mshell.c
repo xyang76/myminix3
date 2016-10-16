@@ -36,6 +36,7 @@ void sigint_handler(int signal)
     sigdelset(&mask,SIGQUIT);
     sigprocmask(SIG_BLOCK,&mask,NULL);
     printf("Are you sure? (Y/N) :");
+    fflush(stdin);
     gets(rv);
     sigprocmask(SIG_UNBLOCK,&mask,NULL);
     
@@ -43,7 +44,7 @@ void sigint_handler(int signal)
     if (rv != NULL &&  (rv[0]=='Y' || rv[0] == 'y')){
         exit(0);
     }
-    fflush(stdin);
+    
 }
 
 /*

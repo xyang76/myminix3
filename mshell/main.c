@@ -10,10 +10,7 @@
 
 int main(int argc, char **argv)
 {
-    char cmd[MAXCOMMAND], path[MAXPPATH], c;
-    sigset_t mask;
-    struct sigaction sa;
-    int k=0, i;
+    char cmd[MAXCOMMAND], path[MAXPPATH];
     
     printf("\n-------------------------------\n");
     printf("Welcome to my shell!\n");
@@ -23,31 +20,17 @@ int main(int argc, char **argv)
     printf("Eg: > loadprofile /etc/.profile\n");
     printf("-------------------------------\n");
     
-    
-    sa.sa_flags = 0;
-    sa.sa_handler = sigint_handler;
-    sigaction(SIGINT,  &sa, NULL);	        // Handler for ctrl+c interrupt.
-    sigfillset(&mask);
-    sigdelset(&mask,SIGINT);
-    sigprocmask(SIG_BLOCK,&mask,NULL);
-    
+    signal(SIGINT,  sigint_handler);        // Handler for ctrl+c interrupt.
     read_profile();                         // Read profile from default profile
     
     while(1){
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
         
-        while(fgets(cmd, MAXCOMMAND, stdin) == NULL);
-
-        printf("Current = %s\n", cmd);
-//        precompile(cmd);  
-        
-        fflush(stdin);    
-        k++;
-        if(k>5){
-            printf("Infinity\n");
-            break;
-        }
+	fflush(stdin);
+        gets(cmd);
+        precompile(cmd);        
     }
 }
+
 
