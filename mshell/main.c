@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH], c;
     struct sigaction sa;
-    int k=0;
+    int k=0, i;
     
     printf("\n-------------------------------\n");
     printf("Welcome to my shell!\n");
@@ -32,8 +32,14 @@ int main(int argc, char **argv)
         printf("\n%s> ", path);
         
         
-        gets(cmd);
-        c = getc(stdout);
+//        gets(cmd);
+        i=0;
+        while((c = getc(stdout)) != EOF){
+//            cmd[i] = c;
+            printf("%d ", c);
+        }
+        printf("\n");
+        break;
 //        if(c == '\04' || c == EOF){
 //            k = c == EOF ? 94 : 95;
 //            printf("C = %s and k=%d\n", cmd, k);
