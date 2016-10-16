@@ -27,6 +27,7 @@ int main(int argc, char **argv)
     sigdelset(&mask,SIGQUIT);
     sigdelset(&mask,SIGKILL);
     sigdelset(&mask,SIGTERM);
+    sigdelset(&mask,SIGINT);
     sigprocmask(SIG_BLOCK ,&mask, NULL);
     
     read_profile();                         // Read profile from default profile
