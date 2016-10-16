@@ -11,7 +11,7 @@
 int main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH], c;
-    struct sigset_t mask;
+    sigset_t mask;
     struct sigaction sa;
     int k=0, i;
     
