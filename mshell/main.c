@@ -31,13 +31,13 @@ int main(int argc, char **argv)
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
         
-//        c = getc(stdout);
+        c = getc(stdout);
         gets(cmd);
-        if(cmd[0] == '\04'){
-            printf("CMD = %d\n", k);
+        if(c == EOF || c == '\04' || cmd[0] == '\04'){
+            printf("CMD = %s\n", cmd);
             break;
         }
-        
+        printf("Current = %s\n", cmd);
         precompile(cmd);  
         
         fflush(stdout);    
