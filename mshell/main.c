@@ -12,6 +12,7 @@ int main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH];
     struct sigaction sa;
+    int k=0;
     
     printf("\n-------------------------------\n");
     printf("Welcome to my shell!\n");
@@ -31,7 +32,13 @@ int main(int argc, char **argv)
         printf("\n%s> ", path);
         
         gets(cmd);
-        precompile(cmd);        
+        precompile(cmd);  
+        fflush(stdout);    
+        k++;
+        if(k>100){
+            printf("Infinity\n");
+            break;
+        }
     }
 }
 
