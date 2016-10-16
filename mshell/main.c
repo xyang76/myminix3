@@ -27,8 +27,8 @@ int main(int argc, char **argv)
     sa.sa_flags = 0;
     sa.sa_handler = sigint_handler;
     sigaction(SIGINT,  &sa, NULL);	        // Handler for ctrl+c interrupt.
-    sigemptyset(&mask);
-    sigaddset(&mask,SIGINT);
+    sigfillset(&mask);
+    sigdelset(&mask,SIGINT);
     sigprocmask(SIG_BLOCK,&mask,NULL);
     
     read_profile();                         // Read profile from default profile
