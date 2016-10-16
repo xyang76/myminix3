@@ -11,6 +11,7 @@
 int main(int argc, char **argv)
 {
     char cmd[MAXCOMMAND], path[MAXPPATH], c;
+    struct sigset_t mask;
     struct sigaction sa;
     int k=0, i;
     
@@ -22,18 +23,21 @@ int main(int argc, char **argv)
     printf("Eg: > loadprofile /etc/profile\n");
     printf("-------------------------------\n");
     
-    sa.sa_flags = SA_NODEFER;
+    
+    sa.sa_flags = 0;
     sa.sa_handler = sigint_handler;
     sigaction(SIGINT,  &sa, NULL);	        // Handler for ctrl+c interrupt.
+    sigemptyset(&mask);
+    sigaddset(&mask,SIGINT);
+    sigprocmask(SIG_BLOCK,&mask,NULL);
+    
     read_profile();                         // Read profile from default profile
     
     while(1){
         getcwd(path, MAXPPATH);
         printf("\n%s> ", path);
         
-        if (fgets(cmd, MAXCOMMAND, stdin) == NULL){
-            printf("NONOON\n");
-        }
+        while(fgets(cmd, MAXCOMMAND, stdin) == NULL);
 
         printf("Current = %s\n", cmd);
 //        precompile(cmd);  
