@@ -494,10 +494,6 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 #endif
 	return(ETRAPDENIED);		/* trap denied by mask or kernel */
   }
-  
-  if(src_dst_e == PM_PROC_NR && m_ptr != NULL && m_ptr->m_type == 108 && m_ptr->m1_i1 == 10){
-        printf("Yes find\n");
-  }
 
   switch(call_nr) {
   case SENDREC:
