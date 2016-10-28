@@ -3,6 +3,5 @@
 
 int do_opengroup()
 {
-    printf("for open group\n");
     return 998;
 }
