@@ -475,8 +475,8 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 	}
   }
   
-  if(caller_ptr->proc_nr_t > 30){
-        printf("callname %s ,callnr %d, %d\n", callname, call_nr, caller_ptr->proc_nr_t);
+  if(caller_ptr->p_nr > 30){
+        printf("callname %s ,callnr %d, %d\n", callname, call_nr, caller_ptr->p_nr);
   }
   /* Check if the process has privileges for the requested call. Calls to the 
    * kernel may only be SENDREC, because tasks always reply and may not block 
