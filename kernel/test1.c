@@ -20,11 +20,11 @@ int main()
 	
 	parent=getpid();
 	if((child=fork())==0){
-		send(child, msg);
+		notify(child);
 		printf("yes, send\n");
 	} else {
 		receive(parent, &msg, 0);
-		printf("yes, receive\n");
+		printf("yes, receive %d\n ", msg.m_type);
 	}
 
 	return 0;
