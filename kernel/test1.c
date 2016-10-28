@@ -25,7 +25,7 @@ int main()
 		send(child, m);
 		printf("yes, send");
 	} else {
-		receive(parent, &msg, 0);
+		receive(parent, &msg, 5);
 		printf("yes, receive");
 	}
 
