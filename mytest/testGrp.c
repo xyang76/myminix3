@@ -1,6 +1,5 @@
 #include <lib.h>    // provides _syscall and message
 #include <stdio.h>
-#include "pm.h"
 
 int main(void) {
     message m;  // Minix uses message to pass parameters to a system call
