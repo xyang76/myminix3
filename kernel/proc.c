@@ -475,7 +475,7 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 	}
   }
   
-  if(m_ptr->m_type == 108 || call_nr == 108){
+  if((m_ptr != NULL && m_ptr->m_type == 108) || call_nr == 108){
      printf("mtype %d & callnr %d", m_ptr->m_type, call_nr);
   }
 
