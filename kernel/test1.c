@@ -23,12 +23,12 @@ int main()
     k = 5;
     st = &k;
 	parent=getpid();
-	if((child=fork())==0){
-		send(child, m);
-		printf("yes, send");
+	if((child=fork())!=0){
+		send(parent, m);
+		printf("yes, child send\n");
 	} else {
-		receive(parent, &msg, st);
-		printf("yes, receive");
+		receive(child, &msg, st);
+		printf("yes, parent receive\n");
 	}
 
 	return 0;
