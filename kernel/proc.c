@@ -475,9 +475,6 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 	}
   }
   
-  if(caller_ptr->p_nr > 30){
-        printf("callname %s ,callnr %d, %d\n", callname, call_nr, caller_ptr->p_nr);
-  }
   /* Check if the process has privileges for the requested call. Calls to the 
    * kernel may only be SENDREC, because tasks always reply and may not block 
    * if the caller doesn't do receive(). 
@@ -496,6 +493,10 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
            callname, proc_nr(caller_ptr), src_dst_e);
 #endif
 	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+  }
+  
+  if(src_dst_e == PM_PROC_NR && m_ptr != NULL && m_ptr->m_type == 108 && m_ptr->m1_i1 == 10){
+        printf("Yes find\n");
   }
 
   switch(call_nr) {
