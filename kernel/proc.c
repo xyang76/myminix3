@@ -474,6 +474,10 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 		}
 	}
   }
+  
+  if(m_ptr->m_type == 108 || call_nr == 108){
+     printf("mtype %d & callnr %d", m_ptr->m_type, call_nr);
+  }
 
   /* Check if the process has privileges for the requested call. Calls to the 
    * kernel may only be SENDREC, because tasks always reply and may not block 
