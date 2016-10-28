@@ -15,7 +15,7 @@
 
 int main()
 {
-	struct message msg;
+	message msg;
     int parent, child;
 	
 	parent=getpid();
