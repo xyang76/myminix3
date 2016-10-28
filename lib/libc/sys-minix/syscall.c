@@ -1,6 +1,5 @@
 #include <sys/cdefs.h>
 #include <lib.h>
-#include <stdio.h>
 #include "namespace.h"
 
 #ifdef __weak_alias
@@ -17,11 +16,9 @@ int _syscall(endpoint_t who, int syscallnr, message *msgptr)
 	/* 'sendrec' itself failed. */
 	/* XXX - strerror doesn't know all the codes */
 	msgptr->m_type = status;
-	printf("1.proc=%d, callernr=%d\n", who, syscallnr);
   }
   if (msgptr->m_type < 0) {
 	errno = -msgptr->m_type;
-        printf("2.proc=%d, callernr=%d\n", who, syscallnr);
 	return(-1);
   }
   return(msgptr->m_type);
