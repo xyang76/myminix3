@@ -1,7 +1,10 @@
 #include "stdio.h"
 #include "minix/ipc.h"
 
+int grpnum=900;
+
 int do_opengroup()
 {
-    return 998;
+    grpnum++;
+    return grpnum;
 }
