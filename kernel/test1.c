@@ -20,8 +20,7 @@ int main()
 	
 	msg.m1_i1 = 10;
     m = &msg;
-    k = 5;
-    st = &k;
+    k = 5;          //AMF_VALID && AMF_NOTIFY
 	parent=getpid();
 	if((child=fork())!=0){
         //this is parent
@@ -31,7 +30,7 @@ int main()
 	} else {
         //this is child
         printf("receive %d - %d\n", child, parent);
-		receive(parent, &msg, st);
+		receive(parent, &msg, &k);
 		printf("yes, parent receive\n");
 	}
 
