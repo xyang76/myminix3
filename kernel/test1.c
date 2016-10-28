@@ -1,42 +1,27 @@
 #include <stdio.h>
 #include <string.h>
-//#include <mprofile.h>
-//extern int load_profile(char *name);
-//#include "kernel/kernel.h"
-//#include "arch_proto.h"
-//#include <signal.h>
-//#include <string.h>
-//#include <assert.h>
-//#include "proc.h"
-//#include "proto.h"
-//#include <machine/vm.h>
 #include "minix/ipc.h"
 
 
 int main()
 {
 	message msg, *m;
-    int parent, child, k, *st;
-	
-	msg.m1_i1 = 10;
+    int parent, child, st;
     m = &msg;
-    k = 5;          //AMF_VALID && AMF_NOTIFY
+    st = 5;          //AMF_VALID && AMF_NOTIFY
 	parent=getpid();
 	if((child=fork())!=0){
         //this is parent
+        msg.m1_i1 = 10;
         printf("send %d - %d\n", child, parent);
 		send(child, m);
-		printf("yes, child send\n");
+		printf("yes, child send success\n");
 	} else {
         //this is child
         printf("receive %d - %d\n", child, parent);
-		receive(parent, &msg, &k);
-		printf("yes, parent receive\n");
+		receive(0, &msg, &st);
+		printf("yes, parent receive success\n");
 	}
 
 	return 0;
-}
-
-int test(int i){
-    return 0;
 }
