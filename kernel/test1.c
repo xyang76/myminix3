@@ -25,15 +25,13 @@ int main()
 		send(child, m);
 		printf("yes, send");
 	} else {
-		receive(parent, &msg);
+		receive(parent, &msg, 0);
 		printf("yes, receive");
 	}
 
 	return 0;
 }
 
-int test(proc *pr){
-    struct message m_pagefault;
-    
-    mini_send(pr, VM_PROC_NR, &m_pagefault, FROM_KERNEL);
+int test(int i){
+    return 0;
 }
