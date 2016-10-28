@@ -4,5 +4,5 @@
 int do_opengroup()
 {
     printf("for open group\n");
-    return 0;
+    return 998;
 }
