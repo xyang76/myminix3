@@ -16,16 +16,18 @@
 int main()
 {
 	message msg, *m;
-    int parent, child;
+    int parent, child, k, *st;
 	
 	msg.m1_i1 = 10;
     m = &msg;
+    k = 5;
+    st = &k;
 	parent=getpid();
 	if((child=fork())==0){
 		send(child, m);
 		printf("yes, send");
 	} else {
-		receive(parent, &msg, 5);
+		receive(parent, &msg, st);
 		printf("yes, receive");
 	}
 
