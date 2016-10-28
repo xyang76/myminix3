@@ -1,5 +1,5 @@
-//#include <stdio.h>
-//#include <string.h>
+#include <stdio.h>
+#include <string.h>
 //#include <mprofile.h>
 //extern int load_profile(char *name);
 //#include "kernel/kernel.h"
@@ -10,11 +10,12 @@
 //#include "proc.h"
 //#include "proto.h"
 //#include <machine/vm.h>
+#include "minix/ipc.h"
 
 
 int main()
 {
-	struct message msg;
+	message msg;
     	int parent, child;
 	
 	parent=getpid();
