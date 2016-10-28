@@ -9,7 +9,6 @@ int main()
 	message msg, *m;
     int parent, child, i;
     m = &msg;
-    st = 5;          //AMF_VALID && AMF_NOTIFY
 	parent=getpid();
 	if((child=fork())!=0){
         //this is parent
