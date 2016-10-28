@@ -15,25 +15,25 @@
 
 int main()
 {
-	struct message msg;
+	message msg, *m;
     int parent, child;
 	
+	msg.m1_i1 = 10;
+    m = &msg;
 	parent=getpid();
 	if((child=fork())==0){
-        msg.m_type=1;
-		send(child, msg);
-		printf("yes, send\n");
+		send(child, m);
+		printf("yes, send");
 	} else {
-		receive(parent, &msg, 0);
-		printf("yes, receive %d\n ", msg.m_type);
+		receive(parent, &m);
+		printf("yes, receive");
 	}
 
 	return 0;
 }
 
-int test(int i){
-//    struct message m_pagefault;
-//    
-//    mini_send(pr, VM_PROC_NR, &m_pagefault, FROM_KERNEL);
-    return 0;
+int test(proc *pr){
+    struct message m_pagefault;
+    
+    mini_send(pr, VM_PROC_NR, &m_pagefault, FROM_KERNEL);
 }
