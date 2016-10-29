@@ -824,6 +824,7 @@ struct
 	{ "STIME",		SYS_STIME },
 	{ "VMCTL",		SYS_VMCTL },
 	{ "MEMSET",		SYS_MEMSET },
+	{ "IPCERRDTCCT",	SYS_IPCERRDTCCT },	/* add by Xincheng Yang */
 	{ NULL,		0 }
 };
 
