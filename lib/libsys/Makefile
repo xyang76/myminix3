@@ -74,7 +74,7 @@ SRCS+=  \
 	sys_vsafecopy.c \
 	sys_vtimer.c \
 	sys_vumap.c \
-	sys_ipcerrdtct.c \ 		/* add by Xincheng Yang */
+	sys_ipcerrdtct.c \ 		
 	taskcall.c \
 	tickdelay.c \
 	timers.c \
