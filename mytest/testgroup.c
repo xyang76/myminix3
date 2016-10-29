@@ -20,7 +20,8 @@ int test_opengroup_syscall(){
     int i;
 
     m.m1_i1 = 0;
-    
+    printf("Opengp %d\n", OPENGP);
+ 
     /* group id start from 0 */
     TEST_GREATER(_syscall(PM_PROC_NR, OPENGP, &m), -1, "test_open:opengroup should return id bigger than -1");
 }
