@@ -96,14 +96,16 @@ static int kernel_call_dispatch(struct proc * caller, message *msg)
   int result = OK;
   int call_nr;
   
-  if(call_nr == 57){
-       printf("Yes in kernel!\n"); 
-  }
+  
   
 #if DEBUG_IPC_HOOK
 	hook_ipc_msgkcall(msg, caller);
 #endif
   call_nr = msg->m_type - KERNEL_CALL;
+
+  if(call_nr == 57){
+       printf("Yes in kernel!\n"); 
+  }
 
   /* See if the caller made a valid request and try to handle it. */
   if (call_nr < 0 || call_nr >= NR_SYS_CALLS) {	/* check call number */

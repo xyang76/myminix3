@@ -12,7 +12,7 @@ int do_opengroup()
     int r;
     printf("Yes, messaging\n");
     //r = sys_ipcerrdtct(2, 10, 15);
-    r = _kernel_call(SYS_IPCERRDTCT, &m);
+    r = _taskcall(SYSTASK, SYS_IPCERRDTCT, &m);
     printf("Yes, messaging finish\n");
     return r;
 }
