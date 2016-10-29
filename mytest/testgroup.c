@@ -7,6 +7,8 @@
 /* test cases */
 int test_opengroup_syscall();
 int test_opengroup();
+//int test_closegroup_syscall();
+//int test_closegroup();   
 
 int main(void) {
     test_opengroup_syscall();
@@ -20,7 +22,7 @@ int test_opengroup_syscall(){
     m.m1_i1 = 0;
     
     /* group id start from 0 */
-    TEST_GREATER(_syscall(PM_PROC_NR, OPENGP, &m), -1, "opengroup should return id bigger than -1");
+    TEST_GREATER(_syscall(PM_PROC_NR, OPENGP, &m), -1, "test_open:opengroup should return id bigger than -1");
 }
 
 int test_opengroup(){

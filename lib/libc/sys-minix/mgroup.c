@@ -32,12 +32,13 @@ int closegroup(int grp_nr){
     m.m1_i1 = grp_nr;
     return _syscall(PM_PROC_NR, CLOSEGP, &m);
 }
-int recovergroup(int grp_nr, int stategy){
+
+int recovergroup(int grp_nr, int strategy){
     message m;
     
     m.m1_i1 = grp_nr;
-    m.m1_i2 = stategy;
-    return _syscall(PM_PROC_NR, CLOSEGP, &m);
+    m.m1_i2 = strategy;
+    return _syscall(PM_PROC_NR, RECOVERGP, &m);
 }
 
 
