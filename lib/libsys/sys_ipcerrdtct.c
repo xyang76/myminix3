@@ -1,13 +1,11 @@
-#include <lib.h>
-#include <minix/com.h>
-#include <minix/syslib.h>
+#include "syslib.h"
 
 int sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e)
 {
 	int r;
         message m;
 
-        //return(_kernel_call(SYS_IPCERRDTCCT, &m));
-	r = _taskcall(SYSTASK, SYS_IPCERRDTCCT, &m);
+        //return(_kernel_call(SYS_IPCERRDTCT, &m));
+	r = _taskcall(SYSTASK, SYS_IPCERRDTCT, &m);
 	return r;
 }
