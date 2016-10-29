@@ -107,10 +107,10 @@ int do_closegroup(){
 
 int do_recovergroup(){
     mgroup *g_ptr = NULL;
-    int i, grp_nr, stategy;
+    int i, grp_nr, strategy;
     
     grp_nr = m_in.m1_i1;
-    stategy = m_in.m1_i2;
+    strategy = m_in.m1_i2;
     if(!valid(strategy)){                           // Make sure strategy is valid. 0 is allowed
         return -1;
     }else if(getgroup(grp_nr, &g_ptr)){
@@ -147,7 +147,7 @@ int getgroup(int grp_nr, mgroup ** g_ptr){
     for(i=0, k=g_nr_ptr; i<NR_GRPS; i++, k--){
         k=(k+NR_GRPS)%NR_GRPS;
         if(mgrp[k].g_stat != M_UNUSED && mgrp[k].g_nr == grp_nr){       // find the group in group table.
-            *g_ptr = mgrp[k];
+            (*g_ptr) = &mgrp[k];
             return 0;
         }
     }
