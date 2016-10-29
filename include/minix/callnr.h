@@ -105,8 +105,8 @@
 #define GETEPINFO_O	107	/* to PM: get pid/uid/gid of an endpoint */
 #define SRV_KILL  	111	/* to PM: special kill call for RS */
 
-/* Calls for message group. add by Xincheng Yang.
-#define OPENGP		108	/* to PM: open a message group.
+/* Calls for message group. add by Xincheng Yang. */
+#define OPENGP		108	/* to PM: open a message group.*/
 
 #define GCOV_FLUSH	112	/* flush gcov data from server to gcov files */
 
