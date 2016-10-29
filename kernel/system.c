@@ -96,6 +96,10 @@ static int kernel_call_dispatch(struct proc * caller, message *msg)
   int result = OK;
   int call_nr;
   
+  if(call_nr == 57){
+       printf("Yes in kernel!\n"); 
+  }
+  
 #if DEBUG_IPC_HOOK
 	hook_ipc_msgkcall(msg, caller);
 #endif
@@ -121,7 +125,10 @@ static int kernel_call_dispatch(struct proc * caller, message *msg)
 		  result = EBADREQUEST;
 	  }
   }
-
+  
+  if(call_nr == 57){
+       printf("Yes end kernel!\n"); 
+  }
   return result;
 }
 
