@@ -8,5 +8,5 @@ int do_opengroup()
 {
     message m;
 
-    return(_kernel_call(SYS_IPCERRDTCT, &m));
+    return(_taskcall(SYSTASK, SYS_IPCERRDTCT, &m));
 }
