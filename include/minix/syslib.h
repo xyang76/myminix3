@@ -247,5 +247,8 @@ int sys_setmcontext(endpoint_t proc, mcontext_t *mcp);
 /* input */
 int tty_input_inject(int type, int code, int val);
 
+/* ipc error */
+sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e);
+
 #endif /* _SYSLIB_H */
 
