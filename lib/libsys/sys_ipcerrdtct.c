@@ -1,6 +1,6 @@
 #include "syslib.h"
 
-sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e)
+int sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e)
 {
 	int r;
         message m;
