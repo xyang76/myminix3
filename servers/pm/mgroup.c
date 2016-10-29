@@ -42,7 +42,7 @@ int do_opengroup()
         return -1;                          
     }
     
-    g_ptr->grp_stat = M_READY;
+    g_ptr->g_stat = M_READY;
     g_ptr->g_nr = g_id_ctr;
     g_ptr->g_sttg = strategy;
     g_ptr->p_size = 0;
@@ -97,7 +97,7 @@ int do_closegroup(){
     if(getgroup(grp_nr, &g_ptr)){
         return -1;
     }
-    g_ptr->grp_stat = M_UNUSED;
+    g_ptr->g_stat = M_UNUSED;
     g_ptr->g_nr = 0;
     g_ptr->g_sttg = 0;
     g_ptr->p_size = 0;
@@ -107,7 +107,7 @@ int do_closegroup(){
 
 int do_recovergroup(){
     mgroup *g_ptr = NULL;
-    int i, grp_nr, strategy;
+    int grp_nr, strategy;
     
     grp_nr = m_in.m1_i1;
     strategy = m_in.m1_i2;
