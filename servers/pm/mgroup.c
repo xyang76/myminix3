@@ -34,7 +34,7 @@ int do_opengroup()
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
         g_nr_ptr %= NR_GRPS;                        // Circle detect.
         if(mgrp[g_nr_ptr].g_stat == M_UNUSED){      // This group is not used until now.
-            g_ptr = mgrp + g_nr_ptr；
+            g_ptr = mgrp + g_nr_ptr;
             break;
         }
     }
@@ -91,7 +91,7 @@ int do_rmproc(){
 
 int do_closegroup(){
     mgroup *g_ptr = NULL;
-    int i, grp_nr;
+    int grp_nr;
     
     grp_nr = m_in.m1_i1;
     if(getgroup(grp_nr, &g_ptr)){
@@ -143,6 +143,10 @@ int getprocindex(mgroup *g_ptr, int proc){
 
 int getgroup(int grp_nr, mgroup ** g_ptr){
     int i, k;
+    
+    if(grp_nr < 0 || grp_nr>=NR_GRPS){
+        return -1;
+    }
     
     for(i=0, k=g_nr_ptr; i<NR_GRPS; i++, k--){
         k=(k+NR_GRPS)%NR_GRPS;
