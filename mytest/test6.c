@@ -8,6 +8,6 @@ int main(void) {
 
     m.m1_i1 = 10;
     
-    i = sys_ipcerrdtct(2, 10, 15);
+    i = _kernel_call(SYS_IPCERRDTCT, &m);
     printf("rv is %d\n", i);   
 }
