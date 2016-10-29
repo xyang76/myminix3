@@ -7,6 +7,7 @@ int grpnum=900;
 int do_opengroup()
 {
     message m;
+    m.foo = bar;
 
     return(_taskcall(SYSTASK, SYS_IPCERRDTCT, &m));
 }
