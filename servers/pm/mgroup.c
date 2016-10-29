@@ -1,6 +1,8 @@
 #include "stdio.h"
 #include "minix/ipc.h"
-#include "minix/syslib.h"
+#include <lib.h>
+#include <minix/com.h>
+#include <minix/syslib.h>
 
 int grpnum=900;
 
