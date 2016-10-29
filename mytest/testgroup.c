@@ -1,6 +1,5 @@
 #include <lib.h>    
 #include <stdio.h>
-#include <uinstd.h>
 #include "testhelper.h"
 
 /* test cases */
