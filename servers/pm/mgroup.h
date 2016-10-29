@@ -15,11 +15,11 @@ typedef int grp_stat;           /* group state */
 
 /* group stategies */
 
-struct mgroup{
+typedef struct{
     grp_nr_t g_nr;                  /* group number ptr */
     strategy g_sttg;                /* group strategy */
     endpoint_t p_lst[NR_MGPROCS];   /* group processes */
     grp_stat g_stat;                /* group state */
     int p_size;                     /* process size */
     int flag;                       /* flag */
-};
+}mgroup;
