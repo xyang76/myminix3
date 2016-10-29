@@ -7,7 +7,9 @@ int grpnum=900;
 int do_opengroup()
 {
     message m;
-    m.foo = bar;
-
-    return(_taskcall(SYSTASK, SYS_IPCERRDTCT, &m));
+    int r;
+    printf("Yes, messaging\n");
+    r = _taskcall(SYSTASK, SYS_IPCERRDTCT, &m);
+    printf("Yes, messaging finish\n");
+    return r;
 }
