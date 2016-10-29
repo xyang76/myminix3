@@ -11,8 +11,8 @@ int do_opengroup()
     message m;
     int r;
     printf("Yes, messaging\n");
-    r = sys_ipcerrdtct(2, 10, 15);
-    //r = _taskcall(SYSTASK, SYS_IPCERRDTCT, &m);
+    //r = sys_ipcerrdtct(2, 10, 15);
+    r = _taskcall(PM_PROC_NR, SYS_IPCERRDTCT, &m);
     printf("Yes, messaging finish\n");
     return r;
 }
