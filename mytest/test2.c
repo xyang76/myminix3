@@ -6,22 +6,11 @@
 
 int main()
 {
-	message msg, *m;
-    int parent, child, i;
-    m = &msg;
-	parent=getpid();
-	if((child=fork())!=0){
-        //this is parent
-        msg.m1_i1 = 10;
-        printf("send %d - %d\n", child, parent);
-		i = _syscall(PM_PROC_NR, 108, &msg);
-		printf("rv is %d\n", i); 
-	} else {
-        //this is child
-        printf("receive %d - %d\n", child, parent);
-		i = _syscall(PM_PROC_NR, 108, &msg);
-		printf("rv is %d\n", i); 
-	}
+    message m;  // Minix uses message to pass parameters to a system call
+    int i;
 
-	return 0;
+    m.m1_i1 = 10;
+    
+    i = _syscall(PM_PROC_NR, 108, &m);
+    printf("rv is %d\n", i);
 }
