@@ -18,7 +18,7 @@ static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 0;                /* group id counter */
 
 /* private methods prototype */
-int valid(int strategy);                        /* valid strategy */
+int invalid(int strategy);                      /* valid strategy */
 int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
 
@@ -29,8 +29,8 @@ int do_opengroup()
     
     printf("Yes in\n");
     strategy = m_in.m1_i1;
-    if(!valid(strategy)){                           // Make sure strategy is valid. 0 is allowed
-        return -1;
+    if(!invalid(strategy)){                         // Make sure strategy is valid. 0 is allowed
+        return EIVSTTG;                             // Invalid strategy. which defined in sys/errno.h
     }
     printf("Yes in1.5\n");
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
@@ -43,7 +43,7 @@ int do_opengroup()
     }
     
     if(g_ptr == NULL){                              // No avalible(free) group in PM server.
-        return -1;                          
+        return EGRPBUSY;                            // Resource busy
     }
     printf("Yes in2\n");
     g_ptr->g_stat = M_READY;
@@ -61,12 +61,12 @@ int do_addproc(){
     
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
-    if(getgroup(grp_nr, &g_ptr)){
-        return -1;
-    }else if(g_ptr->p_size == NR_MGPROCS){
-        return -1;
+    if(!getgroup(grp_nr, &g_ptr)){
+        return EIVGRP;
+    }else if(g_ptr->p_size >= NR_MGPROCS){
+        return EPROCLEN;                    // reach max length
     }else if(getprocindex(g_ptr, proc) != -1){
-        return -1;
+        return EPROCEXIST;                  // proc already exist
     }
     
     *(g_ptr->p_lst+g_ptr->p_size) = proc;
@@ -81,9 +81,9 @@ int do_rmproc(){
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
     if(getgroup(grp_nr, &g_ptr)){
-        return -1;
+        return EIVGRP;
     } else if((i=getprocindex(g_ptr, proc)) == -1){
-        return -1;
+        return EIVPROC;                     // cant find proc in group
     } 
     
     for(; i<g_ptr->p_size-1;i++){
@@ -99,7 +99,7 @@ int do_closegroup(){
     
     grp_nr = m_in.m1_i1;
     if(getgroup(grp_nr, &g_ptr)){
-        return -1;
+        return EIVGRP;
     }
     g_ptr->g_stat = M_UNUSED;
     g_ptr->g_nr = 0;
@@ -116,9 +116,9 @@ int do_recovergroup(){
     grp_nr = m_in.m1_i1;
     strategy = m_in.m1_i2;
     if(!valid(strategy)){                           // Make sure strategy is valid. 0 is allowed
-        return -1;
+        return EIVSTTG;
     }else if(getgroup(grp_nr, &g_ptr)){
-        return -1;
+        return EIVGRP;
     }
     
     return 0;
@@ -162,6 +162,6 @@ int getgroup(int grp_nr, mgroup ** g_ptr){
     return -1;
 }
 
-int valid(int strategy){
+int invalid(int strategy){
     return 0;
 }
