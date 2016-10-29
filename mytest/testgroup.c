@@ -1,7 +1,7 @@
 #include <lib.h>    
 #include <stdio.h>
-#include <uinst.h>
-#include <testhelper.h>
+#include <uinstd.h>
+#include "testhelper.h"
 
 /* test cases */
 int test_opengroup_syscall();
