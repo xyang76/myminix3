@@ -262,6 +262,9 @@ void system_init(void)
   map(SYS_SCHEDULE, do_schedule);	/* reschedule a process */
   map(SYS_SCHEDCTL, do_schedctl);	/* change process scheduler */
 
+  /* IPC error detect */
+  map(SYS_IPCERRDTCT, do_ipcerrdtct);	/* IPC error detect: add by Xincheng Yang */
+
 }
 /*===========================================================================*
  *				get_priv				     *
