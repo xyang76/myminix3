@@ -1,6 +1,6 @@
 #include <lib.h>    // provides _syscall and message
 #include <stdio.h>
-#include <syslib.h>
+#include <minix/syslib.h>
 
 int main(void) {
     message m;  // Minix uses message to pass parameters to a system call
