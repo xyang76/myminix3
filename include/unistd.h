@@ -146,6 +146,14 @@ __aconst char *ttyname(int);
 int	 unlink(const char *);
 ssize_t	 write(int, const void *, size_t);
 
+/*
+ *  Project2: opengroup, closegroup, recovergroup, addproc, rmproc
+ */
+int opengroup(int strategy);
+int addproc(int grp_nr, int proc);
+int rmproc(int grp_nr, int proc);
+int closegroup(int grp_nr);
+int recovergroup(int grp_nr, int stategy);
 
 /*
  * IEEE Std 1003.2-92, adopted in X/Open Portability Guide Issue 4 and later

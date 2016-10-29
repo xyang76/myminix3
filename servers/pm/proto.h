@@ -106,3 +106,7 @@ void tell_vfs(struct mproc *rmp, message *m_ptr);
 
 /* mgroup.c */
 int do_opengroup(void);
+int do_closegroup(void);
+int do_recovergroup(void);
+int do_addproc(void);
+int do_rmproc(void);
