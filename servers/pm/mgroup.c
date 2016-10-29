@@ -27,21 +27,25 @@ int do_opengroup()
     mgroup *g_ptr = NULL;
     int i, strategy;
     
+    printf("Yes in\n");
     strategy = m_in.m1_i1;
     if(!valid(strategy)){                           // Make sure strategy is valid. 0 is allowed
         return -1;
     }
+    printf("Yes in1.5\n");
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
         g_nr_ptr %= NR_GRPS;                        // Circle detect.
         if(mgrp[g_nr_ptr].g_stat == M_UNUSED){      // This group is not used until now.
+            printf("Yes in1.6\n");
             g_ptr = mgrp + g_nr_ptr;
             break;
         }
     }
+    
     if(g_ptr == NULL){                              // No avalible(free) group in PM server.
         return -1;                          
     }
-    
+    printf("Yes in2\n");
     g_ptr->g_stat = M_READY;
     g_ptr->g_nr = g_id_ctr;
     g_ptr->g_sttg = strategy;
