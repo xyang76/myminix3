@@ -1,6 +1,7 @@
 #include <lib.h>    
 #include <stdio.h>
 #include <sys/unistd.h>
+#include <unistd.h>
 #include "testhelper.h"
 
 /* test cases */
