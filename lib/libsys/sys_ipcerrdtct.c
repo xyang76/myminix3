@@ -1,4 +1,6 @@
-#include "syslib.h"
+#include <lib.h>
+#include <minix/com.h>
+#include <minix/syslib.h>
 
 int sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e)
 {
