@@ -115,7 +115,7 @@ int do_recovergroup(){
     
     grp_nr = m_in.m1_i1;
     strategy = m_in.m1_i2;
-    if(!valid(strategy)){                           // Make sure strategy is valid. 0 is allowed
+    if(!invalid(strategy)){                           // Make sure strategy is valid. 0 is allowed
         return EIVSTTG;
     }else if(getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
