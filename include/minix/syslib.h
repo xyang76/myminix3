@@ -41,6 +41,9 @@ int sys_schedule(endpoint_t proc_ep, int priority, int quantum, int
 int sys_schedctl(unsigned flags, endpoint_t proc_ep, int priority, int
 	quantum, int cpu);
 
+/* ipc error: add by Xincheng Yang */
+int sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e);
+
 /* Shorthands for sys_runctl() system call. */
 #define sys_stop(proc_ep) sys_runctl(proc_ep, RC_STOP, 0)
 #define sys_delay_stop(proc_ep) sys_runctl(proc_ep, RC_STOP, RC_DELAY)
@@ -244,9 +247,6 @@ int sys_setmcontext(endpoint_t proc, mcontext_t *mcp);
 
 /* input */
 int tty_input_inject(int type, int code, int val);
-
-/* ipc error */
-int sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e);
 
 #endif /* _SYSLIB_H */
 
