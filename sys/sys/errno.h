@@ -173,7 +173,7 @@
 #define EDEADEPT     (_SIGN 302 )  /* specified endpoint is not alive */
 #define EBADCPU	     (_SIGN 303 )  /* requested CPU does not work */
 
-/* The following are project 2 errors. Add by Xincheng Yang*/
+/* The following are project 2 errors.*/
 #define EIVSTTG      (_SIGN 401 )  /* invalid strategy */
 #define EGRPBUSY     (_SIGN 402 )  /* group busy */
 #define EIVGRP       (_SIGN 403 )  /* group not exist */
