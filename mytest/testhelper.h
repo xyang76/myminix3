@@ -11,23 +11,24 @@ static inline int ASSERT_EQUAL(int result, int expect)
     if(result == expect){
         return TRUE;
     }
-    return FALSE;
+    printf("ASSERT_EQUAL [%d==%d] Fail.\n", result, expect);
+    exit(0);
 }
 
 static inline void TEST_EQUAL(int result, int expect, char *msg){
     if(result == expect){
-        printf("TEST [%s] OK.\n", msg);
+        printf("TEST_EQUAL [%s] OK.\n", msg);
     } else {
-        printf("TEST [%s] Error, expect %d, result %d\n", msg, expect, result);
+        printf("TEST_EQUAL [%s] Error, expect %d, result %d\n", msg, expect, result);
         exit(0);
     }
 }
 
 static inline void TEST_GREATER(int val1, int val2, char *msg){
     if(val1 > val2){
-        printf("TEST [%s] OK.\n", msg);
+        printf("TEST_GREATER [%s] OK.\n", msg);
     } else {
-        printf("TEST [%s] Error, value1 %d, value2 %d\n", msg, val1, val2);
+        printf("TEST_GREATER [%s] Error, value1 %d, value2 %d\n", msg, val1, val2);
         exit(0);
     }
 }
