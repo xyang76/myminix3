@@ -35,7 +35,7 @@ int main()
     if (status == -1){
         //Fork error
     } else if (status == 0){
-        
+        printf("current index%d : %d", i, getpid());
     } else {
         for(i=0; i<10; i++){
             printf("pid=%d\n", pid[i]);
