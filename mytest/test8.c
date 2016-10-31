@@ -5,6 +5,7 @@
 
 int main()
 {
+    /*
 	message msg, *m;
 	int parent, child, st;
 	m = &msg;
@@ -23,7 +24,22 @@ int main()
 		printf("receive %d - %d\n", child, parent);
 		receive(parent, &msg, &st);
 		printf("yes, parent receive success %d\n", msg.m1_i1);
-	}
-
+	}*/
+    
+    int status,i, pid[10];
+    for (i = 0; i < 10; i++){
+        status = fork();
+        if (status == 0 || status == -1) break;
+        pid[i] = status;
+    }
+    if (status == -1){
+        //Fork error
+    } else if (status == 0){
+        
+    } else {
+        for(i=0; i<10; i++){
+            printf("pid=%d\n", i);
+        }
+    }
 	return 0;
 }
