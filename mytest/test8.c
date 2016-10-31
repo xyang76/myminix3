@@ -14,8 +14,9 @@ int main()
 		//this is parent
 		msg.m1_i1 = 10;
 		printf("send %d - %d\n", child, parent);
+		receive(0, &msg, &st);
 		//send(child, m);
-		printf("yes, child send success\n");
+		printf("yes, child receive success\n");
 	} else {
 		//this is child
 		printf("receive %d - %d\n", child, parent);
