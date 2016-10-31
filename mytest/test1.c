@@ -19,12 +19,12 @@ int main()
 	} else {
 		//this is child
 		printf("receive %d - %d\n", child, parent);
-		while(1){
+		//while(1){
 			rv = receive(child, &msg, &st);
-			if(rv == 0){
+		//	if(rv == 0){
 				printf("yes, parent receive success %d\n", msg.m1_i1);
-			}
-		}
+		//	}
+		//}
 	}
 	while(1);		//infinity loop to keep this proc not terminate.
 	return 0;
