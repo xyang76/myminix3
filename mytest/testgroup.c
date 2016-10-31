@@ -104,11 +104,11 @@ int test_recovergroup(){
     int strategy=0;
     int f;
 	
-    gid1 = opengroup(0);
+    gid = opengroup(0);
 
-    f1 = recovergroup(gid, strategy);
+    f = recovergroup(gid, strategy);
 
-    TEST_EQUAL(f1, 0, "recovergroup should return 0");         
+    TEST_EQUAL(f, 0, "recovergroup should return 0");         
 }
 
 /* 
