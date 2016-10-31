@@ -38,7 +38,7 @@ int main()
         
     } else {
         for(i=0; i<10; i++){
-            printf("pid=%d\n", i);
+            printf("pid=%d\n", pid[i]);
         }
     }
 	return 0;
