@@ -20,9 +20,9 @@ int main()
 		//this is child
 		printf("receive %d - %d\n", child, parent);
 		//while(1){
-			rv = receive(child, &msg, &st);
+        rv = receive(parent, &msg, &st);
 		//	if(rv == 0){
-				printf("yes, parent receive success %d\n", msg.m1_i1);
+        printf("yes, parent receive success %d\n", msg.m1_i1);
 		//	}
 		//}
 	}
