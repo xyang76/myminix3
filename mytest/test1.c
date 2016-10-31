@@ -6,7 +6,7 @@
 int main()
 {
 	message msg, *m;
-	int parent, child, st;
+	int parent, child, st, rv;
 	m = &msg;
 	st = 5;          //AMF_VALID && AMF_NOTIFY
 	parent=getpid();
@@ -19,8 +19,12 @@ int main()
 	} else {
 		//this is child
 		printf("receive %d - %d\n", child, parent);
-		receive(parent, &msg, &st);
-		printf("yes, parent receive success %d\n", msg.m1_i1);
+		while(1){
+			rv = receive(parent, &msg, &st);
+			if(rv == 0){
+				printf("yes, parent receive success %d\n", msg.m1_i1);
+			}
+		}
 	}
 
 	return 0;
