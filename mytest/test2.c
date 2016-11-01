@@ -19,7 +19,7 @@ int main()
         m.m_source=getpid();
         m.m_type = MSEND;
         printf("start send %d->%d\n", m.m_source, m.m1_i1);
-        rv= send(PM_PROC_NR, &m);
+        rv= sendrec(PM_PROC_NR, &m);
         printf("send rv is %d\n", rv);
     } else {
         // This is parent
