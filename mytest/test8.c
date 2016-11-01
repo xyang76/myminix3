@@ -41,12 +41,13 @@ int main()
 //        } else {
         msg.m1_i1 = 10;
         rv = send(parent, &msg);
-        printf("send %d %d", parent, rv);
+        printf("send %d %d\n", parent, rv);
 //        }
     } else {
+        printf("cur id:%d\n", parent);
         while(1){
             for(i=0; i<10; i++){
-                if(receive(pid[i], &msg, &st)){
+                if(receive(pid[i], &msg, &st) == 0){
                     printf("Yes rec success! %d\n", msg.m1_i1);
                 }
             }
