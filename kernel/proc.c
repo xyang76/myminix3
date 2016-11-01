@@ -455,6 +455,41 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 			proc_nr(caller_ptr), src_dst_e);
 #endif
         printf("e,d %d-%d\n", src_dst_e, src_dst_p);
+        
+      int failed = 0;
+      endpoint_t ke;
+      char *file = "file";
+      int line = 1000, fatal=0;
+      
+      *proc = _ENDPOINT_P(endpoint);
+      if (endpoint == NONE) {
+        printf("VFS %s:%d: endpoint is NONE\n", file, line);
+        failed = 1;
+      } else if (*proc < 0 || *proc >= NR_PROCS) {
+        printf("VFS %s:%d: proc (%d) from endpoint (%d) out of range\n",
+            file, line, *proc, endpoint);
+        failed = 1;
+      } 
+      
+      /*else if ((ke = fproc[*proc].fp_endpoint) != endpoint) {
+        if(ke == NONE) {
+            printf("VFS %s:%d: endpoint (%d) points to NONE slot (%d)\n",
+                file, line, endpoint, *proc);
+            assert(fproc[*proc].fp_pid == PID_FREE);
+        } else {
+            printf("VFS %s:%d: proc (%d) from endpoint (%d) doesn't match "
+                "known endpoint (%d)\n", file, line, *proc, endpoint,
+                fproc[*proc].fp_endpoint);
+            assert(fproc[*proc].fp_pid != PID_FREE);
+        }
+        failed = 1;
+      }*/
+
+  if(failed && fatal)
+	panic("isokendpt_f failed");
+
+        printf("Failed in vfs %d\n", *proc);
+        
 		return -501;
 	}
 
