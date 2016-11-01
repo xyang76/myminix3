@@ -16,7 +16,9 @@ int main()
         
         m.m1_i1 = parent;
         m.m1_p1 = &msg;
-        m.m_source=getpid();
+        msg.m_source=PM_PROC_NR;
+        msg.m_type=2;
+        m.m_source=PM_PROC_NR;
         m.m_type = MSEND;
         printf("start send %d->%d\n", m.m_source, m.m1_i1);
         rv= sendrec(PM_PROC_NR, &m);
