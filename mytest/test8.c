@@ -25,8 +25,8 @@ int main()
 		receive(parent, &msg, &st);
 		printf("yes, parent receive success %d\n", msg.m1_i1);
 	}*/
-    
-    int status,i, pid[10];
+    message msg;
+    int status,i, pid[10], st=5, rv;
     for (i = 0; i < 10; i++){
         status = fork();
         if (status == 0 || status == -1) break;
@@ -35,7 +35,17 @@ int main()
     if (status == -1){
         //Fork error
     } else if (status == 0){
-        printf("current index%d : %d\n", i, getpid());
+        if(i<1){        //Receiver
+            while(1){
+                if(receive(ANY, &msg, &st)){
+                    printf("Yes rec success! %d\n", msg.m1_i1);
+                }
+            }
+        } else {
+            msg.m1_i1 = 10;
+            rv = send(pid[0], &msg);
+            printf("send %d %d", pid[0], rv);
+        }
     } else {
         for(i=0; i<10; i++){
             printf("pid=%d\n", pid[i]);
