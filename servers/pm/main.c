@@ -363,7 +363,8 @@ static void sendreply()
       if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) ==
           (REPLY | IN_USE)) {
           if(dbug==1){
-              printf("end point%d reply%d, %d", rmp->mp_endpoint, rmp->mp_reply.m_source, rmp->mp_reply.m_type);
+              printf("end point%d reply%d, %d\n", rmp->mp_endpoint, rmp->mp_reply.m_source, rmp->mp_reply.m_type);
+              dbug=0;
           }
           s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
           if (s != OK) {
