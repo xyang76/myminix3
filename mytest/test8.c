@@ -44,14 +44,14 @@ int main()
         printf("send %d %d\n", parent, rv);
 //        }
     } else {
-        printf("cur id:%d\n", parent);
-        while(1){
-            for(i=0; i<10; i++){
-                if(receive(pid[i], &msg, &st) == 0){
-                    printf("Yes rec success! %d\n", msg.m1_i1);
-                }
-            }
-        }
+//        printf("cur id:%d\n", parent);
+//        while(1){
+//            for(i=0; i<10; i++){
+//                if(receive(pid[i], &msg, &st) == 0){
+//                    printf("Yes rec success! %d\n", msg.m1_i1);
+//                }
+//            }
+//        }
     }
 	return 0;
 }
