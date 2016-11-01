@@ -7,7 +7,7 @@
 int main()
 {
     message m, msg, *m_sg;  // Minix uses message to pass parameters to a system call
-    int rv, child;
+    int rv, child, st=5, status;
     int parent = getpid();
 
     if((child=fork())==0){
@@ -24,8 +24,9 @@ int main()
     } else {
         // This is parent
         printf("start rec \n");
-        rv = receive(PM_PROC_NR, &m, 0);
-        printf("start rec is %d, %d\n", rv, m.m1_i1);
+        waitpid(child, &status, 0);
+        rv = receive(PM_PROC_NR, &m, &st);
+        printf("start rec is %d, %d, %d\n", rv, m.m1_i1, status);
 //        m.m1_i1 = PM_PROC_NR;
 //        m.m1_p1 = m_sg;
 //        m.m_source=getpid();
