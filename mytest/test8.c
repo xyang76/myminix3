@@ -37,7 +37,7 @@ int main()
     } else if (status == 0){
         if(i<1){        //Receiver
             while(1){
-                if(receive(ANY, &msg, &st)){
+                if(receive(0, &msg, &st)){
                     printf("Yes rec success! %d\n", msg.m1_i1);
                 }
             }
