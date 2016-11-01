@@ -41,7 +41,7 @@ int recovergroup(int grp_nr, int strategy){
     return _syscall(PM_PROC_NR, RECOVERGP, &m);
 }
 
-int msend(int dest, message *msg, int* proclist){
+int msend(int dest, char *msg, int* proclist){
     message m;
     
     msg->m_source=getpid();
@@ -52,7 +52,7 @@ int msend(int dest, message *msg, int* proclist){
     return _syscall(PM_PROC_NR, MSEND, &m);
 }
 
-int mreceive(int src, message *msg, int* proclist, int *status_ptr){
+int mreceive(int src, char *msg, int* proclist, int *status_ptr){
     message m;
     
     msg->m_source=getpid();
