@@ -43,7 +43,7 @@ int main()
         int result;                 
 
       /* SEF local startup. */
-      env_setargs(argc, argv);
+//      env_setargs(argc, argv);
       sef_local_startup();
       m_ptr = &m;
       while (TRUE) { 
