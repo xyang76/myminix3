@@ -106,8 +106,10 @@
 #define SRV_KILL  	111	/* to PM: special kill call for RS */
 
 /* Calls for message group. add by Xincheng Yang. */
-#define ADDPROC		69	/* to PM: add proc into a message group.*/
-#define RMPROC		70	/* to PM: rm proc from a message group.*/
+#define MSEND       56 /* to PM: send message into a group.*/
+#define MRECEIVE    58 /* to PM: receive message from group.*/
+#define ADDPROC     69	/* to PM: add proc into a message group.*/
+#define RMPROC      70	/* to PM: rm proc from a message group.*/
 #define OPENGP		108	/* to PM: open a message group.*/
 #define CLOSEGP		109	/* to PM: close a message group.*/
 #define RECOVERGP	110	/* to PM: recover a message group.*/

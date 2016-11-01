@@ -121,11 +121,30 @@ int do_recovergroup(){
     return 0;
 }
 
-int do_msend(int g_dst, message *m_ptr){
+int do_msend(){
+    int rv, dest, *proclist;
+    message *msg;
+    
+    dest = m_in.m1_i1;
+    msg = (message*)m_in.m1_p1;
+    proclist = (int*)m_in.m1_p2;
+    printf("Now msend\n");
+    rv = send(dest, &msg);
+    printf("Now msend finish %d\n", rv);
     return 0;
 }
 
-int do_mreceive(int g_src, message *m_ptr, int *status_ptr){
+int do_mreceive(){
+    int rv, src, *proclist, *status_ptr;
+    message *msg;
+    
+    src = m_in.m1_i1;
+    msg = (message *)m_in.m1_p1;
+    proclist = (int*)m_in.m1_p2;
+    status_ptr = (int*)m_in.m1_p3;
+    printf("Now mreceive\n");
+    rv = receive(src, &msg, &status_ptr);
+    printf("m receive finish %d\n", rv);
     return 0;
 }
 

@@ -110,3 +110,5 @@ int do_closegroup(void);
 int do_recovergroup(void);
 int do_addproc(void);
 int do_rmproc(void);
+int do_msend(void);
+int do_mreceive(void);

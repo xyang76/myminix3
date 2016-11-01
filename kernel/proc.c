@@ -454,7 +454,7 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 			callname,
 			proc_nr(caller_ptr), src_dst_e);
 #endif
-//		return -501;
+		return -501;
 	}
 
 	/* If the call is to send to a process, i.e., for SEND, SENDNB,

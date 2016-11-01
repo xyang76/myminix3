@@ -154,6 +154,8 @@ int addproc(int grp_nr, int proc);
 int rmproc(int grp_nr, int proc);
 int closegroup(int grp_nr);
 int recovergroup(int grp_nr, int stategy);
+int msend(int dest, message *msg, int* proclist);
+int mreceive(int src, message *msg, int* proclist, int *status_ptr);
 
 /*
  * IEEE Std 1003.2-92, adopted in X/Open Portability Guide Issue 4 and later
