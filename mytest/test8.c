@@ -40,6 +40,8 @@ int main()
             
 //        } else {
         msg.m1_i1 = 10;
+        msg.m_source = getpid();
+        msg.m_type = 100;
         rv = send(parent, &msg);
         printf("send %d %d\n", parent, rv);
 //        }
