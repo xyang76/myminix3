@@ -1,33 +1,60 @@
 #include <stdio.h>
 #include <string.h>
 #include "minix/ipc.h"
+#define _POSIX_SOURCE      1	/* tell headers to include POSIX stuff */
+#define _MINIX             1	/* tell headers to include MINIX stuff */
+#define _SYSTEM            1    /* get OK and negative error codes */
+
+#include <sys/types.h>
+#include <sys/param.h>
+#include <limits.h>
+#include <errno.h>
+#include <regex.h>
+
+#include <minix/callnr.h>
+#include <minix/config.h>
+#include <minix/type.h>
+#include <minix/const.h>
+#include <minix/com.h>
+#include <minix/ds.h>
+#include <minix/syslib.h>
+#include <minix/sysinfo.h>
+#include <minix/sysutil.h>
+#include <minix/keymap.h>
+#include <minix/bitmap.h>
+#include <minix/rs.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
+
+#include "proto.h"
+#include <minix/endpoint.h>
 
 
 int main()
 {
-    /*
-	message msg, *m;
-	int parent, child, st;
-	m = &msg;
-	st = 5;          //AMF_VALID && AMF_NOTIFY
-	parent=getpid();
-	if((child=fork())!=0){
-		//this is parent
-		msg.m1_i1 = 10;
-		printf("send %d - %d\n", child, parent);
-		receive(child, &msg, &st);
-		//send(child, m);
-		printf("yes, child receive success %d\n", msg.m1_i1);
-	} else {
-		//this is child
-		msg.m1_i1 = 20;
-		printf("receive %d - %d\n", child, parent);
-		receive(parent, &msg, &st);
-		printf("yes, parent receive success %d\n", msg.m1_i1);
-	}*/
     message msg;
     int status,i, pid[10], st=5, rv;
-    int parent = getpid();
+    int server;
+    if((server=fork()) == 0){
+        message m, *m_ptr;
+        int result;                 
+
+      /* SEF local startup. */
+      env_setargs(argc, argv);
+      sef_local_startup();
+      m_ptr = &m;
+      while (TRUE) { 
+          
+        int status = sef_receive(0, m_ptr); 
+        printf("message %d type %d", m_ptr->m_source, m_ptr->m_type);
+        send(m_ptr->m_source, m_ptr);
+      }
+      exit(0);
+    }
+    
     for (i = 0; i < 10; i++){
         status = fork();
         if (status == 0 || status == -1) break;
@@ -36,16 +63,13 @@ int main()
     if (status == -1){
         //Fork error
     } else if (status == 0){
-//        if(i<1){        //Receiver
-            
-//        } else {
         msg.m1_i1 = 10;
         msg.m_source = getpid();
         msg.m_type = 100;
-        rv = send(parent, &msg);
-        printf("send %d %d\n", parent, rv);
-//        }
+        rv = send(server, &msg);
+        printf("send %d %d\n", server, rv);
     } else {
+        
 //        printf("cur id:%d\n", parent);
 //        while(1){
 //            for(i=0; i<10; i++){
