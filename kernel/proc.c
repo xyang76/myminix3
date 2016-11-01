@@ -454,6 +454,7 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 			callname,
 			proc_nr(caller_ptr), src_dst_e);
 #endif
+        printf("e,d %d-%d\n", src_dst_e, src_dst_p);
 		return -501;
 	}
 
