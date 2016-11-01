@@ -459,7 +459,9 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
       int failed = 0;
       endpoint_t ke;
       char *file = "file";
-      int line = 1000, fatal=0;
+      int line = 1000, fatal=0,;
+      endpoint = src_dst_e;
+      *proc =  &src_dst_p;
       
       *proc = _ENDPOINT_P(endpoint);
       if (endpoint == NONE) {
