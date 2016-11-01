@@ -136,6 +136,9 @@ int isokendpt_f(char *file, int line, endpoint_t endpoint, int *proc,
   if(failed && fatal)
 	panic("isokendpt_f failed");
 
+  if(failed){
+      printf("Failed in vfs\n");
+  }
   return(failed ? EDEADEPT : OK);
 }
 
