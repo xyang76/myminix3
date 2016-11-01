@@ -29,7 +29,6 @@
 #include <string.h>
 #include <signal.h>
 
-#include "proto.h"
 #include <minix/endpoint.h>
 
 
