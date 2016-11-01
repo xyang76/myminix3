@@ -454,7 +454,7 @@ static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
 			callname,
 			proc_nr(caller_ptr), src_dst_e);
 #endif
-		return EDEADSRCDST;
+		return -501;
 	}
 
 	/* If the call is to send to a process, i.e., for SEND, SENDNB,
@@ -815,7 +815,7 @@ int mini_send(
 
   if (RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT))
   {
-	return EDEADSRCDST;
+	return -502;
   }
 
   /* Check if 'dst' is blocked waiting for this message. The destination's 
@@ -916,7 +916,7 @@ static int mini_receive(struct proc * caller_ptr,
 	okendpt(src_e, &src_p);
 	if (RTS_ISSET(proc_addr(src_p), RTS_NO_ENDPOINT))
 	{
-		return EDEADSRCDST;
+		return -503;
 	}
   }
 
@@ -1053,7 +1053,7 @@ int mini_notify(
   if (!isokendpt(dst_e, &dst_p)) {
 	util_stacktrace();
 	printf("mini_notify: bogus endpoint %d\n", dst_e);
-	return EDEADSRCDST;
+	return -504;
   }
 
   dst_ptr = proc_addr(dst_p);
@@ -1198,7 +1198,7 @@ int try_deliver_senda(struct proc *caller_ptr,
 
 	r = OK;
 	if (!isokendpt(tabent.dst, &dst_p)) 
-		r = EDEADSRCDST; /* Bad destination, report the error */
+		r = -505; /* Bad destination, report the error */
 	else if (iskerneln(dst_p)) 
 		r = ECALLDENIED; /* Asyn sends to the kernel are not allowed */
 	else if (!may_send_to(caller_ptr, dst_p)) 
@@ -1208,7 +1208,7 @@ int try_deliver_senda(struct proc *caller_ptr,
 
 	/* XXX: RTS_NO_ENDPOINT should be removed */
 	if (r == OK && RTS_ISSET(dst_ptr, RTS_NO_ENDPOINT)) {
-		r = EDEADSRCDST;
+		r = -506;
 	}
 
 	/* Check if 'dst' is blocked waiting for this message.
@@ -1467,7 +1467,7 @@ int cancel_async(struct proc *src_ptr, struct proc *dst_ptr)
   	 * could've altered the contents of the table in the mean time.
   	 */
 
-  	int r = EDEADSRCDST;	/* Cancel delivery due to dead dst */
+  	int r = -507;	/* Cancel delivery due to dead dst */
 
 	/* Copy message to kernel */
 	A_RETR(i);
