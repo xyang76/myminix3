@@ -43,7 +43,13 @@ int main()
 
       /* SEF local startup. */
 //      env_setargs(argc, argv);
-      sef_local_startup();
+        sef_setcb_init_fresh(sef_cb_init_fresh);
+  sef_setcb_init_restart(sef_cb_init_fail);
+
+  /* No live update support for now. */
+
+  /* Let SEF perform startup. */
+        sef_startup();
       m_ptr = &m;
       while (TRUE) { 
           
