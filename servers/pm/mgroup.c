@@ -186,7 +186,7 @@ int invalid(int strategy){
 
 int getendpoint(int proc_id){
     register struct mproc *rmp;
-    for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--) 
+    for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if (proc_id > 0 && proc_id == rmp->mp_pid) return rmp->mp_endpoint;
     }
