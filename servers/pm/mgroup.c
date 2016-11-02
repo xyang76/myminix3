@@ -147,7 +147,7 @@ int do_mreceive(){
     proclist = (int*)m_in.m1_p2;
     status_ptr = (int*)m_in.m1_p3;
     printf("Now mreceive\n");
-    rv = receive(src, &msg, &status_ptr);
+    rv = receive(src, &msg, status_ptr);
     printf("m receive finish %d\n", rv);
     return 0;
 }
