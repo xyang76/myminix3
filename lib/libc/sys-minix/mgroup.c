@@ -51,12 +51,12 @@ int msend(int dest, char *msg, int* proclist){
     m.m1_p2 = (char *)proclist;
     if((pid=fork()) == 0){
         rv = _syscall(PM_PROC_NR, MSEND, &m);
+        printf("rv is %d", rv);
         exit(rv);
     } else {
         waitpid(pid, &status, 0);
         return status;
     }
-//    return _syscall(PM_PROC_NR, MSEND, &m);
 }
 
 int mreceive(int src, char *msg, int* proclist, int *status_ptr){
@@ -70,6 +70,7 @@ int mreceive(int src, char *msg, int* proclist, int *status_ptr){
     m.m1_p3 = (char *)status_ptr;
     if((pid=fork()) == 0){
         rv = _syscall(PM_PROC_NR, MRECEIVE, &m);
+        printf("rv is %d", rv);
         exit(rv);
     } else {
         waitpid(pid, &status, 0);
