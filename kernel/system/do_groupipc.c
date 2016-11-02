@@ -42,7 +42,7 @@ int do_singleipc(struct proc *caller_ptr, message *m_ptr)
 //    for()
 //    printf("caller_ptr %d-%d\n", caller_p->p_nr, caller_p->p_endpoint);
     printf("caller_ptr2 %d-%d-%d\n", caller_ptr->p_nr, caller_ptr->p_endpoint,nr_to_id(caller_ptr->p_nr));
-    printf("caller_e%d-%d\n", caller_e, nr_to_id(caller_e));
+    printf("caller_e%d-%d\n", caller_e, id_to_nr(caller_e));
 //    printf("caller_e %d-%d-%d\n", nr_to_id(caller_e), caller_e, id_to_nr(caller_e));
 //    do_sync_ipc()
     return(OK);
