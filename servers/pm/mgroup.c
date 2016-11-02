@@ -175,7 +175,7 @@ int do_msend(){
 }
 
 int do_mreceive(){
-    int rv, src, grp_nr, rec_type, *p;
+    int rv, src, grp_nr, rec_type;
     message m, *msg;
     mgroup *g_ptr = NULL;
     

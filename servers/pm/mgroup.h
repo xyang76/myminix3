@@ -21,7 +21,7 @@ typedef int grp_stat;           /* group state */
 #define IPCNONBLOCK   -1
 #define RECSENDB      -2
 #define SENDRECB      -3
-#define ANY           -4 
+#define ANYSOURCE     -4 
 
 
 /* group stategies */
