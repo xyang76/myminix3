@@ -151,7 +151,7 @@ int do_msend(){
         
     for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
         if(*p != src){
-            rv += rv=sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
+            rv += sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
         }
     }
     

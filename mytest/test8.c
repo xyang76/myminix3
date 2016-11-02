@@ -50,7 +50,7 @@ int main()
     } else if (status == 0){
         //Child proc
         while(1){
-            rv=mreceive(gid, &msg);
+            rv=mreceive(parent, &msg);
             if(rv==-1){
                 printf("error-no %d", errno);
                 break;
