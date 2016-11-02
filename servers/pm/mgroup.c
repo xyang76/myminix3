@@ -192,7 +192,7 @@ int do_msend(){
 //            sent_to(g_ptr, src, send_type, &m);
 //    }
     
-    printf("Now msend finish %d\n", size);
+    printf("Now msend finish \n");
     return rv;
 }
 
