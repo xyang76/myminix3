@@ -24,7 +24,7 @@ int main()
 //        m.m1_p2 = (char *)proclist;
         if((pid=fork()) == 0){
             printf("1.1send rv is\n");
-            rv = _syscall(PM_PROC_NR, MSEND, &m);
+//            rv = _syscall(PM_PROC_NR, MSEND, &m);
             printf("send rv is %d\n", rv);
             exit(1022);
         } else {
