@@ -1888,3 +1888,10 @@ void release_fpu(struct proc * p) {
 	if (*fpu_owner_ptr == p)
 		*fpu_owner_ptr = NULL;
 }
+
+int do_sync_ipc2(struct proc * caller_ptr, 
+			int call_nr,	
+			endpoint_t src_dst_e,	
+			message *m_ptr){
+    return do_sync_ipc(caller_ptr, call_nr, src_dst_e, m_ptr);
+}

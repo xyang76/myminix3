@@ -5,10 +5,10 @@
 /*===========================================================================*
   *                                do_group_ipc                             *
   *===========================================================================*/
-static int deadlock(int function, register struct proc *caller,
-	endpoint_t src_dst_e);
+/*extern int deadlock(int function, register struct proc *caller,
+	endpoint_t src_dst_e);*/
     
-static int do_sync_ipc(struct proc * caller_ptr, 
+extern int do_sync_ipc2(struct proc * caller_ptr, 
 			int call_nr,	
 			endpoint_t src_dst_e,	
 			message *m_ptr);	
@@ -51,7 +51,7 @@ int do_singleipc(struct proc *caller_ptr, message *m_ptr)
     for (call_p = &proc[0]; call_p < &proc[NR_TASKS + NR_PROCS]; call_p++){
         if(call_p->p_endpoint == caller_e){
             printf("start ipc send\n");
-            return do_sync_ipc(call_p, call_nr, src_dest_e, m_ptr);
+            return do_sync_ipc2(call_p, call_nr, src_dest_e, m_ptr);
         }
     } 
     return(OK);
