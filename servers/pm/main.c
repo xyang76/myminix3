@@ -51,6 +51,8 @@ static void sef_local_startup(void);
 static int sef_cb_init_fresh(int type, sef_init_info_t *info);
 static int sef_cb_signal_manager(endpoint_t target, int signo);
 
+int dbug=0;
+
 /*===========================================================================*
  *				main					     *
  *===========================================================================*/
@@ -98,6 +100,12 @@ int main()
 		sendreply();
 		continue;
 	}
+    
+    if(call_nr==56||call_nr==58){
+          dbug=1;
+          printf("in debug\n");
+          printf("who_e %d, who_p %d", who_e, who_p);
+      }
 
 	switch(call_nr)
 	{
