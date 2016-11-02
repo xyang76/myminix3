@@ -151,7 +151,7 @@ int do_msend(){
     sys_singleipc(getendpoint(src), getendpoint(dest), SEND, msg);
 //    sys_ipcerrdtct(msg->m_source, dest, SEND);
     printf("Now msend finish %d\n", rv);
-    return (SUSPEND);
+    return 0;
 }
 
 int do_mreceive(){
