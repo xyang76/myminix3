@@ -15,7 +15,7 @@
 
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
-static int g_id_ctr = 0;                /* group id counter */
+static int g_id_ctr = 1;                /* group id counter */
 
 /* private methods prototype */
 int invalid(int strategy);                      /* valid strategy */
@@ -56,6 +56,7 @@ int do_opengroup()
 int do_addproc(){
     mgroup *g_ptr = NULL;
     int grp_nr, proc;	
+    endpoint proc_ep;
     
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
@@ -63,11 +64,13 @@ int do_addproc(){
         return EIVGRP;
     }else if(g_ptr->p_size >= NR_MGPROCS){
         return EPROCLEN;                    // reach max length
-    }else if(getprocindex(g_ptr, proc) != -1){
+    }else if((proc_ep=getendpoint(proc))<0){
+        return EIVPROC;
+    }else if(getprocindex(g_ptr, proc_ep) != -1){
         return EPROCEXIST;                  // proc already exist
     }
     
-    *(g_ptr->p_lst+g_ptr->p_size) = proc;
+    *(g_ptr->p_lst+g_ptr->p_size) = proc_ep;
     g_ptr->p_size++;
     return 0;
 }
@@ -75,12 +78,15 @@ int do_addproc(){
 int do_rmproc(){
     mgroup *g_ptr = NULL;
     int i, grp_nr, proc;
+    endpoint proc_ep;
     
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
     if(getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
-    } else if((i=getprocindex(g_ptr, proc)) == -1){
+    } else if((proc_ep=getendpoint(proc))<0){
+        return EIVPROC;
+    } else if((i=getprocindex(g_ptr, proc_ep)) == -1){
         return EIVPROC;                     // cant find proc in group
     } 
     
@@ -130,10 +136,10 @@ int do_msend(){
     msg = (message*)m_in.m1_p1;
     proclist = (int*)m_in.m1_p2;
     endpoint = getendpoint(dest);
-    endpoint2 = getendpoint(msg->m_source);
-    endpoint3 = getendpoint(m_in.m_source);
+    endpoint2 = msg->m1_i1;
+    endpoint3 = msg->m_type;
     printf("Now msend %d %d %d %d\n", endpoint, endpoint2, endpoint3, msg->m_source);
-//    rv = send(endpoint, &msg);
+    rv = send(endpoint, &msg);
     printf("Now msend finish %d\n", rv);
     return 0;
 }
@@ -188,6 +194,9 @@ int invalid(int strategy){
 
 int getendpoint(int proc_id){
     register struct mproc *rmp;
+    if(proc_id < 0){
+        return -1;
+    }
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if (proc_id > 0 && proc_id == rmp->mp_pid) return rmp->mp_endpoint;
