@@ -16,7 +16,7 @@
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
-register struct mproc *dstmp;
+struct mproc *dstmp;
 
 /* private methods prototype */
 int invalid(int strategy);                      /* valid strategy */
