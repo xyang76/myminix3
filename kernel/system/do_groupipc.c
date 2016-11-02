@@ -35,9 +35,9 @@ int do_singleipc(struct proc *caller_ptr, message *m_ptr)
     int caller_e, src_dest_e, call_nr;
     
     struct proc *const caller_ptr = get_cpulocal_var(proc_ptr);
-    caller_e = m_ptr.m1_i1 ;
-    src_dest_e = m_ptr.m1_i2;
-    call_nr = m_ptr.m1_i3;
+    caller_e = m_ptr->m1_i1 ;
+    src_dest_e = m_ptr->m1_i2;
+    call_nr = m_ptr->m1_i3;
     
 //    for()
     printf("caller_ptr %d-%d\n", caller_ptr->p_nr, caller_ptr->p_endpoint);
