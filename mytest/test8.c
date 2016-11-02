@@ -50,9 +50,9 @@ int main()
     } else if (status == 0){
         //Child proc
         while(1){
-            rv=mreceive(parent, &msg);
+            rv=mreceive(gid, &msg, parent);
             if(rv==-1){
-                printf("error-no %d", errno);
+                printf("error-no %d\n", errno);
                 break;
             }
             printf("yes receive success! %d", rv);

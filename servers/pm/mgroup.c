@@ -179,7 +179,7 @@ int do_mreceive(){
     }
     
     printf("Now mreceive\n");
-    rv=sys_singleipc(getendpoint(src), getendpoint(grp_nr), RECEIVE, msg);
+    rv=sys_singleipc(getendpoint(src), getendpoint(rec_type), RECEIVE, msg);
     printf("m receive finish %d\n", rv);
     return 0;
 }
