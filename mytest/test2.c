@@ -8,7 +8,7 @@ int main()
 {
     message m, msg, *m_sg;  // Minix uses message to pass parameters to a system call
     int rv, child, st=5, status, pid;
-    int pidlst[5] = {1,2,3,4,0};
+    int pidlst = 0;
     int parent = getpid();
 
     if((child=fork())==0){

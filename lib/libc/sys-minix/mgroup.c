@@ -46,40 +46,26 @@ int recovergroup(int grp_nr, int strategy){
     return _syscall(PM_PROC_NR, RECOVERGP, &m);
 }
 
-int msend(int dest, char *msg, int* proclist){
+int msend(int dest, char *msg, int type){
     message m;
-    int rv, pid, status, i;
-    proc_list pl, *p;
+    int rv, pid, status;
     
-    for(i=0, pl.size=0; proclist+i != NULL && *(proclist+i) != 0; i++){
-        pl.size++;
-        pl.proc[i] = *(proclist+i);
-    }
-    p = &pl;
     m.m1_i1 = getpid();
     m.m1_i2 = dest;
+    m.m1_i3 = type;
     m.m1_p1 = msg;
-    m.m1_p2 = (char *)p;
    
     return _syscall(PM_PROC_NR, MSEND, &m);
 }
 
-int mreceive(int src, char *msg, int* proclist, int *status_ptr){
+int mreceive(int src, char *msg, int type){
     message m;
-    int rv, pid, status, i;
-    proc_list pl, *p;
+    int rv, pid, status;
     
-    for(i=0, pl.size=0; proclist+i != NULL && *(proclist+i) != 0; i++){
-        pl.size++;
-        pl.proc[i] = *(proclist+i);
-    }
-    p = &pl;
     m.m1_i1 = getpid();
     m.m1_i2 = src;
-    m.m1_i3 = proc_num;
+    m.m1_i3 = type;
     m.m1_p1 = msg;
-    m.m1_p2 = (char *)p;
-    m.m1_p3 = (char *)status_ptr;
     
     return _syscall(PM_PROC_NR, MRECEIVE, &m);
 }

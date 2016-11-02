@@ -16,7 +16,7 @@
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static mqueue *send_queue = NULL;       /* send queue*/
 static mqueue *rec_queue = NULL;        /* receive queue */
-static mqueue *msg_queue = NULL;        /* receive queue */
+static mqueue *unblock_queue = NULL;    /* unblock queue */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 
@@ -34,10 +34,10 @@ int do_opengroup()
     mgroup *g_ptr = NULL;
     int i, strategy;
     
-    if(send_queue == NULL || rec_queue == NULL || msg_queue == NULL){    //Init queues
+    if(send_queue == NULL || rec_queue == NULL || unblock_queue == NULL){    //Init queues
         initQueue(&send_queue);
         initQueue(&rec_queue);
-        initQueue(&msg_queue);
+        initQueue(&unblock_queue);
     }
     
     strategy = m_in.m1_i1;
@@ -81,7 +81,7 @@ int do_addproc(){
     }else if(getprocindex(g_ptr, proc) != -1){
         return EPROCEXIST;                  // proc already exist
     }
-    
+    printf("in add proc2\n");
     *(g_ptr->p_lst+g_ptr->p_size) = proc;
     g_ptr->p_size++;
     return 0;
@@ -142,64 +142,60 @@ int do_recovergroup(){
 
 int do_msend(){
     int rv, src, grp_nr, send_type, *p;
-    endpoint_t sendto[NR_MGPROCS];
     message m;
-    proc_list pl;
     mgroup *g_ptr = NULL;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
-//    send_type = m_in.m1_i3;
+    send_type = m_in.m1_i3;
 
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
-    } else if(getprocindex(g_ptr, src) == -1){
+    } else if(getprocindex(mgroup *g_ptr, proc) == -1){
         return -2;
     }
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-    rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p2,
-		PM_PROC_NR, (vir_bytes) &pl, (phys_bytes) sizeof(pl));
-//    switch(send_type){
-//        case IPCALL:                            // will send to all other processes in this group
-//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-//                if(*p != src){
-//                    sent_to(g_ptr, src, *p, &m);
-//                }
-//            }
-//            rv = (SUSPEND);                     
-//            break;
-//        case IPCRECBLOCK:                       // will send all receive blocking to this process. after send will not block.
-//            rv = 0;
-//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-//                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, rec_queue)){
-//                    rv += sent_to(g_ptr, src, *p, &m);
-//                }
-//            }
-//            break;  
-//        case IPCNONBLOCK:                       // will send to all non-blocked process, will block current sender
-//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-//                if(*p != src && iswaiting(*p)==0){
-//                    sent_to(g_ptr, src, *p, &m);
-//                }
-//            }
-//            rv = (SUSPEND);
-//            break;
-//        default:
-//            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
-//                return -3;
-//            }
-//            sent_to(g_ptr, src, send_type, &m);
-//    }
+    switch(send_type){
+        case SENDALL:                            // will send to all other processes in this group
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src){
+                    sent_to(g_ptr, src, *p, &m);
+                }
+            }
+            rv = (SUSPEND);                     
+            break;
+        case IPCRECBLOCK:                       // will send all receive blocking to this process. after send will not block.
+            rv = 0;
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, rec_queue)){
+                    rv += sent_to(g_ptr, src, *p, &m);
+                }
+            }
+            break;  
+        case IPCNONBLOCK:                       // will send to all non-blocked process, will block current sender
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src && iswaiting(*p)==0){
+                    sent_to(g_ptr, src, *p, &m);
+                }
+            }
+            mp->mp_flags |= WAITING;
+            rv = (SUSPEND);
+            break;
+        default:
+            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
+                return -3;
+            }
+            sent_to(g_ptr, src, send_type, &m);
+    }
     
-    printf("Now msend finish \n");
+    printf("Now msend finish\n");
     return rv;
 }
 
 int do_mreceive(){
     int rv, src, grp_nr, rec_type, *proclist, *status_ptr;
     message m, *msg;
-    mgroup *g_ptr = NULL;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
@@ -207,7 +203,7 @@ int do_mreceive(){
     
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
-    } else if(getprocindex(g_ptr, src) == -1){
+    } else if(getprocindex(mgroup *g_ptr, proc) == -1){
         return -2;
     }
     if ((message *) m_in.m1_p1 != (message *) NULL) {
@@ -216,45 +212,45 @@ int do_mreceive(){
         if (rv != OK) return(rv);
     }
     printf("Now mreceive\n");
-//    switch(rec_type){
-//        case IPCALL:
-//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-//                if(*p != src){
-//                    rec_from(g_ptr, src, *p, message *msg);
-//                }
-//            }
-//            break;
-//        case IPCSENDBLOCK:
-//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-//                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, send_queue)){
-//                    rec_from(g_ptr, src, *p, message *msg);
-//                }
-//            }
-//            break;
-//        case IPCNONBLOCK:
-//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-//                if(*p != src && iswaiting(*p)==0){
-//                    rec_from(g_ptr, src, *p, message *msg);
-//                }
-//            }
-//            break;
-//        default:
-//            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
-//                return -3;
-//            }
-//            rec_from(g_ptr, src, send_type, message *msg);
-//    }
+    switch(rec_type){
+        case RECANY:                                            // Will not block
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, send_queue)){
+                    return rec_from(g_ptr, src, *p, message *msg);
+                }
+            }
+            break;
+        case IPCNONBLOCK:                                       // will block
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src && iswaiting(*p)==0){
+                    rv = rec_from(g_ptr, src, *p, message *msg);
+                    mp->mp_flags |= WAITING;
+                    return rv==0? (SUSPEND) : rv;
+                }
+            }
+            break;
+        default:
+            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
+                return -3;
+            }else if(send_type != src && iswaiting(send_type)>0 && isinqueue(src, send_type, send_queue))
+                return rec_from(g_ptr, src, send_type, message *msg);  //NON block
+            } else {
+                rv = rec_from(g_ptr, src, send_type, message *msg);  
+                mp->mp_flags |= WAITING;
+                return rv==0? (SUSPEND) : rv;
+            }
+    }
     printf("m receive finish %d\n", rv);
     return 0;
 }
 
 /*  ========================= private methods ================================*/
 
-int getprocindex(mgroup *g_ptr, int proc_id){
+int getprocindex(mgroup *g_ptr, int proc){
     int i;
     
     for(i=0; i<g_ptr->p_size;i++){
-        if(*(g_ptr->p_lst+i) == proc_id){
+        if(*(g_ptr->p_lst+i) == proc){
             return i;
         }
     }
