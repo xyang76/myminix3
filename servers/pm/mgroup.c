@@ -147,24 +147,25 @@ int do_msend(){
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
     size = m_in.m1_i3;
+    int p_list[size];
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
     }
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-//    rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p2 ,
-//		PM_PROC_NR, (vir_bytes) proclist, (phys_bytes) sizeof(size*sizeof(int)));
-//    
-//    if(proclist == NULL || (int)proclist == 0){
-//        //Send all
-//        send_list = g_ptr->p_lst;
-//        printf("still null\n");
-//    } else {
-//        while(proclist != NULL && *proclist != 0){
-//            printf("proc is %d\n", *proclist);
-//            proclist++;
-//        }
-//    }
+    rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p2 ,
+		PM_PROC_NR, (vir_bytes) &p_list[0], (phys_bytes) sizeof(size*sizeof(int)));
+    proclist = p_list;
+    if(proclist == NULL || (int)proclist == 0){
+        //Send all
+        send_list = g_ptr->p_lst;
+        printf("still null\n");
+    } else {
+        while(proclist != NULL && *proclist != 0){
+            printf("proc is %d\n", *proclist);
+            proclist++;
+        }
+    }
     
     
     printf("Now msend finish %d\n", size);
