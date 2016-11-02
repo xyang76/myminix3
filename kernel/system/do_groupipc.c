@@ -5,10 +5,10 @@
 /*===========================================================================*
   *                                do_group_ipc                             *
   *===========================================================================*/
-extern static int deadlock(int function, register struct proc *caller,
+static int deadlock(int function, register struct proc *caller,
 	endpoint_t src_dst_e);
     
-extern static int do_sync_ipc(struct proc * caller_ptr, 
+static int do_sync_ipc(struct proc * caller_ptr, 
 			int call_nr,	
 			endpoint_t src_dst_e,	
 			message *m_ptr);	
