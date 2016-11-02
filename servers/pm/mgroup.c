@@ -153,7 +153,7 @@ int do_msend(){
 
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
-    } else if(getprocindex(g_ptr, proc) == -1){
+    } else if(getprocindex(g_ptr, src) == -1){
         return -2;
     }
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
@@ -207,7 +207,7 @@ int do_mreceive(){
     
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
-    } else if(getprocindex(g_ptr, proc) == -1){
+    } else if(getprocindex(g_ptr, src) == -1){
         return -2;
     }
     if ((message *) m_in.m1_p1 != (message *) NULL) {
@@ -250,11 +250,11 @@ int do_mreceive(){
 
 /*  ========================= private methods ================================*/
 
-int getprocindex(mgroup *g_ptr, int proc){
+int getprocindex(mgroup *g_ptr, int proc_id){
     int i;
     
     for(i=0; i<g_ptr->p_size;i++){
-        if(*(g_ptr->p_lst+i) == proc){
+        if(*(g_ptr->p_lst+i) == proc_id){
             return i;
         }
     }
