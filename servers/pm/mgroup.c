@@ -148,7 +148,7 @@ int do_msend(){
 }
 
 int do_mreceive(){
-    int rv, src, *proclist, *status_ptr;
+    int rv, src, dest, *proclist, *status_ptr;
     message *msg;
     
     src = m_in.m1_i1;
