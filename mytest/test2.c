@@ -16,12 +16,19 @@ int main()
         msg.m_type=2;
         msg.m_source=getpid();
         m_sg = &msg;
-        m.m1_i1 = parent;
-        m.m1_p1 = (char*)m_sg;
-        m.m_source=getpid();
-        m.m_type = MSEND;
+        
         printf("start send %d->%d\n", msg.m_source, m.m1_i1);
-        rv= sendrec(PM_PROC_NR, &m);
+        m.m1_i1 = getpid();
+        m.m1_i2 = dest;
+        m.m1_p1 = msg;
+        m.m1_p2 = (char *)proclist;
+        if((pid=fork()) == 0){
+            rv = _syscall(PM_PROC_NR, MSEND, &m);
+            exit(rv);
+        } else {
+            waitpid(pid, &status, 0);
+            return status;
+        }
         printf("send rv is %d\n", rv);
         printf("send is not waiting %d\n", rv);
     } else {

@@ -43,11 +43,20 @@ int recovergroup(int grp_nr, int strategy){
 
 int msend(int dest, char *msg, int* proclist){
     message m;
+    int rv, pid, status;
     
-    m.m1_i1 = dest;
+    m.m1_i1 = getpid();
+    m.m1_i2 = dest;
     m.m1_p1 = msg;
     m.m1_p2 = (char *)proclist;
-    return _syscall(PM_PROC_NR, MSEND, &m);
+    if((pid=fork()) == 0){
+        rv = _syscall(PM_PROC_NR, MSEND, &m);
+        exit(rv);
+    } else {
+        waitpid(pid, &status, 0);
+        return status;
+    }
+//    return _syscall(PM_PROC_NR, MSEND, &m);
 }
 
 int mreceive(int src, char *msg, int* proclist, int *status_ptr){

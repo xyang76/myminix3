@@ -131,23 +131,24 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv, dest, *proclist, endpoint, endpoint2, endpoint3;
+    int rv, src, dest, *proclist, endpoint, endpoint2, endpoint3;
     message m, *msg;
     
-    dest = m_in.m1_i1;
+    src = m_in.m1_i1;
+    dest = m_in.m1_i2;
     // Call sys_datacopy to copy message from m_in.m1_p1.
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
     msg = &m;
-    msg->m_source=mp->mp_pid;
+//    msg->m_source=mp->mp_pid;
 //    msg = (message*)m_in.m1_p1;
     proclist = (int*)m_in.m1_p2;
     endpoint = getendpoint(dest);
-    printf("Now msend %d->%d %d->%d\n", msg->m_source, dest, getendpoint(msg->m_source), getendpoint(dest));
+    printf("Now msend %d->%d %d->%d\n", src, dest, getendpoint(src), getendpoint(dest));
     //rv = send(endpoint, &msg);
-    getmproc(dest);
+//    getmproc(dest);
 //    dstmp->mp_flags |= WAITING;
-//    sys_singleipc(getendpoint(msg->m_source), getendpoint(dest), SEND, msg);
+    sys_singleipc(getendpoint(src), getendpoint(dest), SEND, msg);
 //    sys_ipcerrdtct(msg->m_source, dest, SEND);
     printf("Now msend finish %d\n", rv);
     return (SUSPEND);
