@@ -32,6 +32,7 @@ int do_ipcerrdtct(struct proc *caller_ptr, message *m_ptr)
 int do_singleipc(struct proc *caller_ptr, message *m_ptr)
 {
     message *msg;
+    struct proc *call_p=NULL;
     int caller_e, src_dest_e, call_nr;
     
 //    struct proc *const caller_p = get_cpulocal_var(proc_ptr);
@@ -42,7 +43,14 @@ int do_singleipc(struct proc *caller_ptr, message *m_ptr)
 //    for()
 //    printf("caller_ptr %d-%d\n", caller_p->p_nr, caller_p->p_endpoint);
     printf("caller_ptr2 %d-%d-%d\n", caller_ptr->p_nr, caller_ptr->p_endpoint,nr_to_id(caller_ptr->p_nr));
-    printf("caller_e%d-%d\n", caller_e, id_to_nr(caller_e));
+    printf("caller_e%d\n", caller_e);
+    
+    for (call_p = &proc[0]; call_p <= &proc[NR_TASKS + NR_PROCS-1]; call_p++){
+        if(call_p->p_endpoint == caller_e){
+            printf("yes! this is proc %d find\n", call_p->p_nr);
+            break;
+        }
+    } 
 //    printf("caller_e %d-%d-%d\n", nr_to_id(caller_e), caller_e, id_to_nr(caller_e));
 //    do_sync_ipc()
     return(OK);
