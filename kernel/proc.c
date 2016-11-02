@@ -1893,6 +1893,7 @@ int do_sync_ipc2(struct proc * caller_ptr,
 			int call_nr,	
 			endpoint_t src_dst_e,	
 			message *m_ptr){
+    int result;
     switch(call_nr) {
       case SENDREC:
         /* A flag is set so that notifications cannot interrupt SENDREC. */
