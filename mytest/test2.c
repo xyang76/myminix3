@@ -27,7 +27,7 @@ int main()
     } else {
         // This is parent
         printf("start rec \n");
-        rv = mreceive(child, &m, NULL, 0);
+        rv = receive(PM_PROC_NR, &m, 0);
         printf("start rec is %d, %d, %d\n", rv, m.m1_i1, status);
 //        m.m1_i1 = PM_PROC_NR;
 //        m.m1_p1 = m_sg;
