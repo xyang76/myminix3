@@ -19,7 +19,7 @@ static int g_id_ctr = 1;                /* group id counter */
 struct mproc *dstmp;
 
 /* private methods prototype */
-int invalid(int strategy);                      /* valid strategy */
+int invalid(int strategy);                      /* valid strategy */ 
 int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                  /* get endpoint from proc list*/
@@ -154,7 +154,7 @@ int do_mreceive(){
     src = m_in.m1_i1;
     dest = m_in.m1_i2;
     msg = (message *)m_in.m1_p1;
-    proclist = (int*)m_in.m1_p2;
+       = (int*)m_in.m1_p2;
     status_ptr = (int*)m_in.m1_p3;
     printf("Now mreceive\n");
     rv = sys_singleipc(getendpoint(src), getendpoint(dest), RECEIVE, msg);
