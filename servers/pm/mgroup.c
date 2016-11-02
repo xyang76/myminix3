@@ -140,7 +140,7 @@ int do_msend(){
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
     send_type = m_in.m1_i3;
-
+    printf("group nr =%d\n", grp_nr);
     if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
     } else if(getprocindex(g_ptr, src) == -1){
@@ -207,6 +207,7 @@ int getgroup(int grp_nr, mgroup ** g_ptr){
     for(i=0, k=g_nr_ptr; i<NR_GRPS; i++, k--){
         k=(k+NR_GRPS)%NR_GRPS;
         if(mgrp[k].g_stat != M_UNUSED && mgrp[k].g_nr == grp_nr){       // find the group in group table.
+            printf("already find group\n");
             (*g_ptr) = &mgrp[k];
             return 0;
         }

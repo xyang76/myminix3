@@ -52,7 +52,7 @@ int main()
         while(1){
             rv=mreceive(gid, &msg, parent);
             if(rv==-1){
-                printf("error-no %d\n", errno);
+                printf("mreceive fail, error-no %d\n", errno);
                 break;
             }
             printf("yes receive success! %d", rv);
@@ -62,8 +62,11 @@ int main()
         printf("cur id:%d\n", parent);
         
         for(i=0; i<4; i++){
-            if(msend(pid[i], &msg) == 0){
-                printf("Yes rec success! %d\n", msg.m1_i1);
+            if((rv=msend(pid[i], &msg)) == 0){
+                printf("Yes send success! %d\n", msg.m1_i1);
+            } elsse {
+                printf("msend fail, error-no %d\n", errno);
+                break;
             }
         }
         closegroup(gid);
