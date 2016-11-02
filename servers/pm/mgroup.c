@@ -146,7 +146,7 @@ int do_msend(){
     printf("Now msend %d->%d %d->%d\n", msg->m_source, dest, getendpoint(msg->m_source), getendpoint(dest));
     //rv = send(endpoint, &msg);
     getmproc(dest);
-    dstmp->mp_flags |= WAITING;
+//    dstmp->mp_flags |= WAITING;
 //    sys_singleipc(getendpoint(msg->m_source), getendpoint(dest), SEND, msg);
 //    sys_ipcerrdtct(msg->m_source, dest, SEND);
     printf("Now msend finish %d\n", rv);
