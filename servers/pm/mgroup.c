@@ -14,13 +14,10 @@
 #include "mgroup.h"
 
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
-static mqueue *send_queue = NULL;              /* send queue*/
-static mqueue *rec_queue = NULL;               /* receive queue */
+static mqueue *send_queue = NULL;       /* send queue*/
+static mqueue *rec_queue = NULL;        /* receive queue */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
-
-initQueue(&send_queue);
-initQueue(&rec_queue);
 
 /* private methods prototype */
 int invalid(int strategy);                                  /* valid strategy */ 
@@ -35,6 +32,11 @@ int do_opengroup()
 {
     mgroup *g_ptr = NULL;
     int i, strategy;
+    
+    if(send_queue == NULL || rec_queue == NULL){    //Init queues
+        initQueue(&send_queue);
+        initQueue(&rec_queue);
+    }
     
     strategy = m_in.m1_i1;
     if(invalid(strategy)){                         // Make sure strategy is valid. 0 is allowed
@@ -137,15 +139,16 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv, src, dest, *proclist;
+    int rv, src, dest, size, *proclist;
     message m;
     
     src = m_in.m1_i1;
     dest = m_in.m1_i2;
+    size = m_in.m1_i3;
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p2 ,
-		PM_PROC_NR, (vir_bytes) proclist, (phys_bytes) sizeof(NR_MGPROCS*sizeof(int)));
+		PM_PROC_NR, (vir_bytes) proclist, (phys_bytes) sizeof(size*sizeof(int)));
     
     if(proclist == NULL || (int)proclist == 0){
         //Send all
