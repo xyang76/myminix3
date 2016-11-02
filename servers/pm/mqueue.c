@@ -2,27 +2,6 @@
 #include<malloc.h>     
 #include"mqueue.h"
 
-
-int main(void)  
-{  
-    mqueue *que; 
-    char *str="test1";
-    char *str1="test2";
-    void *value;
-
-    initQueue(&que);  
-    push(str, que);
-    push(str1, que);
-	
-    pull(&value, que);
-    printf("%s\n", value);
-    pull(&value, que);
-    printf("%s\n", value);
-  
-    getchar();  
-    return 0;  
-}  
-
 void initQueue(mqueue **que)  
 {  
     (*que) = (mqueue *)malloc(sizeof(mqueue));            
