@@ -34,12 +34,6 @@ int do_opengroup()
     mgroup *g_ptr = NULL;
     int i, strategy;
     
-    if(send_queue == NULL || rec_queue == NULL || unblock_queue == NULL){    //Init queues
-        initQueue(&send_queue);
-        initQueue(&rec_queue);
-        initQueue(&unblock_queue);
-    }
-    
     strategy = m_in.m1_i1;
     if(invalid(strategy)){                         // Make sure strategy is valid. 0 is allowed
         return EIVSTTG;                             // Invalid strategy. which defined in sys/errno.h
