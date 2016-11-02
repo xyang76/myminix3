@@ -24,9 +24,10 @@ int main()
 //        m.m1_p2 = (char *)proclist;
         if((pid=fork()) == 0){
             rv = _syscall(PM_PROC_NR, MSEND, &m);
-            exit(rv);
+            exit(1022);
         } else {
             waitpid(pid, &status, 0);
+            printf("rv is %d\n", status);
             return status;
         }
         printf("send rv is %d\n", rv);
