@@ -7,7 +7,7 @@
 int main()
 {
     message m, msg, *m_sg;  // Minix uses message to pass parameters to a system call
-    int rv, child, st=5, status;
+    int rv, child, st=5, status, pid;
     int parent = getpid();
 
     if((child=fork())==0){
@@ -19,9 +19,9 @@ int main()
         
         printf("start send %d->%d\n", msg.m_source, m.m1_i1);
         m.m1_i1 = getpid();
-        m.m1_i2 = dest;
+        m.m1_i2 = parent;
         m.m1_p1 = msg;
-        m.m1_p2 = (char *)proclist;
+//        m.m1_p2 = (char *)proclist;
         if((pid=fork()) == 0){
             rv = _syscall(PM_PROC_NR, MSEND, &m);
             exit(rv);
