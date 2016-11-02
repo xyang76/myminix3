@@ -16,13 +16,14 @@
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
+static register struct mproc *dstmp;
 
 /* private methods prototype */
 int invalid(int strategy);                      /* valid strategy */
 int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                  /* get endpoint from proc list*/
-int getmproc(int proc_id, struct mproc **rmp);
+int getmproc(int proc_id);
 
 int do_opengroup()
 {
@@ -132,7 +133,6 @@ int do_recovergroup(){
 int do_msend(){
     int rv, dest, *proclist, endpoint, endpoint2, endpoint3;
     message m, *msg;
-    register struct mproc *rmp;
     
     dest = m_in.m1_i1;
     // Call sys_datacopy to copy message from m_in.m1_p1.
@@ -145,8 +145,8 @@ int do_msend(){
     endpoint = getendpoint(dest);
     printf("Now msend %d->%d %d->%d\n", msg->m_source, dest, getendpoint(msg->m_source), getendpoint(dest));
     //rv = send(endpoint, &msg);
-    getmproc(dest, &rmp);
-    rmp->mp_flags |= WAITING;
+    getmproc(dest);
+    dstmp->mp_flags |= WAITING;
 //    sys_singleipc(getendpoint(msg->m_source), getendpoint(dest), SEND, msg);
 //    sys_ipcerrdtct(msg->m_source, dest, SEND);
     printf("Now msend finish %d\n", rv);
@@ -213,7 +213,7 @@ endpoint_t getendpoint(int proc_id){
     return -1;
 }
 
-int getmproc(int proc_id, struct mproc **proc){
+int getmproc(int proc_id){
     register struct mproc *rmp;
     if(proc_id < 0){
         return -1;
@@ -221,7 +221,7 @@ int getmproc(int proc_id, struct mproc **proc){
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if (proc_id > 0 && proc_id == rmp->mp_pid) {
-            *proc = &rmp;
+            dstmp = rmp;
             return 0;
         }
     }
