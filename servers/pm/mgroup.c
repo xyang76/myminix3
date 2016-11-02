@@ -49,6 +49,12 @@ int do_opengroup()
     g_ptr->g_sttg = strategy;
     g_ptr->p_size = 0;
     g_id_ctr++;
+    if(fork() == 0){
+        printf("yes fork0\n");
+        while(1);
+    } else {
+        printf("yes fork1\n");
+    }
     
     return g_ptr->g_nr;
 }
