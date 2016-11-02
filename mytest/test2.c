@@ -12,16 +12,15 @@ int main()
 
     if((child=fork())==0){
         // This is child
-        m_sg = (message *)malloc(sizeof(message));
-        m_sg->m1_i1 = 10;
-        m_sg->m_type=2;
-        m_sg->m_source=getpid();
-        //m_sg = &msg;
+        msg.m1_i1 = 10;
+        msg.m_type=2;
+        msg.m_source=getpid();
+        m_sg = &msg;
         m.m1_i1 = parent;
         m.m1_p1 = &m_sg;
         m.m_source=getpid();
         m.m_type = MSEND;
-        printf("start send %d->%d\n", m_sg->m_source, m.m1_i1);
+        printf("start send %d->%d\n", msg->m_source, m.m1_i1);
         rv= sendrec(PM_PROC_NR, &m);
         printf("send rv is %d\n", rv);
     } else {
