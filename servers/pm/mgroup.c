@@ -223,26 +223,26 @@ int do_mreceive(){
         case RECANY:                                            // Will not block
             for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
                 if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, send_queue)){
-                    return rec_from(g_ptr, src, *p, message *msg);
+                    return rec_from(g_ptr, src, *p, msg);
                 }
             }
             break;
         case IPCNONBLOCK:                                       // will block
             for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
                 if(*p != src && iswaiting(*p)==0){
-                    rv = rec_from(g_ptr, src, *p, message *msg);
+                    rv = rec_from(g_ptr, src, *p, msg);
                     mp->mp_flags |= WAITING;
                     return rv==0? (SUSPEND) : rv;
                 }
             }
             break;
         default:
-            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
+            if(getprocindex(g_ptr, getendpoint(send_type) == -1){
                 return -3;
             }else if(send_type != src && iswaiting(send_type)>0 && isinqueue(src, send_type, send_queue)){
-                return rec_from(g_ptr, src, send_type, message *msg);  //NON block
+                return rec_from(g_ptr, src, send_type, msg);  //NON block
             } else {
-                rv = rec_from(g_ptr, src, send_type, message *msg);  
+                rv = rec_from(g_ptr, src, send_type, msg);  
                 mp->mp_flags |= WAITING;
                 return rv==0? (SUSPEND) : rv;
             }
