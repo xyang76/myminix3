@@ -133,15 +133,14 @@ int do_msend(){
     message m, *msg;
     
     dest = m_in.m1_i1;
+    // Call sys_datacopy to copy message from m_in.m1_p1.
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
     msg = &m;
 //    msg = (message*)m_in.m1_p1;
     proclist = (int*)m_in.m1_p2;
     endpoint = getendpoint(dest);
-    endpoint2 = msg->m1_i1;
-    endpoint3 = msg->m_type;
-    printf("Now msend %d %d %d %d\n", endpoint, endpoint2, endpoint3, msg->m_source);
+    printf("Now msend %d->%d %d->%d\n", msg->m_source, dest, getendpoint(msg->m_source), getendpoint(dest));
     //rv = send(endpoint, &msg);
     printf("Now msend finish %d\n", rv);
     return 0;
