@@ -27,7 +27,7 @@ int main()
         // This is parent
         waitpid(child, &status, 0);
         printf("start rec \n");
-        rv = receive(PM_PROC_NR, &m, &st);
+        rv = receive(child, &m, &st);
         printf("start rec is %d, %d, %d\n", rv, m.m1_i1, status);
 //        m.m1_i1 = PM_PROC_NR;
 //        m.m1_p1 = m_sg;

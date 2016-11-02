@@ -51,8 +51,6 @@ static void sef_local_startup(void);
 static int sef_cb_init_fresh(int type, sef_init_info_t *info);
 static int sef_cb_signal_manager(endpoint_t target, int signo);
 
-int dbug=0;
-
 /*===========================================================================*
  *				main					     *
  *===========================================================================*/
@@ -76,12 +74,6 @@ int main()
 		  panic("PM got message from invalid endpoint: %d", who_e);
 	  call_nr = m_in.m_type;	/* system call number */
 
-      if(call_nr==56||call_nr==58){
-          dbug=1;
-          printf("in debug\n");
-          printf("who_e %d", who_e);
-      }
-      
 	  /* Process slot of caller. Misuse PM's own process slot if the kernel is
 	   * calling. This can happen in case of synchronous alarms (CLOCK) or or
 	   * event like pending kernel signals (SYSTEM).
@@ -362,10 +354,6 @@ static void sendreply()
        */
       if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) ==
           (REPLY | IN_USE)) {
-          if(dbug==1){
-              printf("end point%d reply%d, %d\n", rmp->mp_endpoint, rmp->mp_reply.m_source, rmp->mp_reply.m_type);
-              dbug=0;
-          }
           s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
           if (s != OK) {
               printf("PM can't reply to %d (%s): %d\n",
