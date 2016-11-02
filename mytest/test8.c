@@ -38,7 +38,7 @@ int sef_cb_init_fresh(int type, sef_init_info_t *info){
 int main()
 {
     message msg;
-    int status,i, pid[10], st=5, rv;
+    int status,i, pid[10], st=5, rv, parent=getpid();
     
     for (i = 0; i < 4; i++){
         status = fork();
