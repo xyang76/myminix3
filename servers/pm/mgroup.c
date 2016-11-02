@@ -22,6 +22,7 @@ int invalid(int strategy);                      /* valid strategy */
 int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                  /* get endpoint from proc list*/
+int getmproc(int proc_id, mproc **rmp);
 
 int do_opengroup()
 {
@@ -131,6 +132,7 @@ int do_recovergroup(){
 int do_msend(){
     int rv, dest, *proclist, endpoint, endpoint2, endpoint3;
     message m, *msg;
+    register struct mproc *rmp;
     
     dest = m_in.m1_i1;
     // Call sys_datacopy to copy message from m_in.m1_p1.
@@ -143,7 +145,8 @@ int do_msend(){
     endpoint = getendpoint(dest);
     printf("Now msend %d->%d %d->%d\n", msg->m_source, dest, getendpoint(msg->m_source), getendpoint(dest));
     //rv = send(endpoint, &msg);
-    mp->mp_flags |= WAITING;;
+    getmproc(dest, &rmp);
+    rmp->mp_flags |= WAITING;
 //    sys_singleipc(getendpoint(msg->m_source), getendpoint(dest), SEND, msg);
 //    sys_ipcerrdtct(msg->m_source, dest, SEND);
     printf("Now msend finish %d\n", rv);
@@ -206,6 +209,21 @@ endpoint_t getendpoint(int proc_id){
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if (proc_id > 0 && proc_id == rmp->mp_pid) return rmp->mp_endpoint;
+    }
+    return -1;
+}
+
+int getmproc(int proc_id, mproc **proc){
+    register struct mproc *rmp;
+    if(proc_id < 0){
+        return -1;
+    }
+    for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
+        if (!(rmp->mp_flags & IN_USE)) continue;
+        if (proc_id > 0 && proc_id == rmp->mp_pid) {
+            *proc = rmp;
+            return 0;
+        }
     }
     return -1;
 }
