@@ -21,7 +21,7 @@ static int g_id_ctr = 1;                /* group id counter */
 int invalid(int strategy);                      /* valid strategy */
 int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
-int getendpoint(int proc_id);                  /* get endpoint from proc list*/
+endpoint_t getendpoint(int proc_id);                  /* get endpoint from proc list*/
 
 int do_opengroup()
 {
@@ -56,7 +56,7 @@ int do_opengroup()
 int do_addproc(){
     mgroup *g_ptr = NULL;
     int grp_nr, proc;	
-    endpoint proc_ep;
+    endpoint_t proc_ep;
     
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
@@ -78,7 +78,7 @@ int do_addproc(){
 int do_rmproc(){
     mgroup *g_ptr = NULL;
     int i, grp_nr, proc;
-    endpoint proc_ep;
+    endpoint_t proc_ep;
     
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
@@ -192,7 +192,7 @@ int invalid(int strategy){
     return 0;
 }
 
-int getendpoint(int proc_id){
+endpoint_t getendpoint(int proc_id){
     register struct mproc *rmp;
     if(proc_id < 0){
         return -1;
