@@ -54,7 +54,7 @@ int msend(int dest, char *msg, int* proclist){
         printf("rv is %d", rv);
         exit(rv);
     } else {
-        waitpid(pid, &status, 0);
+//        waitpid(pid, &status, 0);
         return status;
     }
 }
@@ -73,7 +73,7 @@ int mreceive(int src, char *msg, int* proclist, int *status_ptr){
         printf("rv is %d", rv);
         exit(rv);
     } else {
-        waitpid(pid, &status, 0);
+//        waitpid(pid, &status, 0);
         return status;
     }
 }
