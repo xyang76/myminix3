@@ -151,11 +151,10 @@ int do_msend(){
         
     for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
         if(*p != src){
-            sendnb(getendpoint(*p), &m);
+            rv += sendnb(getendpoint(*p), &m);
         }
     }
     
-    printf("Now msend finish\n");
     return rv;
 }
 

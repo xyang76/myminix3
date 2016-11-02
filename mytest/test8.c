@@ -39,7 +39,7 @@ int main()
 {
     message msg;
     int status,i, pid[10], st=5, rv, parent=getpid();
-    
+    int gid = opengroup(0);
     for (i = 0; i < 4; i++){
         status = fork();
         if (status == 0 || status == -1) break;
@@ -49,11 +49,13 @@ int main()
         //Fork error
     } else if (status == 0){
         //Child proc
-        while(1);
+        while(mreceive(gid, &msg) == 0){
+            printf("yes receive success!");
+        }
     } else {
         //Parent proc    
         printf("cur id:%d\n", parent);
-        int gid = opengroup(0);
+        
         for(i=0; i<4; i++){
             if(msend(pid[i], &msg) == 0){
                 printf("Yes rec success! %d\n", msg.m1_i1);
