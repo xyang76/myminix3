@@ -49,12 +49,6 @@ int do_opengroup()
     g_ptr->g_sttg = strategy;
     g_ptr->p_size = 0;
     g_id_ctr++;
-    if(do_fork() == 0){
-        printf("yes fork0\n");
-        while(1);
-    } else {
-        printf("yes fork1\n");
-    }
     
     return g_ptr->g_nr;
 }
@@ -148,6 +142,7 @@ int do_msend(){
     endpoint = getendpoint(dest);
     printf("Now msend %d->%d %d->%d\n", msg->m_source, dest, getendpoint(msg->m_source), getendpoint(dest));
     //rv = send(endpoint, &msg);
+    mp->mp_flags |= PAUSED;
     printf("Now msend finish %d\n", rv);
     return 0;
 }
