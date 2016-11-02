@@ -322,27 +322,43 @@ int unblock_list(){
 }
 
 int sent_to(int block, mgroup *g_ptr, int src, int dest, message *m){
-    grp_message g_m;
+    grp_message *g_m;
     
-    if(block){
-        g_m.grp_nr = g_ptr->g_nr;
-        g_m.msg = m;
-        g_m.call_nr = SEND;
-        g_m.dest = dest;
-        g_m.src = src;
-        enqueue(g_m, send_queue);
-    } else {
+    if(dest != src && iswaiting(dest)>0 && isinqueue(src, dest, rec_queue)){
+        //non block getitem
+//        for(int i=0; i<)
+        //unblock item
         
-    }
+    } else {
+        // add item
+        g_m = (grp_message*) malloc(sizeof(grp_message));
+        g_m->grp_nr = g_ptr->g_nr;
+        g_m->msg = m;
+        g_m->call_nr = SEND;
+        g_m->dest = dest;
+        g_m->src = src;
+        enqueue(&g_m, send_queue);
+        mp->mp_flags |= WAITING;
+        return (SUSPEND);
+    } 
 }
 
 int rec_from(int block, mgroup *g_ptr, int src, int dest, message *m){
-    grp_message g_m;
-    
-    g_m.grp_nr = g_ptr->g_nr;
-    g_m.msg = m;
-    g_m.call_nr = SEND;
-    g_m.dest = dest;
-    g_m.src = src;
-    enqueue(g_m, rec_queue);
+    grp_message *g_m;
+    if(dest != src && iswaiting(dest)>0 && isinqueue(src, dest, rec_queue)){
+        //non block getitem
+        
+        //unblock item
+        
+    } else {
+        g_m = (grp_message*) malloc(sizeof(grp_message));
+        g_m->grp_nr = g_ptr->g_nr;
+        g_m->msg = m;
+        g_m->call_nr = RECEIVE;
+        g_m->dest = dest;
+        g_m->src = src;
+        enqueue(g_m, rec_queue);
+        mp->mp_flags |= WAITING;
+        return (SUSPEND);
+    }
 }
