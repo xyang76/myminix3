@@ -123,14 +123,16 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv, dest, *proclist, endpoint;
+    int rv, dest, *proclist, endpoint, endpoint2, endpoint3;
     message *msg;
     
     dest = m_in.m1_i1;
     msg = (message*)m_in.m1_p1;
     proclist = (int*)m_in.m1_p2;
     endpoint = getendpoint(dest);
-    printf("Now msend %d\n", endpoint);
+    endpoint2 = getendpoint(msg->m_source);
+    endpoint3 = getendpoint(m.m_source);
+    printf("Now msend %d %d %d\n", endpoint, endpoint2, endpoint3);
 //    rv = send(endpoint, &msg);
     printf("Now msend finish %d\n", rv);
     return 0;

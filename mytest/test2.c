@@ -16,8 +16,8 @@ int main()
         
         m.m1_i1 = parent;
         m.m1_p1 = &msg;
-        msg.m_source=PM_PROC_NR;
         msg.m_type=2;
+        msg.m_source=getpid();
         m.m_source=PM_PROC_NR;
         m.m_type = MSEND;
         printf("start send %d->%d\n", m.m_source, m.m1_i1);
@@ -27,7 +27,7 @@ int main()
         // This is parent
         waitpid(child, &status, 0);
         printf("start rec \n");
-        rv = receive(child, &m, &st);
+        rv = receive(PM_PROC_NR, &m, &st);
         printf("start rec is %d, %d, %d\n", rv, m.m1_i1, status);
 //        m.m1_i1 = PM_PROC_NR;
 //        m.m1_p1 = m_sg;
