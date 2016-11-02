@@ -5,14 +5,14 @@
 /*===========================================================================*
   *                                do_group_ipc                             *
   *===========================================================================*/
-extern static int deadlock(int function, register struct proc *caller,
+/*extern int deadlock(int function, register struct proc *caller,
 	endpoint_t src_dst_e);
     
-extern static int do_sync_ipc(struct proc * caller_ptr, /* who made the call */
-			int call_nr,	/* system call number and flags */
-			endpoint_t src_dst_e,	/* src or dst of the call */
-			message *m_ptr);	/* users pointer to a message */
-
+extern int do_sync_ipc(struct proc * caller_ptr, 
+			int call_nr,	
+			endpoint_t src_dst_e,	
+			message *m_ptr);	
+*/
 EXTERN struct proc proc[NR_TASKS + NR_PROCS];
   
 int do_ipcerrdtct(struct proc *caller_ptr, message *m_ptr)
@@ -34,13 +34,14 @@ int do_singleipc(struct proc *caller_ptr, message *m_ptr)
     message *msg;
     int caller_e, src_dest_e, call_nr;
     
-    struct proc *const caller_ptr = get_cpulocal_var(proc_ptr);
+//    struct proc *const caller_p = get_cpulocal_var(proc_ptr);
     caller_e = m_ptr->m1_i1 ;
     src_dest_e = m_ptr->m1_i2;
     call_nr = m_ptr->m1_i3;
     
 //    for()
-    printf("caller_ptr %d-%d\n", caller_ptr->p_nr, caller_ptr->p_endpoint);
+//    printf("caller_ptr %d-%d\n", caller_p->p_nr, caller_p->p_endpoint);
+    printf("caller_ptr2 %d-%d\n", caller_ptr->p_nr, caller_ptr->p_endpoint);
     printf("caller_e %d-%d-%d\n", nr_to_id(caller_e), caller_e, id_to_nr(caller_e));
 //    do_sync_ipc()
     return(OK);
