@@ -11,12 +11,9 @@
   message *m_ptr,			/* pointer to message buffer */
   const int flags
 );
-
-extern static int dbug;
   
 int do_ipcerrdtct(struct proc *caller_ptr, message *m_ptr)
 {
-    dbug = 1;
 //    message *msg;
 //	int rv, dest, *proclist;
 //    
