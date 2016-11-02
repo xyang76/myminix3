@@ -19,7 +19,7 @@ static inline void TEST_EQUAL(int result, int expect, char *msg){
     if(result == expect){
         printf("TEST_EQUAL [%s] OK.\n", msg);
     } else {
-        printf("TEST_EQUAL [%s] Error, expect %d, result %d\n", msg, expect, result);
+        printf("TEST_EQUAL [%s] Error, expect %d, result %d, errno %d\n", msg, expect, result, errno);
         exit(0);
     }
 }
@@ -28,7 +28,7 @@ static inline void TEST_GREATER(int val1, int val2, char *msg){
     if(val1 > val2){
         printf("TEST_GREATER [%s] OK.\n", msg);
     } else {
-        printf("TEST_GREATER [%s] Error, value1 %d, value2 %d\n", msg, val1, val2);
+        printf("TEST_GREATER [%s] Error, value1 %d, value2 %d, errno %d\n", msg, val1, val2, errno);
         exit(0);
     }
 }
