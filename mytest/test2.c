@@ -12,10 +12,11 @@ int main()
 
     if((child=fork())==0){
         // This is child
-        msg.m1_i1 = 10;
-        msg.m_type=2;
-        msg.m_source=getpid();
-        m_sg = &msg;
+        m_sg = (message *)malloc(sizeof(message));
+        m_sg->m1_i1 = 10;
+        m_sg->m_type=2;
+        m_sg->m_source=getpid();
+        //m_sg = &msg;
         m.m1_i1 = parent;
         m.m1_p1 = (char*)m_sg;
         m.m_source=getpid();
