@@ -151,7 +151,7 @@ int do_msend(){
         
     for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
         if(*p != src){
-            rv += sendnb(getendpoint(*p), &m);
+            rv += rv=sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
         }
     }
     
@@ -179,7 +179,7 @@ int do_mreceive(){
     }
     
     printf("Now mreceive\n");
-    rv=sys_singleipc(getendpoint(src), PM_PROC_NR, RECEIVE, msg);
+    rv=sys_singleipc(getendpoint(src), getendpoint(grp_nr), RECEIVE, msg);
     printf("m receive finish %d\n", rv);
     return 0;
 }
