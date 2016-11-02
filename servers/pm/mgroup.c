@@ -61,42 +61,36 @@ int do_opengroup()
 
 int do_addproc(){
     mgroup *g_ptr = NULL;
-    int grp_nr, proc;	
+    int grp_nr, proc_id;	
     endpoint_t proc_ep;
-    printf("in add proc %d\n", grp_nr);
     grp_nr = m_in.m1_i1;
-    proc = m_in.m1_i2;
+    proc_id = m_in.m1_i2;
     if(getgroup(grp_nr, &g_ptr) == -1){
-        printf("in add proc1.1\n");
         return EIVGRP;
     }else if(g_ptr->p_size >= NR_MGPROCS){
-        printf("in add proc1.2\n");
         return EPROCLEN;                    // reach max length
-    }else if((proc_ep=getendpoint(proc))<0){
-        printf("in add proc1.3\n");
+    }else if((proc_ep=getendpoint(proc_id))<0){
         return EIVPROC;
-    }else if(getprocindex(g_ptr, proc) != -1){
-        printf("in add proc1.4\n");
+    }else if(getprocindex(g_ptr, proc_id) != -1){
         return EPROCEXIST;                  // proc already exist
     }
-    printf("in add proc2\n");
-    *(g_ptr->p_lst+g_ptr->p_size) = proc;
+    *(g_ptr->p_lst+g_ptr->p_size) = proc_id;
     g_ptr->p_size++;
     return 0;
 }
 
 int do_rmproc(){
     mgroup *g_ptr = NULL;
-    int i, grp_nr, proc;
+    int i, grp_nr, proc_id;
     endpoint_t proc_ep;
     
     grp_nr = m_in.m1_i1;
-    proc = m_in.m1_i2;
+    proc_id = m_in.m1_i2;
     if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
-    } else if((proc_ep=getendpoint(proc))<0){
+    } else if((proc_ep=getendpoint(proc_id))<0){
         return EIVPROC;
-    } else if((i=getprocindex(g_ptr, proc)) == -1){
+    } else if((i=getprocindex(g_ptr, proc_id)) == -1){
         return EIVPROC;                     // cant find proc in group
     } 
     
@@ -186,35 +180,7 @@ int do_mreceive(){
     }
     
     printf("Now mreceive\n");
-    /*
-    switch(rec_type){
-        case RECANY:                                            // Will not block
-            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, send_queue)){
-                    return rec_from(g_ptr, src, *p, msg);
-                }
-            }
-            break;
-        case IPCNONBLOCK:                                       // will block
-            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-                if(*p != src && iswaiting(*p)==0){
-                    rv = rec_from(g_ptr, src, *p, msg);
-                    mp->mp_flags |= WAITING;
-                    return rv==0? (SUSPEND) : rv;
-                }
-            }
-            break;
-        default:
-            if(getprocindex(g_ptr, getendpoint(rec_type) == -1)){
-                return -3;
-            }else if(rec_type != src && iswaiting(rec_type)>0 && isinqueue(src, rec_type, send_queue)){
-                return rec_from(g_ptr, src, rec_type, msg);  //NON block
-            } else {
-                rv = rec_from(g_ptr, src, rec_type, msg);  
-                mp->mp_flags |= WAITING;
-                return rv==0? (SUSPEND) : rv;
-            }
-    }*/
+    rv=sys_singleipc(getendpoint(src), PM_PROC_NR, RECEIVE, msg);
     printf("m receive finish %d\n", rv);
     return 0;
 }

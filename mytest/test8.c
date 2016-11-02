@@ -40,7 +40,7 @@ int main()
     message msg;
     int status,i, pid[10], st=5, rv;
     
-    for (i = 0; i < 10; i++){
+    for (i = 0; i < 4; i++){
         status = fork();
         if (status == 0 || status == -1) break;
         pid[i] = status;

@@ -116,7 +116,7 @@ Test ADDPROC syscall and addproc
 */
 int test_addproc_syscall(){
     message m;  
-    int i;
+    int i, parent, child;
 
     m.m1_i1 = opengroup(0);
     m.m1_i2 = fork();
