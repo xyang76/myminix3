@@ -15,9 +15,6 @@
 #include "mgroup.h"
 
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
-static mqueue *send_queue = NULL;       /* send queue*/
-static mqueue *rec_queue = NULL;        /* receive queue */
-static mqueue *unblock_queue = NULL;    /* unblock queue */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 
@@ -291,51 +288,3 @@ int iswaiting(int proc_id){
     return -1;
 }
 
-int isinqueue(int src, int proc_id, mqueue *queue){
-    return 1;
-}
-
-int unblock_list(){
-}
-
-int sent_to( mgroup *g_ptr, int src, int dest, message *m){
-    grp_message *g_m;
-    
-    if(dest != src && iswaiting(dest)>0 && isinqueue(src, dest, rec_queue)){
-        //non block getitem
-//        for(int i=0; i<)
-        //unblock item
-        
-    } else {
-        // add item
-        g_m = (grp_message*) malloc(sizeof(grp_message));
-        g_m->grp_nr = g_ptr->g_nr;
-        g_m->msg = m;
-        g_m->call_nr = SEND;
-        g_m->dest = dest;
-        g_m->src = src;
-        push(&g_m, send_queue);
-        mp->mp_flags |= WAITING;
-        return (SUSPEND);
-    } 
-}
-
-int rec_from(mgroup *g_ptr, int src, int dest, message *m){
-    grp_message *g_m;
-    if(dest != src && iswaiting(dest)>0 && isinqueue(src, dest, rec_queue)){
-        //non block getitem
-        
-        //unblock item
-        
-    } else {
-        g_m = (grp_message*) malloc(sizeof(grp_message));
-        g_m->grp_nr = g_ptr->g_nr;
-        g_m->msg = m;
-        g_m->call_nr = RECEIVE;
-        g_m->dest = dest;
-        g_m->src = src;
-        push(g_m, rec_queue);
-        mp->mp_flags |= WAITING;
-        return (SUSPEND);
-    }
-}
