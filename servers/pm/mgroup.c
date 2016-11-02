@@ -21,6 +21,7 @@ static int g_id_ctr = 0;                /* group id counter */
 int invalid(int strategy);                      /* valid strategy */
 int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
+int getendpoint(int proc_id);                  /* get endpoint from proc list*/
 
 int do_opengroup()
 {
@@ -122,14 +123,15 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv, dest, *proclist;
+    int rv, dest, *proclist, endpoint;
     message *msg;
     
     dest = m_in.m1_i1;
     msg = (message*)m_in.m1_p1;
     proclist = (int*)m_in.m1_p2;
-    printf("Now msend\n");
-    rv = send(dest, &msg);
+    endpoint = getendpoint(dest);
+    printf("Now msend %d\n", endpoint);
+    rv = send(endpoint, &msg);
     printf("Now msend finish %d\n", rv);
     return 0;
 }
@@ -180,4 +182,13 @@ int getgroup(int grp_nr, mgroup ** g_ptr){
 
 int invalid(int strategy){
     return 0;
+}
+
+int getendpoint(int proc_id){
+    register struct mproc *rmp;
+    for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--) 
+        if (!(rmp->mp_flags & IN_USE)) continue;
+        if (proc_id > 0 && proc_id == rmp->mp_pid) return rmp->mp_endpoint;
+    }
+    return -1;
 }
