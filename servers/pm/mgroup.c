@@ -22,7 +22,7 @@ int invalid(int strategy);                      /* valid strategy */
 int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                  /* get endpoint from proc list*/
-int getmproc(int proc_id, mproc **rmp);
+int getmproc(int proc_id, struct mproc **rmp);
 
 int do_opengroup()
 {
@@ -213,7 +213,7 @@ endpoint_t getendpoint(int proc_id){
     return -1;
 }
 
-int getmproc(int proc_id, mproc **proc){
+int getmproc(int proc_id, struct mproc **proc){
     register struct mproc *rmp;
     if(proc_id < 0){
         return -1;
