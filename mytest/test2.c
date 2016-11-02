@@ -20,7 +20,7 @@ int main()
         printf("start send %d->%d\n", msg.m_source, m.m1_i1);
         m.m1_i1 = getpid();
         m.m1_i2 = parent;
-        m.m1_p1 = msg;
+        m.m1_p1 = (char*)msg;
 //        m.m1_p2 = (char *)proclist;
         if((pid=fork()) == 0){
             rv = _syscall(PM_PROC_NR, MSEND, &m);
