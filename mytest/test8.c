@@ -40,10 +40,13 @@ int main()
     message msg;
     int status,i, pid[10], st=5, rv, parent=getpid();
     int gid = opengroup(0);
+    addproc(gid, parent);
+    
     for (i = 0; i < 4; i++){
         status = fork();
         if (status == 0 || status == -1) break;
         pid[i] = status;
+        addproc(gid, pid[i]);
     }
     if (status == -1){
         //Fork error
@@ -62,11 +65,10 @@ int main()
         printf("cur id:%d\n", parent);
         
         for(i=0; i<4; i++){
-            if((rv=msend(pid[i], &msg)) == 0){
+            if((rv=msend(gid, &msg, pid[i])) == 0){
                 printf("Yes send success! %d\n", msg.m1_i1);
-            } elsse {
+            } else {
                 printf("msend fail, error-no %d\n", errno);
-                break;
             }
         }
         closegroup(gid);
