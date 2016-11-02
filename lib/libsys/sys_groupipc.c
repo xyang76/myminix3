@@ -16,7 +16,7 @@ int sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e)
 int sys_singleipc(endpoint_t caller_e, endpoint_t src_dest_e, int call_nr, message *msg)
 {
 	int r;
-    message m, msg;
+    message m;
     
     m.m1_i1 = caller_e;
     m.m1_i2 = src_dest_e;
