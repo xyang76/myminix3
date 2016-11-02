@@ -208,6 +208,7 @@ int do_statectl(struct proc * caller, message *m_ptr);
 #endif
 
 int do_ipcerrdtct(struct proc *caller, message *m_ptr);
+int do_singleipc(struct proc *caller, message *m_ptr);
 
 #endif	/* SYSTEM_H */
 
