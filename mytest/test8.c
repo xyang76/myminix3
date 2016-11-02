@@ -37,10 +37,11 @@ int sef_cb_init_fresh(int type, sef_init_info_t *info){
 
 int main()
 {
-    message msg;
+    message m, *msg;
     int status,i, pid[10], st=5, rv, parent=getpid();
     int gid = opengroup(0);
     addproc(gid, parent);
+    msg = &m;
     
     for (i = 0; i < 4; i++){
         status = fork();
@@ -53,7 +54,7 @@ int main()
     } else if (status == 0){
         //Child proc
         while(1){
-            rv=mreceive(gid, &msg, parent);
+            rv=mreceive(gid, msg, parent);
             if(rv==-1){
                 printf("mreceive fail, error-no %d\n", errno);
                 break;
@@ -65,7 +66,7 @@ int main()
         printf("cur id:%d\n", parent);
         
         for(i=0; i<4; i++){
-            if((rv=msend(gid, &msg, pid[i])) == 0){
+            if((rv=msend(gid, msg, pid[i])) == 0){
                 printf("Yes send success! %d\n", msg.m1_i1);
             } else {
                 printf("msend fail, error-no %d\n", errno);

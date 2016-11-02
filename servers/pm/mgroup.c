@@ -146,9 +146,12 @@ int do_msend(){
     } else if(getprocindex(g_ptr, src) == -1){
         return -2;
     }
-    rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
-		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-        
+    if ((message *) m_in.m1_p1 != (message *) NULL) {
+        rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
+            PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
+        if (rv != OK) return(rv);
+    }
+    printf("now msend\n");    
     for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
         if(*p != src){
             rv += sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
