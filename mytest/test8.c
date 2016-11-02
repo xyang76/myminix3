@@ -49,16 +49,17 @@ int main()
         //Fork error
     } else if (status == 0){
         //Child proc
+        while(1);
     } else {
         //Parent proc    
         printf("cur id:%d\n", parent);
-        while(1){
-            for(i=0; i<10; i++){
-                if(receive(pid[i], &msg, &st) == 0){
-                    printf("Yes rec success! %d\n", msg.m1_i1);
-                }
+        int gid = opengroup(0);
+        for(i=0; i<4; i++){
+            if(msend(pid[i], &msg) == 0){
+                printf("Yes rec success! %d\n", msg.m1_i1);
             }
         }
+        closegroup(gid);
     }
 	return 0;
 }
