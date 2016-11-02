@@ -1,3 +1,5 @@
+#include "mqueue.h"
+
 #define NR_GRPS      256        /* max number of groups */
 #define NR_MGPROCS   NR_PROCS   /* max number of processes in one group */
 
@@ -15,11 +17,20 @@ typedef int grp_stat;           /* group state */
 
 /* group stategies */
 
+
+typedef struct{
+    endpoint_t src;                 /* sender */
+    endpoint_t dest;                /* receiver */
+    int call_nr;                    /* type */                      
+    message *msg;                   /* message */
+}grp_message;
+
 typedef struct{
     grp_nr_t g_nr;                  /* group number ptr */
     strategy g_sttg;                /* group strategy */
     endpoint_t p_lst[NR_MGPROCS];   /* group processes */
     grp_stat g_stat;                /* group state */
+    mqueue *msg_queue;              /* group message queue*/
     int p_size;                     /* process size */
     int flag;                       /* flag */
 }mgroup;

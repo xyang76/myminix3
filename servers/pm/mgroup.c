@@ -132,18 +132,28 @@ int do_recovergroup(){
 
 int do_msend(){
     int rv, src, dest, *proclist;
-    message m, *msg;
+    message m;
     
     src = m_in.m1_i1;
     dest = m_in.m1_i2;
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-    msg = &m;
     proclist = (int*)m_in.m1_p2;
-    printf("Now msend %d->%d %d->%d\n", src, dest, getendpoint(src), getendpoint(dest));
-    rv = sys_singleipc(getendpoint(src), getendpoint(dest), SEND, msg);
-
-    printf("Now msend finish %d\n", rv);
+    
+    
+    
+    if(proclist == NULL || (int)proclist == 0){
+        //Send all
+        
+    } else {
+        while(proclist != NULL && *proclist != 0){
+            printf("proc is %d\n", *proclist);
+            proclist++;
+        }
+    }
+    
+    
+    printf("Now msend finish\n");
     return rv;
 }
 
@@ -153,11 +163,15 @@ int do_mreceive(){
     
     src = m_in.m1_i1;
     dest = m_in.m1_i2;
-    msg = (message *)m_in.m1_p1;
-       = (int*)m_in.m1_p2;
+    if ((message *) m_in.m1_p1 != (message *) NULL) {
+        r = sys_datacopy(PM_PROC_NR,(vir_bytes) msg,
+            who_e, (vir_bytes) m_in.m1_p1, (phys_bytes) sizeof(m));
+        if (r != OK) return(r);
+    }
+    proclist = (int*)m_in.m1_p2;
     status_ptr = (int*)m_in.m1_p3;
     printf("Now mreceive\n");
-    rv = sys_singleipc(getendpoint(src), getendpoint(dest), RECEIVE, msg);
+    
     printf("m receive finish %d\n", rv);
     return 0;
 }
