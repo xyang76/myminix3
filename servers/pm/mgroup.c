@@ -130,10 +130,12 @@ int do_recovergroup(){
 
 int do_msend(){
     int rv, dest, *proclist, endpoint, endpoint2, endpoint3;
+    message **ptr;
     message *msg;
     
     dest = m_in.m1_i1;
-    msg = (message*)m_in.m1_p1;
+    ptr = (message **)m_in.m1_p1;
+    msg = *ptr;
     proclist = (int*)m_in.m1_p2;
     endpoint = getendpoint(dest);
     endpoint2 = msg->m1_i1;

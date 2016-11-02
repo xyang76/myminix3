@@ -18,10 +18,10 @@ int main()
         m_sg->m_source=getpid();
         //m_sg = &msg;
         m.m1_i1 = parent;
-        m.m1_p1 = (char*)m_sg;
+        m.m1_p1 = &m_sg;
         m.m_source=getpid();
         m.m_type = MSEND;
-        printf("start send %d->%d\n", msg.m_source, m.m1_i1);
+        printf("start send %d->%d\n", m_sg->m_source, m.m1_i1);
         rv= sendrec(PM_PROC_NR, &m);
         printf("send rv is %d\n", rv);
     } else {
