@@ -221,7 +221,7 @@ int getmproc(int proc_id, struct mproc **proc){
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if (proc_id > 0 && proc_id == rmp->mp_pid) {
-            *proc = rmp;
+            *proc = &rmp;
             return 0;
         }
     }
