@@ -241,9 +241,9 @@ int do_mreceive(){
             if(getprocindex(g_ptr, getendpoint(rec_type) == -1)){
                 return -3;
             }else if(rec_type != src && iswaiting(rec_type)>0 && isinqueue(src, rec_type, send_queue)){
-                return rec_from(g_ptr, src, send_type, msg);  //NON block
+                return rec_from(g_ptr, src, rec_type, msg);  //NON block
             } else {
-                rv = rec_from(g_ptr, src, send_type, msg);  
+                rv = rec_from(g_ptr, src, rec_type, msg);  
                 mp->mp_flags |= WAITING;
                 return rv==0? (SUSPEND) : rv;
             }
