@@ -19,6 +19,7 @@ typedef int grp_stat;           /* group state */
 
 
 typedef struct{
+    int grp_nr;                     /* group */
     endpoint_t src;                 /* sender */
     endpoint_t dest;                /* receiver */
     int call_nr;                    /* type */                      
@@ -30,7 +31,6 @@ typedef struct{
     strategy g_sttg;                /* group strategy */
     endpoint_t p_lst[NR_MGPROCS];   /* group processes */
     grp_stat g_stat;                /* group state */
-    mqueue *msg_queue;              /* group message queue*/
     int p_size;                     /* process size */
     int flag;                       /* flag */
 }mgroup;

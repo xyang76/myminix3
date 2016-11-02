@@ -14,17 +14,22 @@
 #include "mgroup.h"
 
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
+static mqueue *send_queue = NULL;              /* send queue*/
+static mqueue *rec_queue = NULL;               /* receive queue */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
-struct mproc *dstmp;
+
+initQueue(&send_queue);
+initQueue(&rec_queue);
 
 /* private methods prototype */
-int invalid(int strategy);                      /* valid strategy */ 
-int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
-int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
-endpoint_t getendpoint(int proc_id);             /* get endpoint from proc list*/
+int invalid(int strategy);                                  /* valid strategy */ 
+int deadlock(int src, int dest, int call_nr);               /* valid deadlock */ 
+int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
+int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
+endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 int getmproc(int proc_id);
-int revoke(int proc_id);    
+int revokeproc(int proc_id);    
 
 int do_opengroup()
 {
@@ -141,9 +146,6 @@ int do_msend(){
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p2 ,
 		PM_PROC_NR, (vir_bytes) proclist, (phys_bytes) sizeof(NR_MGPROCS*sizeof(int)));
-//    proclist = (int*)m_in.m1_p2;
-    
-    
     
     if(proclist == NULL || (int)proclist == 0){
         //Send all
