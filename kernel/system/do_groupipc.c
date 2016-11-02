@@ -31,27 +31,28 @@ int do_ipcerrdtct(struct proc *caller_ptr, message *m_ptr)
 
 int do_singleipc(struct proc *caller_ptr, message *m_ptr)
 {
-    message *msg;
+    message msg;
     struct proc *call_p=NULL;
-    int caller_e, src_dest_e, call_nr;
+    int caller_e, src_dest_e, call_nr, r;
     
-//    struct proc *const caller_p = get_cpulocal_var(proc_ptr);
     caller_e = m_ptr->m1_i1 ;
     src_dest_e = m_ptr->m1_i2;
     call_nr = m_ptr->m1_i3;
     
-//    for()
-//    printf("caller_ptr %d-%d\n", caller_p->p_nr, caller_p->p_endpoint);
-    printf("caller_ptr2 %d-%d-%d\n", caller_ptr->p_nr, caller_ptr->p_endpoint,nr_to_id(caller_ptr->p_nr));
-    printf("caller_e%d\n", caller_e);
+    /* copy message from caller*/
+//    if((r=data_copy_vmcheck(caller_ptr, caller_ptr->p_endpoint,
+//		(vir_bytes) m_ptr->m1_p1, KERNEL, (vir_bytes) &msg,
+//		(phys_bytes) sizeof(struct msg))) != OK)
+//        return r;
+//    
+    printf("kernel caller_ptr2 %d-%d-%d\n", caller_ptr->p_nr, caller_ptr->p_endpoint,nr_to_id(caller_ptr->p_nr));
+//    printf("msg=%d\n", msg.m1_i1);
     
-    for (call_p = &proc[0]; call_p <= &proc[NR_TASKS + NR_PROCS-1]; call_p++){
+    for (call_p = &proc[0]; call_p < &proc[NR_TASKS + NR_PROCS]; call_p++){
         if(call_p->p_endpoint == caller_e){
-            printf("yes! this is proc %d find\n", call_p->p_nr);
-            break;
+            printf("start ipc send\n");
+            return do_sync_ipc(call_p, call_nr, src_dest_e, m_ptr);
         }
     } 
-//    printf("caller_e %d-%d-%d\n", nr_to_id(caller_e), caller_e, id_to_nr(caller_e));
-//    do_sync_ipc()
     return(OK);
 }
