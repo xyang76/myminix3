@@ -200,8 +200,9 @@ int do_msend(){
 }
 
 int do_mreceive(){
-    int rv, src, grp_nr, rec_type, *proclist, *status_ptr;
+    int rv, src, grp_nr, rec_type, *proclist, *status_ptr, *p;
     message m, *msg;
+    mgroup *g_ptr = NULL;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
