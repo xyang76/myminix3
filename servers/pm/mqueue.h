@@ -10,6 +10,6 @@ typedef struct
 void initQueue(mqueue ** que);                
 int isEmpty(mqueue * que);                   
 int isFull(mqueue * que);                  
-int push(void *item, mqueue * que);        
-int pull(void **item, mqueue * que);   
+int enqueue(void *item, mqueue * que);        
+int dequeue(void **item, mqueue * que);   
 void closeQueue(mqueue * que);   

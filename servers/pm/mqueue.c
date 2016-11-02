@@ -13,7 +13,7 @@ void initQueue(mqueue **que)
 /* 
 push item into queue
  */  
-int push(void *item, mqueue *que)  
+int enqueue(void *item, mqueue *que)  
 {  
     if(isFull(que))  
     {  
@@ -30,7 +30,7 @@ int push(void *item, mqueue *que)
 /* 
 pull out first item from the queue
  */  
-int pull(void **item, mqueue *que)  
+int dequeue(void **item, mqueue *que)  
 {  
     if(isEmpty(que))  
     {  

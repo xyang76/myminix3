@@ -28,6 +28,8 @@ int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 int getmproc(int proc_id);
 int revokeproc(int proc_id);    
+int rec_from(int block, mgroup *g_ptr, int src, int dest, message *m);
+int sent_to(int block, mgroup *g_ptr, int src, int dest, message *m)
 
 int do_opengroup()
 {
@@ -73,12 +75,16 @@ int do_addproc(){
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
     if(!getgroup(grp_nr, &g_ptr)){
+        printf("in add proc1.1\n");
         return EIVGRP;
     }else if(g_ptr->p_size >= NR_MGPROCS){
+        printf("in add proc1.2\n");
         return EPROCLEN;                    // reach max length
     }else if((proc_ep=getendpoint(proc))<0){
+        printf("in add proc1.3\n");
         return EIVPROC;
     }else if(getprocindex(g_ptr, proc) != -1){
+        printf("in add proc1.4\n");
         return EPROCEXIST;                  // proc already exist
     }
     printf("in add proc2\n");
@@ -311,10 +317,31 @@ int isinqueue(int src, int proc_id, mqueue *queue){
     return 1;
 }
 
-int sent_to(mgroup *g_ptr, int src, int dest, message *m){
-    
+int unblock_list(){
 }
 
-int rec_from(mgroup *g_ptr, int src, int dest, message *m){
+int sent_to(int block, mgroup *g_ptr, int src, int dest, message *m){
+    grp_message g_m;
     
+    if(block){
+        g_m.grp_nr = g_ptr->g_nr;
+        g_m.msg = m;
+        g_m.call_nr = SEND;
+        g_m.dest = dest;
+        g_m.src = src;
+        enqueue(g_m, send_queue);
+    } else {
+        
+    }
+}
+
+int rec_from(int block, mgroup *g_ptr, int src, int dest, message *m){
+    grp_message g_m;
+    
+    g_m.grp_nr = g_ptr->g_nr;
+    g_m.msg = m;
+    g_m.call_nr = SEND;
+    g_m.dest = dest;
+    g_m.src = src;
+    enqueue(g_m, rec_queue);
 }
