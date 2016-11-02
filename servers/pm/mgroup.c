@@ -139,13 +139,15 @@ int do_msend(){
     dest = m_in.m1_i2;
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-    proclist = (int*)m_in.m1_p2;
+    rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p2 ,
+		PM_PROC_NR, (vir_bytes) proclist, (phys_bytes) sizeof(NR_MGPROCS*sizeof(int)));
+//    proclist = (int*)m_in.m1_p2;
     
     
     
     if(proclist == NULL || (int)proclist == 0){
         //Send all
-        
+        printf("still null\n");
     } else {
         while(proclist != NULL && *proclist != 0){
             printf("proc is %d\n", *proclist);
