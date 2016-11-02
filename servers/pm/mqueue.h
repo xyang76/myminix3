@@ -19,4 +19,5 @@ void initQueue(mqueue ** que);
 int isEmpty(mqueue * que);                   
 int isFull(mqueue * que);                  
 int push(void *item, mqueue * que);        
-int pull(void **item, mqueue * que);   
+int pull(void **item, mqueue * que);
+int pullindex(void **item, mqueue *que, int index);
