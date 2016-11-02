@@ -16,6 +16,7 @@
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static mqueue *send_queue = NULL;       /* send queue*/
 static mqueue *rec_queue = NULL;        /* receive queue */
+static mqueue *msg_queue = NULL;        /* receive queue */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 
@@ -33,9 +34,10 @@ int do_opengroup()
     mgroup *g_ptr = NULL;
     int i, strategy;
     
-    if(send_queue == NULL || rec_queue == NULL){    //Init queues
+    if(send_queue == NULL || rec_queue == NULL || msg_queue == NULL){    //Init queues
         initQueue(&send_queue);
         initQueue(&rec_queue);
+        initQueue(&msg_queue);
     }
     
     strategy = m_in.m1_i1;
@@ -67,7 +69,7 @@ int do_addproc(){
     mgroup *g_ptr = NULL;
     int grp_nr, proc;	
     endpoint_t proc_ep;
-    
+    printf("in add proc\n");
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
     if(!getgroup(grp_nr, &g_ptr)){
@@ -76,11 +78,11 @@ int do_addproc(){
         return EPROCLEN;                    // reach max length
     }else if((proc_ep=getendpoint(proc))<0){
         return EIVPROC;
-    }else if(getprocindex(g_ptr, proc_ep) != -1){
+    }else if(getprocindex(g_ptr, proc) != -1){
         return EPROCEXIST;                  // proc already exist
     }
     
-    *(g_ptr->p_lst+g_ptr->p_size) = proc_ep;
+    *(g_ptr->p_lst+g_ptr->p_size) = proc;
     g_ptr->p_size++;
     return 0;
 }
@@ -96,7 +98,7 @@ int do_rmproc(){
         return EIVGRP;
     } else if((proc_ep=getendpoint(proc))<0){
         return EIVPROC;
-    } else if((i=getprocindex(g_ptr, proc_ep)) == -1){
+    } else if((i=getprocindex(g_ptr, proc)) == -1){
         return EIVPROC;                     // cant find proc in group
     } 
     
@@ -139,55 +141,102 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv, src, grp_nr, size, *proclist;
-    endpoint_t sendto[NR_MGPROCS], *send_list;
+    int rv, src, grp_nr, send_type, *p;
+    endpoint_t sendto[NR_MGPROCS];
     message m;
     mgroup *g_ptr = NULL;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
-    size = m_in.m1_i3;
-    int p_list[size];
+    send_type = m_in.m1_i3;
+
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
+    } else if(getprocindex(mgroup *g_ptr, proc) == -1){
+        return -2;
     }
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-    rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p2 ,
-		PM_PROC_NR, (vir_bytes) &p_list[0], (phys_bytes) sizeof(size*sizeof(int)));
-    proclist = p_list;
-    if(proclist == NULL || (int)proclist == 0){
-        //Send all
-        send_list = g_ptr->p_lst;
-        printf("still null\n");
-    } else {
-        while(proclist != NULL && *proclist != 0){
-            printf("proc is %d\n", *proclist);
-            proclist++;
-        }
+    switch(send_type){
+        case IPCALL:
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src){
+                    sent_to(g_ptr, src, *p, message *m);
+                }
+            }
+            break;
+        case IPCSENDBLOCK:
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, rec_queue)){
+                    sent_to(g_ptr, src, *p, message *m);
+                }
+            }
+            break;
+        case IPCNONBLOCK:
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src && iswaiting(*p)==0){
+                    rec_from(g_ptr, src, *p, message *m);
+                }
+            }
+            break;
+        default:
+            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
+                return -3;
+            }
+            sent_to(g_ptr, src, send_type, message *m);
     }
-    
     
     printf("Now msend finish %d\n", size);
     return rv;
 }
 
 int do_mreceive(){
-    int rv, src, dest, size, *proclist, *status_ptr;
+    int rv, src, grp_nr, rec_type, *proclist, *status_ptr;
     message m, *msg;
     
     src = m_in.m1_i1;
-    dest = m_in.m1_i2;
-    size = m_in.m1_i3;
+    grp_nr = m_in.m1_i2;
+    rec_type = m_in.m1_i3;
+    
+    if(!getgroup(grp_nr, &g_ptr)){
+        return EIVGRP;
+    } else if(getprocindex(mgroup *g_ptr, proc) == -1){
+        return -2;
+    }
     if ((message *) m_in.m1_p1 != (message *) NULL) {
         rv = sys_datacopy(PM_PROC_NR,(vir_bytes) msg,
             who_e, (vir_bytes) m_in.m1_p1, (phys_bytes) sizeof(m));
         if (rv != OK) return(rv);
     }
-    proclist = (int*)m_in.m1_p2;
-    status_ptr = (int*)m_in.m1_p3;
     printf("Now mreceive\n");
-    
+    switch(rec_type){
+        case IPCALL:
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src){
+                    rec_from(g_ptr, src, *p, message *m);
+                }
+            }
+            break;
+        case IPCRECBLOCK:
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, send_queue)){
+                    rec_from(g_ptr, src, *p, message *m);
+                }
+            }
+            break;
+        case IPCNONBLOCK:
+            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+                if(*p != src && iswaiting(*p)==0){
+                    rec_from(g_ptr, src, *p, message *m);
+                }
+            }
+            break;
+        default:
+            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
+                return -3;
+            }
+            rec_from(g_ptr, src, send_type, message *m);
+    }
     printf("m receive finish %d\n", rv);
     return 0;
 }
@@ -238,3 +287,31 @@ endpoint_t getendpoint(int proc_id){
     return -1;
 }
 
+int iswaiting(int proc_id){
+    register struct mproc *rmp;
+    if(proc_id < 0){
+        return -1;
+    }
+    for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
+        if (!(rmp->mp_flags & IN_USE)) continue;
+        if (proc_id > 0 && proc_id == rmp->mp_pid){
+            if(rmp->mp_flags & WAITING){
+                return 1;
+            } 
+            return 0;
+        } 
+    }
+    return -1;
+}
+
+int isinqueue(int src, int proc_id, mqueue *queue){
+    return 1;
+}
+
+int sent_to(mgroup *g_ptr, int src, int dest, message *m){
+    
+}
+
+int rec_from(mgroup *g_ptr, int src, int dest, message *m){
+    
+}
