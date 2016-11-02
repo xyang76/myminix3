@@ -148,10 +148,10 @@ int do_msend(){
     //rv = send(endpoint, &msg);
 //    getmproc(dest);
 //    dstmp->mp_flags |= WAITING;
-    sys_singleipc(getendpoint(src), getendpoint(dest), SEND, msg);
+    rv = sys_singleipc(getendpoint(src), getendpoint(dest), SEND, msg);
 //    sys_ipcerrdtct(msg->m_source, dest, SEND);
     printf("Now msend finish %d\n", rv);
-    return 0;
+    return rv;
 }
 
 int do_mreceive(){
