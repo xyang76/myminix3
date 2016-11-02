@@ -39,13 +39,13 @@ int push(void *item, mqueue *que)
     if(isFull(que))  
     {  
         printf("Queue is full!\n");  
-        return false;  
+        return -1;  
     }  
     else  
     {  
         que->list[que->tail] = item;  
         que->tail = que->tail+1;  
-        return true;  
+        return 0;  
     }  
 }  
 /* 
@@ -56,13 +56,13 @@ int pull(void **item, mqueue *que)
     if(isEmpty(que))  
     {  
         printf("Queue is empty!\n");  
-        return false;  
+        return -1;  
     }  
     else  
     {  
         *item = que->list[que->head];        
         que->head = que->head+1;       
-        return true;  
+        return 0;  
     }  
 }  
 
@@ -72,9 +72,9 @@ if queue is full
 int isFull(mqueue * que)  
 {  
     if((que->tail+1) ==MQUEUESIZE)     
-        return true;  
+        return 1;  
     else  
-        return false;  
+        return 0;  
 }  
 /* 
 if queue is empty
@@ -82,9 +82,9 @@ if queue is empty
 int isEmpty(mqueue * que)  
 {  
     if(que->head == que->tail)  
-        return true;  
+        return 1;  
     else  
-        return false;  
+        return 0;  
 }
 
 void closeQueue(mqueue * que){
