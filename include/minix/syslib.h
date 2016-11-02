@@ -43,6 +43,7 @@ int sys_schedctl(unsigned flags, endpoint_t proc_ep, int priority, int
 
 /* ipc error: add by Xincheng Yang */
 int sys_ipcerrdtct(int function, endpoint_t src_e, endpoint_t dest_e);
+int sys_singleipc(endpoint_t caller_e, endpoint_t src_dest_e, int call_nr, message *msg);
 
 /* Shorthands for sys_runctl() system call. */
 #define sys_stop(proc_ep) sys_runctl(proc_ep, RC_STOP, 0)
