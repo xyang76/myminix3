@@ -149,7 +149,7 @@ int do_msend(){
 
 int do_mreceive(){
     int rv, src, dest, *proclist, *status_ptr;
-    message msg;
+    message m, *msg;
     
     src = m_in.m1_i1;
     dest = m_in.m1_i2;
@@ -157,7 +157,7 @@ int do_mreceive(){
     proclist = (int*)m_in.m1_p2;
     status_ptr = (int*)m_in.m1_p3;
     printf("Now mreceive\n");
-    rv = sys_singleipc(getendpoint(src), getendpoint(dest), RECEIVE, &msg);
+    rv = sys_singleipc(getendpoint(src), getendpoint(dest), RECEIVE, msg);
     printf("m receive finish %d\n", rv);
     return 0;
 }
