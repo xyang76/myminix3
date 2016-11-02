@@ -51,6 +51,10 @@ int main()
         //Child proc
         while(1){
             rv=mreceive(gid, &msg);
+            if(rv==-1){
+                printf("error-no %d", errno);
+                break;
+            }
             printf("yes receive success! %d", rv);
         }
     } else {
