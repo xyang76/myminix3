@@ -144,11 +144,12 @@ int do_msend(){
     int rv, src, grp_nr, send_type, *p;
     endpoint_t sendto[NR_MGPROCS];
     message m;
+    proc_list pl;
     mgroup *g_ptr = NULL;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
-    send_type = m_in.m1_i3;
+//    send_type = m_in.m1_i3;
 
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
@@ -157,34 +158,39 @@ int do_msend(){
     }
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-    switch(send_type){
-        case IPCALL:
-            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-                if(*p != src){
-                    sent_to(g_ptr, src, *p, message *m);
-                }
-            }
-            break;
-        case IPCSENDBLOCK:
-            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, rec_queue)){
-                    sent_to(g_ptr, src, *p, message *m);
-                }
-            }
-            break;
-        case IPCNONBLOCK:
-            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-                if(*p != src && iswaiting(*p)==0){
-                    rec_from(g_ptr, src, *p, message *m);
-                }
-            }
-            break;
-        default:
-            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
-                return -3;
-            }
-            sent_to(g_ptr, src, send_type, message *m);
-    }
+    rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p2,
+		PM_PROC_NR, (vir_bytes) &pl, (phys_bytes) sizeof(pl));
+//    switch(send_type){
+//        case IPCALL:                            // will send to all other processes in this group
+//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+//                if(*p != src){
+//                    sent_to(g_ptr, src, *p, &m);
+//                }
+//            }
+//            rv = (SUSPEND);                     
+//            break;
+//        case IPCRECBLOCK:                       // will send all receive blocking to this process. after send will not block.
+//            rv = 0;
+//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+//                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, rec_queue)){
+//                    rv += sent_to(g_ptr, src, *p, &m);
+//                }
+//            }
+//            break;  
+//        case IPCNONBLOCK:                       // will send to all non-blocked process, will block current sender
+//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+//                if(*p != src && iswaiting(*p)==0){
+//                    sent_to(g_ptr, src, *p, &m);
+//                }
+//            }
+//            rv = (SUSPEND);
+//            break;
+//        default:
+//            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
+//                return -3;
+//            }
+//            sent_to(g_ptr, src, send_type, &m);
+//    }
     
     printf("Now msend finish %d\n", size);
     return rv;
@@ -209,34 +215,34 @@ int do_mreceive(){
         if (rv != OK) return(rv);
     }
     printf("Now mreceive\n");
-    switch(rec_type){
-        case IPCALL:
-            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-                if(*p != src){
-                    rec_from(g_ptr, src, *p, message *m);
-                }
-            }
-            break;
-        case IPCRECBLOCK:
-            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, send_queue)){
-                    rec_from(g_ptr, src, *p, message *m);
-                }
-            }
-            break;
-        case IPCNONBLOCK:
-            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
-                if(*p != src && iswaiting(*p)==0){
-                    rec_from(g_ptr, src, *p, message *m);
-                }
-            }
-            break;
-        default:
-            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
-                return -3;
-            }
-            rec_from(g_ptr, src, send_type, message *m);
-    }
+//    switch(rec_type){
+//        case IPCALL:
+//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+//                if(*p != src){
+//                    rec_from(g_ptr, src, *p, message *msg);
+//                }
+//            }
+//            break;
+//        case IPCSENDBLOCK:
+//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+//                if(*p != src && iswaiting(*p)>0 && isinqueue(src, *p, send_queue)){
+//                    rec_from(g_ptr, src, *p, message *msg);
+//                }
+//            }
+//            break;
+//        case IPCNONBLOCK:
+//            for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){
+//                if(*p != src && iswaiting(*p)==0){
+//                    rec_from(g_ptr, src, *p, message *msg);
+//                }
+//            }
+//            break;
+//        default:
+//            if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
+//                return -3;
+//            }
+//            rec_from(g_ptr, src, send_type, message *msg);
+//    }
     printf("m receive finish %d\n", rv);
     return 0;
 }

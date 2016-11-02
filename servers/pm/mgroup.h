@@ -16,14 +16,19 @@ typedef int grp_stat;           /* group state */
 #define M_ERROR        5 
 
 /* send_type */
-#define IPCALL         0
-#define IPCSENDBLOCK   -1
-#define IPCRECBLOCK    -2
-#define IPCNONBLOCK    -3 
-#define IPCANY         -4
+#define IPCANY         0
+#define IPCALL         -1
+#define IPCSENDBLOCK   -2
+#define IPCRECBLOCK    -3
+#define IPCNONBLOCK    -4 
+
 
 /* group stategies */
 
+typedef struct{
+    int size;                       /* size */
+    int proc[NR_PROCS];             /* proc */
+}proc_list;
 
 typedef struct{
     int grp_nr;                     /* group */
