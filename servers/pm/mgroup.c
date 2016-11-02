@@ -166,7 +166,7 @@ int do_mreceive(){
     if ((message *) m_in.m1_p1 != (message *) NULL) {
         rv = sys_datacopy(PM_PROC_NR,(vir_bytes) msg,
             who_e, (vir_bytes) m_in.m1_p1, (phys_bytes) sizeof(m));
-        if (rv != OK) return(r);
+        if (rv != OK) return(rv);
     }
     proclist = (int*)m_in.m1_p2;
     status_ptr = (int*)m_in.m1_p3;
