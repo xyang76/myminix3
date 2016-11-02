@@ -239,7 +239,7 @@ int do_mreceive(){
         default:
             if(getprocindex(mgroup *g_ptr, getendpoint(send_type) == -1){
                 return -3;
-            }else if(send_type != src && iswaiting(send_type)>0 && isinqueue(src, send_type, send_queue))
+            }else if(send_type != src && iswaiting(send_type)>0 && isinqueue(src, send_type, send_queue)){
                 return rec_from(g_ptr, src, send_type, message *msg);  //NON block
             } else {
                 rv = rec_from(g_ptr, src, send_type, message *msg);  
