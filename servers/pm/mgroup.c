@@ -63,10 +63,10 @@ int do_addproc(){
     mgroup *g_ptr = NULL;
     int grp_nr, proc;	
     endpoint_t proc_ep;
-    printf("in add proc\n");
+    printf("in add proc %d\n", grp_nr);
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
-    if(!getgroup(grp_nr, &g_ptr)){
+    if(getgroup(grp_nr, &g_ptr) == -1){
         printf("in add proc1.1\n");
         return EIVGRP;
     }else if(g_ptr->p_size >= NR_MGPROCS){
@@ -92,7 +92,7 @@ int do_rmproc(){
     
     grp_nr = m_in.m1_i1;
     proc = m_in.m1_i2;
-    if(getgroup(grp_nr, &g_ptr)){
+    if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
     } else if((proc_ep=getendpoint(proc))<0){
         return EIVPROC;
@@ -112,7 +112,7 @@ int do_closegroup(){
     int grp_nr;
     
     grp_nr = m_in.m1_i1;
-    if(getgroup(grp_nr, &g_ptr)){
+    if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
     }
     g_ptr->g_stat = M_UNUSED;
@@ -131,7 +131,7 @@ int do_recovergroup(){
     strategy = m_in.m1_i2;
     if(invalid(strategy)){                           // Make sure strategy is valid. 0 is allowed
         return EIVSTTG;
-    }else if(getgroup(grp_nr, &g_ptr)){
+    }else if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
     }
     
@@ -147,7 +147,7 @@ int do_msend(){
     grp_nr = m_in.m1_i2;
     send_type = m_in.m1_i3;
 
-    if(!getgroup(grp_nr, &g_ptr)){
+    if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
     } else if(getprocindex(g_ptr, src) == -1){
         return -2;
@@ -174,7 +174,7 @@ int do_mreceive(){
     grp_nr = m_in.m1_i2;
     rec_type = m_in.m1_i3;
     
-    if(!getgroup(grp_nr, &g_ptr)){
+    if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
     } else if(getprocindex(g_ptr, src) == -1){
         return -2;
