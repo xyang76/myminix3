@@ -164,7 +164,7 @@ int do_msend(){
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
         
-    for(p=g_ptr->p_lst; p<NR_MGPROCS && *p != 0; p++){  
+    for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && *p != 0; p++){  
         if(*p != src){
             sendnb(getendpoint(*p), &m);
         }
