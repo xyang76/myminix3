@@ -45,7 +45,7 @@ int msend(int dest, char *msg, int* proclist){
     message m;
     int rv, pid, status, proc_num, *p;
     
-    for(p=proclist, proc_num=0; p != NULL && *p != 0; p++, proc_num++)
+    for(p=proclist, proc_num=0; p != NULL && *p != 0; p++, proc_num++);
     
     m.m1_i1 = getpid();
     m.m1_i2 = dest;
@@ -58,21 +58,18 @@ int msend(int dest, char *msg, int* proclist){
 
 int mreceive(int src, char *msg, int* proclist, int *status_ptr){
     message m;
-    int rv, pid, status;
+    int rv, pid, status, proc_num, *p;
+    
+    for(p=proclist, proc_num=0; p != NULL && *p != 0; p++, proc_num++);
     
     m.m1_i1 = getpid();
     m.m1_i2 = src;
+    m.m1_i3 = proc_num;
     m.m1_p1 = msg;
     m.m1_p2 = (char *)proclist;
     m.m1_p3 = (char *)status_ptr;
-    if((pid=fork()) == 0){
-        rv = _syscall(PM_PROC_NR, MRECEIVE, &m);
-        printf("rv is %d", rv);
-        exit(rv);
-    } else {
-//        waitpid(pid, &status, 0);
-        return status;
-    }
+    
+    return _syscall(PM_PROC_NR, MRECEIVE, &m);
 }
 
 

@@ -230,17 +230,3 @@ endpoint_t getendpoint(int proc_id){
     return -1;
 }
 
-int getmproc(int proc_id){
-    register struct mproc *rmp;
-    if(proc_id < 0){
-        return -1;
-    }
-    for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
-        if (!(rmp->mp_flags & IN_USE)) continue;
-        if (proc_id > 0 && proc_id == rmp->mp_pid) {
-            dstmp = rmp;
-            return 0;
-        }
-    }
-    return -1;
-}
