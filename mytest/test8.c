@@ -49,8 +49,9 @@ int main()
         //Fork error
     } else if (status == 0){
         //Child proc
-        while(mreceive(gid, &msg) == 0){
-            printf("yes receive success!");
+        while(1){
+            rv=mreceive(gid, &msg);
+            printf("yes receive success! %d", rv);
         }
     } else {
         //Parent proc    
