@@ -237,7 +237,7 @@ int do_mreceive(){
             }
             break;
         default:
-            if(getprocindex(g_ptr, getendpoint(send_type) == -1){
+            if(getprocindex(g_ptr, getendpoint(send_type) == -1)){
                 return -3;
             }else if(send_type != src && iswaiting(send_type)>0 && isinqueue(src, send_type, send_queue)){
                 return rec_from(g_ptr, src, send_type, msg);  //NON block
