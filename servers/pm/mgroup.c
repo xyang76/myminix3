@@ -22,8 +22,9 @@ struct mproc *dstmp;
 int invalid(int strategy);                      /* valid strategy */ 
 int getgroup(int grp_nr, mgroup ** g_ptr);      /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);      /* get proc index in group*/
-endpoint_t getendpoint(int proc_id);                  /* get endpoint from proc list*/
+endpoint_t getendpoint(int proc_id);             /* get endpoint from proc list*/
 int getmproc(int proc_id);
+int revoke(int proc_id);    
 
 int do_opengroup()
 {
