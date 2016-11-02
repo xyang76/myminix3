@@ -29,8 +29,8 @@ int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 int getmproc(int proc_id);
 int revokeproc(int proc_id);    
-int rec_from(mgroup *g_ptr, int src, int dest, message *m);
-int sent_to(mgroup *g_ptr, int src, int dest, message *m)
+//int rec_from(mgroup *g_ptr, int src, int dest, message *m);
+//int sent_to(mgroup *g_ptr, int src, int dest, message *m);
 
 int do_opengroup()
 {
@@ -164,7 +164,7 @@ int do_msend(){
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
 		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
         
-    for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+p_size; p++){  
+    for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
         if(*p != src){
             sendnb(getendpoint(*p), &m);
         }
