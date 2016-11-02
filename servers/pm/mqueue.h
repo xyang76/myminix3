@@ -3,7 +3,7 @@
 #define false 0
 struct node
 {
-    void *data;
+    void *item;
     struct node *nextNode; 
 
 };

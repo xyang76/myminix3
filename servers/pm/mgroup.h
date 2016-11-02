@@ -1,5 +1,3 @@
-#include "mqueue.h"
-
 #define NR_GRPS      256        /* max number of groups */
 #define NR_MGPROCS   NR_PROCS   /* max number of processes in one group */
 
