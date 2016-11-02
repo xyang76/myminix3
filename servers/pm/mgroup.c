@@ -153,7 +153,7 @@ int do_msend(){
 
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
-    } else if(getprocindex(mgroup *g_ptr, proc) == -1){
+    } else if(getprocindex(g_ptr, proc) == -1){
         return -2;
     }
     rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
@@ -199,6 +199,7 @@ int do_msend(){
 int do_mreceive(){
     int rv, src, grp_nr, rec_type, *proclist, *status_ptr;
     message m, *msg;
+    mgroup *g_ptr = NULL;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
@@ -206,7 +207,7 @@ int do_mreceive(){
     
     if(!getgroup(grp_nr, &g_ptr)){
         return EIVGRP;
-    } else if(getprocindex(mgroup *g_ptr, proc) == -1){
+    } else if(getprocindex(g_ptr, proc) == -1){
         return -2;
     }
     if ((message *) m_in.m1_p1 != (message *) NULL) {
