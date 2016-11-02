@@ -28,8 +28,8 @@ int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 int getmproc(int proc_id);
 int revokeproc(int proc_id);    
-int rec_from(int block, mgroup *g_ptr, int src, int dest, message *m);
-int sent_to(int block, mgroup *g_ptr, int src, int dest, message *m)
+int rec_from(mgroup *g_ptr, int src, int dest, message *m);
+int sent_to(mgroup *g_ptr, int src, int dest, message *m)
 
 int do_opengroup()
 {
@@ -321,7 +321,7 @@ int isinqueue(int src, int proc_id, mqueue *queue){
 int unblock_list(){
 }
 
-int sent_to(int block, mgroup *g_ptr, int src, int dest, message *m){
+int sent_to( mgroup *g_ptr, int src, int dest, message *m){
     grp_message *g_m;
     
     if(dest != src && iswaiting(dest)>0 && isinqueue(src, dest, rec_queue)){
@@ -343,7 +343,7 @@ int sent_to(int block, mgroup *g_ptr, int src, int dest, message *m){
     } 
 }
 
-int rec_from(int block, mgroup *g_ptr, int src, int dest, message *m){
+int rec_from(mgroup *g_ptr, int src, int dest, message *m){
     grp_message *g_m;
     if(dest != src && iswaiting(dest)>0 && isinqueue(src, dest, rec_queue)){
         //non block getitem
