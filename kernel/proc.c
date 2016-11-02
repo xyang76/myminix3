@@ -1893,5 +1893,31 @@ int do_sync_ipc2(struct proc * caller_ptr,
 			int call_nr,	
 			endpoint_t src_dst_e,	
 			message *m_ptr){
-    return do_sync_ipc(caller_ptr, call_nr, src_dst_e, m_ptr);
+    switch(call_nr) {
+      case SENDREC:
+        /* A flag is set so that notifications cannot interrupt SENDREC. */
+        caller_ptr->p_misc_flags |= MF_REPLY_PEND;
+        /* fall through */
+      case SEND:			
+        result = mini_send(caller_ptr, src_dst_e, m_ptr, 0);
+        if (call_nr == SEND || result != OK)
+            break;				/* done, or SEND failed */
+        /* fall through for SENDREC */
+      case RECEIVE:			
+        if (call_nr == RECEIVE) {
+            caller_ptr->p_misc_flags &= ~MF_REPLY_PEND;
+            IPC_STATUS_CLEAR(caller_ptr);  /* clear IPC status code */
+        }
+        result = mini_receive(caller_ptr, src_dst_e, m_ptr, 0);
+        break;
+      case NOTIFY:
+        result = mini_notify(caller_ptr, src_dst_e);
+        break;
+      case SENDNB:
+            result = mini_send(caller_ptr, src_dst_e, m_ptr, NON_BLOCKING);
+            break;
+      default:
+        result = EBADCALL;			/* illegal system call */
+      }
+    return (result);
 }
