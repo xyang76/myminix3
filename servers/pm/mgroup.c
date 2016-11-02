@@ -131,7 +131,7 @@ int do_msend(){
     proclist = (int*)m_in.m1_p2;
     endpoint = getendpoint(dest);
     printf("Now msend %d\n", endpoint);
-    rv = send(endpoint, &msg);
+//    rv = send(endpoint, &msg);
     printf("Now msend finish %d\n", rv);
     return 0;
 }
