@@ -9,6 +9,7 @@
 #include <sys/ptrace.h>
 #include <sys/resource.h>
 #include <signal.h>
+#include <stdlib.h>
 #include "mproc.h"
 #include "param.h"
 #include "mgroup.h"
@@ -337,7 +338,7 @@ int sent_to( mgroup *g_ptr, int src, int dest, message *m){
         g_m->call_nr = SEND;
         g_m->dest = dest;
         g_m->src = src;
-        enqueue(&g_m, send_queue);
+        push(&g_m, send_queue);
         mp->mp_flags |= WAITING;
         return (SUSPEND);
     } 
@@ -357,7 +358,7 @@ int rec_from(mgroup *g_ptr, int src, int dest, message *m){
         g_m->call_nr = RECEIVE;
         g_m->dest = dest;
         g_m->src = src;
-        enqueue(g_m, rec_queue);
+        push(g_m, rec_queue);
         mp->mp_flags |= WAITING;
         return (SUSPEND);
     }
