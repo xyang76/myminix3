@@ -130,12 +130,13 @@ int do_recovergroup(){
 
 int do_msend(){
     int rv, dest, *proclist, endpoint, endpoint2, endpoint3;
-    message **ptr;
-    message *msg;
+    message m, *msg;
     
     dest = m_in.m1_i1;
-    ptr = (message **)m_in.m1_p1;
-    msg = *ptr;
+    rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
+		PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
+    msg = &m;
+//    msg = (message*)m_in.m1_p1;
     proclist = (int*)m_in.m1_p2;
     endpoint = getendpoint(dest);
     endpoint2 = msg->m1_i1;

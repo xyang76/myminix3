@@ -6,7 +6,7 @@
 
 int main()
 {
-    message m, msg, *m_sg, **mm_sg;  // Minix uses message to pass parameters to a system call
+    message m, msg, *m_sg;  // Minix uses message to pass parameters to a system call
     int rv, child, st=5, status;
     int parent = getpid();
 
@@ -16,9 +16,8 @@ int main()
         msg.m_type=2;
         msg.m_source=getpid();
         m_sg = &msg;
-        mm_sg = &m_sg;
         m.m1_i1 = parent;
-        m.m1_p1 = (char*)mm_sg;
+        m.m1_p1 = (char*)m_sg;
         m.m_source=getpid();
         m.m_type = MSEND;
         printf("start send %d->%d\n", msg.m_source, m.m1_i1);
