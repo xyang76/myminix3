@@ -273,6 +273,7 @@ void system_init(void)
 
   /* IPC error detect */
   map(SYS_IPCERRDTCT, do_ipcerrdtct);	/* IPC error detect: add by Xincheng Yang */
+  map(SYS_SINGLEIPC, do_singleipc);	/* single ipc */
 
 }
 /*===========================================================================*

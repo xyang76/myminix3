@@ -142,7 +142,8 @@ int do_msend(){
     endpoint = getendpoint(dest);
     printf("Now msend %d->%d %d->%d\n", msg->m_source, dest, getendpoint(msg->m_source), getendpoint(dest));
     //rv = send(endpoint, &msg);
-    mp->mp_flags |= WAITING;;
+//    mp->mp_flags |= WAITING;;
+    sys_singleipc(msg->m_source, dest, SEND, msg);
     printf("Now msend finish %d\n", rv);
     return 0;
 }
