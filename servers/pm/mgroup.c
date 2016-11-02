@@ -132,7 +132,7 @@ int do_msend(){
     endpoint = getendpoint(dest);
     endpoint2 = getendpoint(msg->m_source);
     endpoint3 = getendpoint(m_in.m_source);
-    printf("Now msend %d %d %d\n", endpoint, endpoint2, endpoint3);
+    printf("Now msend %d %d %d %d\n", endpoint, endpoint2, endpoint3, msg->m_source);
 //    rv = send(endpoint, &msg);
     printf("Now msend finish %d\n", rv);
     return 0;

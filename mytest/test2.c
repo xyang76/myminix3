@@ -13,11 +13,11 @@ int main()
     if((child=fork())==0){
         // This is child
         msg.m1_i1 = 10;
+        msg.m_type=2;
+        msg.m_source=getpid();
         
         m.m1_i1 = parent;
         m.m1_p1 = &msg;
-        msg.m_type=2;
-        msg.m_source=getpid();
         m.m_source=PM_PROC_NR;
         m.m_type = MSEND;
         printf("start send %d->%d\n", msg.m_source, m.m1_i1);
