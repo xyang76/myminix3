@@ -47,12 +47,19 @@ int do_singleipc(struct proc *caller_ptr, message *m_ptr)
 //    
     printf("kernel caller_ptr2 %d-%d-%d\n", caller_ptr->p_nr, caller_ptr->p_endpoint,nr_to_id(caller_ptr->p_nr));
 //    printf("msg=%d\n", msg.m1_i1);
-    
-    for (call_p = &proc[0]; call_p < &proc[NR_TASKS + NR_PROCS]; call_p++){
-        if(call_p->p_endpoint == caller_e){
-            printf("start ipc send\n");
-            return do_sync_ipc2(call_p, call_nr, src_dest_e, m_ptr);
-        }
-    } 
+    if(call_nr == 98){
+        call_nr = SEND;
+        printf("caller_e %d, src-dest %d", caller_e, src_dest_e);
+    } else if (call_nr == 99){
+        call_nr = RECEIVE;
+        printf("caller_e %d, src-dest %d", caller_e, src_dest_e);
+    } else {    
+        for (call_p = &proc[0]; call_p < &proc[NR_TASKS + NR_PROCS]; call_p++){
+            if(call_p->p_endpoint == caller_e){
+                printf("start ipc send\n");
+                return do_sync_ipc2(call_p, call_nr, src_dest_e, m_ptr);
+            }
+        } 
+    }
     return(OK);
 }

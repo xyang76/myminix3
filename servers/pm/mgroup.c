@@ -204,6 +204,12 @@ int kernel_ipc(){
     
     printf("Now kernel_ipc %d-%d, %d-%d\n", k_src, k_dest, getendpoint(k_src), getendpoint(k_dest));
     rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);
+//    switch(k_ipc_callnr){
+//        case RECEIVE:
+//            sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);
+//        case SEND:
+//            sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);
+//    }
     printf("kernel ipc finish %d\n", rv);
 }
 
