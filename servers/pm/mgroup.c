@@ -140,7 +140,7 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv=0, src, grp_nr, ipc_type;
+    int rv=SUSPEND, src, grp_nr, ipc_type;
     message m;
 //    mgroup *g_ptr = NULL;
     grp_message *g_m;
@@ -174,11 +174,11 @@ int do_msend(){
     g_m->msg= &m;
     push(g_m, msg_queue);
     printf("msend finish\n");    
-    return SUSPEND;
+    return rv;
 }
 
 int do_mreceive(){
-    int rv=0, src, grp_nr, ipc_type;
+    int rv=SUSPEND, src, grp_nr, ipc_type;
     message m;
 //    mgroup *g_ptr = NULL;
     grp_message *g_m;
@@ -207,7 +207,7 @@ int do_mreceive(){
     g_m->msg= &m;
     push(g_m, msg_queue);
     printf("m receive finish\n");
-    return SUSPEND;
+    return rv;
 }
 
 /*
