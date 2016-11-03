@@ -1896,7 +1896,6 @@ int do_sync_ipc2(struct proc * caller_ptr,
   reg_t r1 = (reg_t)call_nr;
   reg_t r2 = (reg_t)src_dst_e;
   reg_t r3 = (reg_t)m_ptr;
-  int call_nr = (int) r1;
 
   assert(!RTS_ISSET(caller_ptr, RTS_SLOT_FREE));
 
