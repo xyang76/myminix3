@@ -4,7 +4,7 @@
 #define false 0
 struct node
 {
-    void *data;
+    void *value;
     struct node *nextNode; 
 
 };

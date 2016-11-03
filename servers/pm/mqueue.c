@@ -20,7 +20,7 @@ int push(void *item, mqueue *que)
     newNode=(struct node *)malloc(sizeof(struct node));
     if(newNode==NULL)
     {
-        printf("Fail£¡ ");
+        printf("FailÂ£Â¡ ");
         exit(1);
     }
     if(isFull(que))  
@@ -30,7 +30,7 @@ int push(void *item, mqueue *que)
     }  
     else  
     {  
-        newNode->data=item; 
+        newNode->value=item; 
         newNode->nextNode = NULL; 
         que->num++;
     }  
@@ -56,7 +56,7 @@ int pull(void **item, mqueue *que)
     }  
     else  
     {  
-        *item = que->head->data;    
+        *item = que->head->value;    
         p=que->head;
         que->head=p->nextNode;  
         if(que->head==NULL)
@@ -84,7 +84,7 @@ int pullindex(void **item, mqueue *que, int index)
 	{
 		for(i=0; i<index; i++)
 		{
-			*item = que->head->data;    
+			*item = que->head->value;    
 			p=que->head;
 			que->head=p->nextNode;
 			if(que->head==NULL)
