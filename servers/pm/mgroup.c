@@ -31,7 +31,6 @@ int deadlock(int src, int dest, int call_nr);               /* valid deadlock */
 int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
-int getproc_nr(endpoint_t endpoint);                        /* get proc number */
 void unblock(endpoint_t src, endpoint_t dest);              /* unblock src and dest */
 
 int do_opengroup()
@@ -275,31 +274,17 @@ endpoint_t getendpoint(int proc_id){
     return -1;
 }
 
-int getproc_nr(endpoint_t endpoint){
-    register struct mproc *rmp;
-    int proc_nr;
-    if(endpoint < 0){
-        return -1;
-    }
-    for (proc_nr==0; proc_nr < NR_PROCS-1; proc_nr++){ 
-        rmp = &mproc[proc_nr];
-        if (!(rmp->mp_flags & IN_USE)) continue;
-        if (endpoint == rmp->mp_endpoint) return proc_nr;
-    }
-    return -1;
-}
-
 void unblock(endpoint_t src, endpoint_t dest){
     register struct mproc *rmp;
-    int sendcount = 0, s;
+    int sendcount = 0, s, proc_nr;
     
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if(src == rmp->mp_endpoint || dest == rmp->mp_endpoint){
-            if (pm_isokendpt(rmp->mp_endpoint, &src_nr) != OK) {
+            if (pm_isokendpt(rmp->mp_endpoint, &proc_nr) != OK) {
                 panic("handle_vfs_reply: got bad endpoint from VFS: %d", rmp->mp_endpoint);
             }
-            setreply(rmp->mp_endpoint, OK);
+            setreply(proc_nr, OK);
             if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) == (REPLY | IN_USE)) {
               s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
               if (s != OK) {
