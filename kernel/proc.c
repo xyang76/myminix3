@@ -1939,22 +1939,6 @@ int do_sync_ipc2(struct proc * caller_ptr,
 		return EDEADSRCDST;
 	}
   }
-  
-  if(call_nr == 2){
-     printf("mtype %d & callnr %d", m_ptr->m_type, call_nr);
-  }
-
-  /* Check if the process has privileges for the requested call. Calls to the 
-   * kernel may only be SENDREC, because tasks always reply and may not block 
-   * if the caller doesn't do receive(). 
-   */
-  if (!(priv(caller_ptr)->s_trap_mask & (1 << call_nr))) {
-#if DEBUG_ENABLE_IPC_WARNINGS
-      printf("sys_call: %s not allowed, caller %d, src_dst %d, callernr %d, msg %d\n", 
-          callname, proc_nr(caller_ptr), src_dst_p, call_nr, m_ptr->m_type);
-#endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
-  }
 
   if (call_nr != SENDREC && call_nr != RECEIVE && iskerneln(src_dst_p)) {
 #if DEBUG_ENABLE_IPC_WARNINGS
