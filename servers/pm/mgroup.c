@@ -17,6 +17,10 @@
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
+static message *k_msg;                  /* kernel level message */
+static int k_src;
+static int k_dest;    
+static int k_ipc_type;
 
 /* private methods prototype */
 int invalid(int strategy);                                  /* valid strategy */ 
@@ -141,23 +145,27 @@ int do_msend(){
     grp_nr = m_in.m1_i2;
     send_type = m_in.m1_i3;
     printf("group nr =%d\n", grp_nr);
-    if(getgroup(grp_nr, &g_ptr) == -1){
-        return EIVGRP;
-    } else if(getprocindex(g_ptr, src) == -1){
-        return -2;
-    }
-    if ((message *) m_in.m1_p1 != (message *) NULL) {
-        rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
-            PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-        if (rv != OK) return(rv);
-    }
-    printf("now msend\n");    
-    for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
-        if(*p != src){
-            rv += sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
-        }
-    }
-    
+//    if(getgroup(grp_nr, &g_ptr) == -1){
+//        return EIVGRP;
+//    } else if(getprocindex(g_ptr, src) == -1){
+//        return -2;
+//    }
+//    if ((message *) m_in.m1_p1 != (message *) NULL) {
+//        rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
+//            PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
+//        if (rv != OK) return(rv);
+//    }
+    printf("now msend %d-%d\n", src, rec_type);    
+//    for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
+//        if(*p != src){
+//            rv += sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
+//        }
+//    }
+    k_src = src;
+    k_dest = rec_type;
+    k_ipc_type = SEND;
+    k_msg = &m;
+    printf("now msend finish\n");  
     return rv;
 }
 
@@ -170,21 +178,33 @@ int do_mreceive(){
     grp_nr = m_in.m1_i2;
     rec_type = m_in.m1_i3;
     
-    if(getgroup(grp_nr, &g_ptr) == -1){
-        return EIVGRP;
-    } else if(getprocindex(g_ptr, src) == -1){
-        return -2;
-    }
-    if ((message *) m_in.m1_p1 != (message *) NULL) {
-        rv = sys_datacopy(PM_PROC_NR,(vir_bytes) msg,
-            who_e, (vir_bytes) m_in.m1_p1, (phys_bytes) sizeof(m));
-        if (rv != OK) return(rv);
-    }
+//    if(getgroup(grp_nr, &g_ptr) == -1){
+//        return EIVGRP;
+//    } else if(getprocindex(g_ptr, src) == -1){
+//        return -2;
+//    }
+//    if ((message *) m_in.m1_p1 != (message *) NULL) {
+//        rv = sys_datacopy(PM_PROC_NR,(vir_bytes) msg,
+//            who_e, (vir_bytes) m_in.m1_p1, (phys_bytes) sizeof(m));
+//        if (rv != OK) return(rv);
+//    }
     
-    printf("Now mreceive\n");
-    rv=sys_singleipc(getendpoint(src), getendpoint(rec_type), RECEIVE, msg);
+    printf("Now mreceive %d-%d\n", src, rec_type);
+    k_src = src;
+    k_dest = rec_type;
+    k_ipc_type = RECEIVE;
+    k_msg = &m;
+//    rv=sys_singleipc(getendpoint(src), getendpoint(rec_type), RECEIVE, msg);
     printf("m receive finish %d\n", rv);
     return 0;
+}
+
+int kernel_ipc(){
+    int rv;
+    
+    printf("Now kernel_ipc %d-%d, %d-%d\n", k_src, k_dest, getendpoint(k_src), getendpoint(k_dest));
+    rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_type, k_msg);
+    printf("kernel ipc finish %d\n", rv);
 }
 
 /*  ========================= private methods ================================*/

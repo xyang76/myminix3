@@ -11,23 +11,22 @@
 #include "proto.h"
 #include <machine/vm.h>
 
-extern int mini_send(
-  register struct proc *caller_ptr,	/* who is trying to send a message? */
-  endpoint_t dst_e,			/* to whom is message being sent? */
-  message *m_ptr,			/* pointer to message buffer */
-  const int flags
-);
-
 int main()
 {
+    int child, parent=getpid();
     
-	printf("Success\n");
-
+	printf("Start test\n");
+    if((child=fork())==0){
+        // child
+        printf("start send\n");
+        rv = msend(1, &msg, parent);
+        printf("finish send %d\n", rv);
+    } else {
+        // This is parent
+        printf("start rec \n");
+        rv = mreceive(1, &m, child);
+        printf("start rec %d", rv);
+    }
+    printf("finish test\n");
 	return 0;
-}
-
-int test(proc *pr){
-    struct message m_pagefault;
-    
-    mini_send(pr, VM_PROC_NR, &m_pagefault, FROM_KERNEL);
 }

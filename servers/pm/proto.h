@@ -112,3 +112,4 @@ int do_addproc(void);
 int do_rmproc(void);
 int do_msend(void);
 int do_mreceive(void);
+int kernel_ipc(void);

@@ -143,6 +143,11 @@ int main()
 	/* Send reply. */
 	if (result != SUSPEND) setreply(who_p, result);
 	sendreply();
+    
+    /* do kernel level ipc. Add by Xincheng Yang*/
+    if (call_nr == MSEND || call_nr == MRECEIVE){
+        kernel_ipc();
+    }
   }
   return(OK);
 }
