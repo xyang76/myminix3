@@ -5,13 +5,14 @@
 
 int main()
 {
-    int child, parent=getpid();
+    int rv, child, parent=getpid();
+    message m;
     
 	printf("Start test\n");
     if((child=fork())==0){
         // child
         printf("start send\n");
-        rv = msend(1, &msg, parent);
+        rv = msend(1, &m, parent);
         printf("finish send %d\n", rv);
     } else {
         // This is parent
