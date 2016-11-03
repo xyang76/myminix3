@@ -140,9 +140,9 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv=0, src, grp_nr, ipc_type, *p;
+    int rv=0, src, grp_nr, ipc_type;
     message m;
-    mgroup *g_ptr = NULL;
+//    mgroup *g_ptr = NULL;
     grp_message *g_m;
     
     src = m_in.m1_i1;
@@ -179,8 +179,8 @@ int do_msend(){
 
 int do_mreceive(){
     int rv=0, src, grp_nr, ipc_type;
-    message m, *msg;
-    mgroup *g_ptr = NULL;
+    message m;
+//    mgroup *g_ptr = NULL;
     grp_message *g_m;
     
     src = m_in.m1_i1;
