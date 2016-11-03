@@ -137,7 +137,7 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv, src, grp_nr, ipc_type, *p;
+    int rv=0, src, grp_nr, ipc_type, *p;
     message m;
     mgroup *g_ptr = NULL;
     
@@ -170,7 +170,7 @@ int do_msend(){
 }
 
 int do_mreceive(){
-    int rv, src, grp_nr, ipc_type;
+    int rv=0, src, grp_nr, ipc_type;
     message m, *msg;
     mgroup *g_ptr = NULL;
     
@@ -200,10 +200,10 @@ int do_mreceive(){
 }
 
 int kernel_ipc(){
-    int rv;
+    int rv=0;
     
     printf("Now kernel_ipc %d-%d, %d-%d\n", k_src, k_dest, getendpoint(k_src), getendpoint(k_dest));
-    rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_type, k_msg);
+    rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);
     printf("kernel ipc finish %d\n", rv);
 }
 
