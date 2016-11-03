@@ -32,6 +32,7 @@ int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its 
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 int getproc_nr(endpoint_t endpoint);                        /* get proc number */
+void unblock(endpoint_t src, endpoint_t dest);              /* unblock src and dest */
 
 int do_opengroup()
 {
@@ -219,18 +220,10 @@ void do_server_ipc(){
     grp_message *g_m;
     
     printf("server ipc start\n");
+    
     if(msg_queue->num==2){
-        
          pull(&g_m, msg_queue);
-         if (pm_isokendpt(g_m->src, &src_nr) != OK) {
-            panic("handle_vfs_reply: got bad endpoint from VFS: %d", g_m->src);
-          }
-          if (pm_isokendpt(g_m->dest, &dest_nr) != OK) {
-            panic("handle_vfs_reply: got bad endpoint from VFS: %d", g_m->dest);
-          }
-         printf("proc number = %d-%d\n", src_nr, dest_nr);
-//         sendnb(g_m->src, g_m->msg);
-//         sendnb(g_m->dest, g_m->msg);
+         ublock(g_m->src, g_m->dest);
     }
     printf("kernel ipc finish %d\n", rv);
 }
@@ -296,3 +289,29 @@ int getproc_nr(endpoint_t endpoint){
     return -1;
 }
 
+void unblock(endpoint_t src, endpoint_t dest){
+    register struct mproc *rmp;
+    int sendcount = 0, s;
+    
+    for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
+        if (!(rmp->mp_flags & IN_USE)) continue;
+        if(src == rmp->mp_endpoint || dest == rmp->mp_endpoint){
+            if (pm_isokendpt(rmp->mp_endpoint, &src_nr) != OK) {
+                panic("handle_vfs_reply: got bad endpoint from VFS: %d", rmp->mp_endpoint);
+            }
+            setreply(rmp->mp_endpoint, OK);
+            if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) == (REPLY | IN_USE)) {
+              s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
+              if (s != OK) {
+                  printf("PM can't reply to %d (%s): %d\n",
+                      rmp->mp_endpoint, rmp->mp_name, s);
+              }
+              rmp->mp_flags &= ~REPLY;
+            }
+            sendcount++;
+            if(sendcount == 2){         //When already send and receive, then return
+                return;
+            }
+        }
+    }
+}
