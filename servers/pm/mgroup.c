@@ -215,14 +215,20 @@ int do_mreceive(){
  * Check message queue, when find match grp_message, send reply to its src & dest, then unblock both of them.
  */
 void do_server_ipc(){
-    int rv=0;
+    int rv=0, src_nr, dest_nr;
     grp_message *g_m;
     
     printf("server ipc start\n");
     if(msg_queue->num==2){
         
          pull(&g_m, msg_queue);
-         printf("proc number = %d-%d\n", getproc_nr(g_m->src), getproc_nr(g_m->dest));
+         if (pm_isokendpt(g_m->src, &src_nr) != OK) {
+            panic("handle_vfs_reply: got bad endpoint from VFS: %d", proc_e);
+          }
+          if (pm_isokendpt(g_m->dest, &dest_nr) != OK) {
+            panic("handle_vfs_reply: got bad endpoint from VFS: %d", proc_e);
+          }
+         printf("proc number = %d-%d\n", src_nr, dest_nr);
 //         sendnb(g_m->src, g_m->msg);
 //         sendnb(g_m->dest, g_m->msg);
     }
