@@ -1894,6 +1894,7 @@ int do_sync_ipc2(struct proc * caller_ptr,
 			endpoint_t src_dst_e,	
 			message *m_ptr){
   int result;					/* the system call's result */
+  int src_dst_p;				/* Process slot number */
   char *callname;
 
   /* Check destination. RECEIVE is the only call that accepts ANY (in addition
