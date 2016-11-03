@@ -213,7 +213,7 @@ int do_mreceive(){
 /*
  * Check message queue, when find match grp_message, send reply to its src & dest, then unblock both of them.
  */
-int do_server_ipc(){
+void do_server_ipc(){
     int rv=0;
     grp_message *g_m;
     
