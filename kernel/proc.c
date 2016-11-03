@@ -1893,88 +1893,101 @@ int do_sync_ipc2(struct proc * caller_ptr,
 			int call_nr,	
 			endpoint_t src_dst_e,	
 			message *m_ptr){
-    int result;					/* the system call's result */
-  int src_dst_p;				/* Process slot number */
-  char *callname;
+  struct proc *const caller_ptr = get_cpulocal_var(proc_ptr);	/* get pointer to caller */
+  int call_nr = (int) r1;
 
-  /* Check destination. RECEIVE is the only call that accepts ANY (in addition
-   * to a real endpoint). The other calls (SEND, SENDREC, and NOTIFY) require an
-   * endpoint to corresponds to a process. In addition, it is necessary to check
-   * whether a process is allowed to send to a given destination.
+  assert(!RTS_ISSET(caller_ptr, RTS_SLOT_FREE));
+
+  /* bill kernel time to this process. */
+  kbill_ipc = caller_ptr;
+
+  /* If this process is subject to system call tracing, handle that first. */
+  if (caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) {
+	/* Are we tracing this process, and is it the first sys_call entry? */
+	if ((caller_ptr->p_misc_flags & (MF_SC_TRACE | MF_SC_DEFER)) ==
+							MF_SC_TRACE) {
+		/* We must notify the tracer before processing the actual
+		 * system call. If we don't, the tracer could not obtain the
+		 * input message. Postpone the entire system call.
+		 */
+		caller_ptr->p_misc_flags &= ~MF_SC_TRACE;
+		assert(!(caller_ptr->p_misc_flags & MF_SC_DEFER));
+		caller_ptr->p_misc_flags |= MF_SC_DEFER;
+		caller_ptr->p_defer.r1 = r1;
+		caller_ptr->p_defer.r2 = r2;
+		caller_ptr->p_defer.r3 = r3;
+
+		/* Signal the "enter system call" event. Block the process. */
+		cause_sig(proc_nr(caller_ptr), SIGTRAP);
+
+		/* Preserve the return register's value. */
+		return caller_ptr->p_reg.retreg;
+	}
+
+	/* If the MF_SC_DEFER flag is set, the syscall is now being resumed. */
+	caller_ptr->p_misc_flags &= ~MF_SC_DEFER;
+
+	assert (!(caller_ptr->p_misc_flags & MF_SC_ACTIVE));
+
+	/* Set a flag to allow reliable tracing of leaving the system call. */
+	caller_ptr->p_misc_flags |= MF_SC_ACTIVE;
+  }
+
+  if(caller_ptr->p_misc_flags & MF_DELIVERMSG) {
+	panic("sys_call: MF_DELIVERMSG on for %s / %d\n",
+		caller_ptr->p_name, caller_ptr->p_endpoint);
+  }
+
+  /* Now check if the call is known and try to perform the request. The only
+   * system calls that exist in MINIX are sending and receiving messages.
+   *   - SENDREC: combines SEND and RECEIVE in a single system call
+   *   - SEND:    sender blocks until its message has been delivered
+   *   - RECEIVE: receiver blocks until an acceptable message has arrived
+   *   - NOTIFY:  asynchronous call; deliver notification or mark pending
+   *   - SENDA:   list of asynchronous send requests
    */
-  assert(call_nr != SENDA);
-
-  /* Only allow non-negative call_nr values less than 32 */
-  if (call_nr < 0 || call_nr > IPCNO_HIGHEST || call_nr >= 32
-      || !(callname = ipc_call_names[call_nr])) {
-#if DEBUG_ENABLE_IPC_WARNINGS
-      printf("sys_call: trap %d not allowed, caller %d, src_dst %d\n", 
-          call_nr, proc_nr(caller_ptr), src_dst_e);
-#endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
-  }
-
-  if (src_dst_e == ANY)
-  {
-	if (call_nr != RECEIVE)
-	{
-#if 0
-		printf("sys_call: %s by %d with bad endpoint %d\n", 
-			callname,
-			proc_nr(caller_ptr), src_dst_e);
-#endif
-		return EINVAL;
-	}
-	src_dst_p = (int) src_dst_e;
-  }
-  else
-  {
-	/* Require a valid source and/or destination process. */
-	if(!isokendpt(src_dst_e, &src_dst_p)) {
-#if 0
-		printf("sys_call: %s by %d with bad endpoint %d\n", 
-			callname,
-			proc_nr(caller_ptr), src_dst_e);
-#endif
-		return EDEADSRCDST;
-	}
-  }
-
-  if (call_nr != SENDREC && call_nr != RECEIVE && iskerneln(src_dst_p)) {
-#if DEBUG_ENABLE_IPC_WARNINGS
-      printf("sys_call: trap %s not allowed, caller %d, src_dst %d\n",
-           callname, proc_nr(caller_ptr), src_dst_e);
-#endif
-	return(ETRAPDENIED);		/* trap denied by mask or kernel */
-  }
-
   switch(call_nr) {
-  case SENDREC:
-	/* A flag is set so that notifications cannot interrupt SENDREC. */
-	caller_ptr->p_misc_flags |= MF_REPLY_PEND;
-	/* fall through */
-  case SEND:			
-	result = mini_send(caller_ptr, src_dst_e, m_ptr, 0);
-	if (call_nr == SEND || result != OK)
-		break;				/* done, or SEND failed */
-	/* fall through for SENDREC */
-  case RECEIVE:			
-	if (call_nr == RECEIVE) {
-		caller_ptr->p_misc_flags &= ~MF_REPLY_PEND;
-		IPC_STATUS_CLEAR(caller_ptr);  /* clear IPC status code */
-	}
-	result = mini_receive(caller_ptr, src_dst_e, m_ptr, 0);
-	break;
-  case NOTIFY:
-	result = mini_notify(caller_ptr, src_dst_e);
-	break;
-  case SENDNB:
-        result = mini_send(caller_ptr, src_dst_e, m_ptr, NON_BLOCKING);
-        break;
-  default:
-	result = EBADCALL;			/* illegal system call */
-  }
+  	case SENDREC:
+  	case SEND:			
+  	case RECEIVE:			
+  	case NOTIFY:
+  	case SENDNB:
+  	{
+  	    /* Process accounting for scheduling */
+	    caller_ptr->p_accounting.ipc_sync++;
 
-  /* Now, return the result of the system call to the caller. */
-  return(result);
+  	    return do_sync_ipc(caller_ptr, call_nr, (endpoint_t) r2,
+			    (message *) r3);
+  	}
+  	case SENDA:
+  	{
+ 	    /*
+  	     * Get and check the size of the argument in bytes as it is a
+  	     * table
+  	     */
+  	    size_t msg_size = (size_t) r2;
+  
+  	    /* Process accounting for scheduling */
+	    caller_ptr->p_accounting.ipc_async++;
+ 
+  	    /* Limit size to something reasonable. An arbitrary choice is 16
+  	     * times the number of process table entries.
+  	     */
+  	    if (msg_size > 16*(NR_TASKS + NR_PROCS))
+	        return EDOM;
+  	    return mini_senda(caller_ptr, (asynmsg_t *) r3, msg_size);
+  	}
+  	case MINIX_KERNINFO:
+	{
+		/* It might not be initialized yet. */
+	  	if(!minix_kerninfo_user) {
+			return EBADCALL;
+		}
+
+  		arch_set_secondary_ipc_return(caller_ptr, minix_kerninfo_user);
+  		return OK;
+	}
+  	default:
+	return EBADCALL;		/* illegal system call */
+  }
 }
