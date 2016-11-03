@@ -203,7 +203,8 @@ int kernel_ipc(){
     int rv=0;
     
     printf("Now kernel_ipc %d-%d, %d-%d\n", k_src, k_dest, getendpoint(k_src), getendpoint(k_dest));
-    rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);
+    rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), 99, k_msg);
+    rv=sys_singleipc(getendpoint(PM_PROC_NR), getendpoint(k_dest), 98, k_msg);
 //    switch(k_ipc_callnr){
 //        case RECEIVE:
 //            sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);

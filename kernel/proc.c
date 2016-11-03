@@ -1893,32 +1893,104 @@ int do_sync_ipc2(struct proc * caller_ptr,
 			int call_nr,	
 			endpoint_t src_dst_e,	
 			message *m_ptr){
-    int result;
-    switch(call_nr) {
-      case SENDREC:
-        /* A flag is set so that notifications cannot interrupt SENDREC. */
-        caller_ptr->p_misc_flags |= MF_REPLY_PEND;
-        /* fall through */
-      case SEND:			
-        result = mini_send(caller_ptr, src_dst_e, m_ptr, 0);
-        if (call_nr == SEND || result != OK)
-            break;				/* done, or SEND failed */
-        /* fall through for SENDREC */
-      case RECEIVE:			
-        if (call_nr == RECEIVE) {
-            caller_ptr->p_misc_flags &= ~MF_REPLY_PEND;
-            IPC_STATUS_CLEAR(caller_ptr);  /* clear IPC status code */
-        }
-        result = mini_receive(caller_ptr, src_dst_e, m_ptr, 0);
+    int result;					/* the system call's result */
+  int src_dst_p;				/* Process slot number */
+  char *callname;
+
+  /* Check destination. RECEIVE is the only call that accepts ANY (in addition
+   * to a real endpoint). The other calls (SEND, SENDREC, and NOTIFY) require an
+   * endpoint to corresponds to a process. In addition, it is necessary to check
+   * whether a process is allowed to send to a given destination.
+   */
+  assert(call_nr != SENDA);
+
+  /* Only allow non-negative call_nr values less than 32 */
+  if (call_nr < 0 || call_nr > IPCNO_HIGHEST || call_nr >= 32
+      || !(callname = ipc_call_names[call_nr])) {
+#if DEBUG_ENABLE_IPC_WARNINGS
+      printf("sys_call: trap %d not allowed, caller %d, src_dst %d\n", 
+          call_nr, proc_nr(caller_ptr), src_dst_e);
+#endif
+	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+  }
+
+  if (src_dst_e == ANY)
+  {
+	if (call_nr != RECEIVE)
+	{
+#if 0
+		printf("sys_call: %s by %d with bad endpoint %d\n", 
+			callname,
+			proc_nr(caller_ptr), src_dst_e);
+#endif
+		return EINVAL;
+	}
+	src_dst_p = (int) src_dst_e;
+  }
+  else
+  {
+	/* Require a valid source and/or destination process. */
+	if(!isokendpt(src_dst_e, &src_dst_p)) {
+#if 0
+		printf("sys_call: %s by %d with bad endpoint %d\n", 
+			callname,
+			proc_nr(caller_ptr), src_dst_e);
+#endif
+		return EDEADSRCDST;
+	}
+  }
+  
+  if(call_nr == 2){
+     printf("mtype %d & callnr %d", m_ptr->m_type, call_nr);
+  }
+
+  /* Check if the process has privileges for the requested call. Calls to the 
+   * kernel may only be SENDREC, because tasks always reply and may not block 
+   * if the caller doesn't do receive(). 
+   */
+  if (!(priv(caller_ptr)->s_trap_mask & (1 << call_nr))) {
+#if DEBUG_ENABLE_IPC_WARNINGS
+      printf("sys_call: %s not allowed, caller %d, src_dst %d, callernr %d, msg %d\n", 
+          callname, proc_nr(caller_ptr), src_dst_p, call_nr, m_ptr->m_type);
+#endif
+	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+  }
+
+  if (call_nr != SENDREC && call_nr != RECEIVE && iskerneln(src_dst_p)) {
+#if DEBUG_ENABLE_IPC_WARNINGS
+      printf("sys_call: trap %s not allowed, caller %d, src_dst %d\n",
+           callname, proc_nr(caller_ptr), src_dst_e);
+#endif
+	return(ETRAPDENIED);		/* trap denied by mask or kernel */
+  }
+
+  switch(call_nr) {
+  case SENDREC:
+	/* A flag is set so that notifications cannot interrupt SENDREC. */
+	caller_ptr->p_misc_flags |= MF_REPLY_PEND;
+	/* fall through */
+  case SEND:			
+	result = mini_send(caller_ptr, src_dst_e, m_ptr, 0);
+	if (call_nr == SEND || result != OK)
+		break;				/* done, or SEND failed */
+	/* fall through for SENDREC */
+  case RECEIVE:			
+	if (call_nr == RECEIVE) {
+		caller_ptr->p_misc_flags &= ~MF_REPLY_PEND;
+		IPC_STATUS_CLEAR(caller_ptr);  /* clear IPC status code */
+	}
+	result = mini_receive(caller_ptr, src_dst_e, m_ptr, 0);
+	break;
+  case NOTIFY:
+	result = mini_notify(caller_ptr, src_dst_e);
+	break;
+  case SENDNB:
+        result = mini_send(caller_ptr, src_dst_e, m_ptr, NON_BLOCKING);
         break;
-      case NOTIFY:
-        result = mini_notify(caller_ptr, src_dst_e);
-        break;
-      case SENDNB:
-            result = mini_send(caller_ptr, src_dst_e, m_ptr, NON_BLOCKING);
-            break;
-      default:
-        result = EBADCALL;			/* illegal system call */
-      }
-    return (result);
+  default:
+	result = EBADCALL;			/* illegal system call */
+  }
+
+  /* Now, return the result of the system call to the caller. */
+  return(result);
 }
