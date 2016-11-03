@@ -222,7 +222,7 @@ void do_server_ipc(){
     
     if(msg_queue->num==2){
          pull(&g_m, msg_queue);
-         ublock(g_m->src, g_m->dest);
+         unblock(g_m->src, g_m->dest);
     }
     printf("kernel ipc finish %d\n", rv);
 }
