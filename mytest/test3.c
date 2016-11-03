@@ -18,7 +18,7 @@ int main()
         // This is parent
         printf("start rec \n");
         rv = mreceive(1, &m, child);
-        printf("start rec %d", rv);
+        printf("finish rec %d\n", rv);
     }
     printf("finish test\n");
 	return 0;

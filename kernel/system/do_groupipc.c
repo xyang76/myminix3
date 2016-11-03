@@ -49,10 +49,10 @@ int do_singleipc(struct proc *caller_ptr, message *m_ptr)
 //    printf("msg=%d\n", msg.m1_i1);
     if(call_nr == 98){
         call_nr = SEND;
-        printf("caller_e %d, src-dest %d", caller_e, src_dest_e);
+        printf("caller_e %d, src-dest %d\n", caller_e, src_dest_e);
     } else if (call_nr == 99){
         call_nr = RECEIVE;
-        printf("caller_e %d, src-dest %d", caller_e, src_dest_e);
+        printf("caller_e %d, src-dest %d\n", caller_e, src_dest_e);
     } else {    
         for (call_p = &proc[0]; call_p < &proc[NR_TASKS + NR_PROCS]; call_p++){
             if(call_p->p_endpoint == caller_e){
