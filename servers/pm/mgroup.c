@@ -201,9 +201,15 @@ int do_mreceive(){
 
 int kernel_ipc(){
     int rv=0;
-    
-    printf("Now go to kernel_ipc %d-%d, %d-%d\n", k_src, k_dest, getendpoint(k_src), getendpoint(k_dest));
-    rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);
+    switch(k_dest){
+        case SEND:
+            rv=sys_singleipc(DS_PROC_NR, getendpoint(k_dest), k_ipc_callnr, k_msg);
+        case RECEIVE:
+            rv=sys_singleipc(DS_PROC_NR, getendpoint(k_dest), k_ipc_callnr, k_msg);
+    }
+//    DS_PROC_NR
+//    printf("Now go to kernel_ipc %d-%d, %d-%d\n", k_src, k_dest, getendpoint(k_src), getendpoint(k_dest));
+//    rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);
     printf("kernel ipc finish %d\n", rv);
 }
 
