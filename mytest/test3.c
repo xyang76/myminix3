@@ -5,19 +5,19 @@
 
 int main()
 {
-    int rv, child, parent=getpid();
+    int gid, rv, child, parent=getpid();
     message m;
-    
+    gid=opengroup(0);
 	printf("Start test\n");
     if((child=fork())==0){
         // child
         printf("start send\n");
-        rv = msend(1, &m, parent);
+        rv = msend(gid, &m, parent);
         printf("finish send %d\n", rv);
     } else {
         // This is parent
         printf("start rec \n");
-        rv = mreceive(1, &m, child);
+        rv = mreceive(gid, &m, child);
         printf("finish rec %d\n", rv);
     }
     printf("finish test\n");
