@@ -31,6 +31,7 @@ int deadlock(int src, int dest, int call_nr);               /* valid deadlock */
 int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
+int getproc_nr(endpoint_t endpoint);                        /* get proc number */
 
 int do_opengroup()
 {
@@ -219,7 +220,9 @@ void do_server_ipc(){
     
     printf("server ipc start\n");
     if(msg_queue->num==2){
-//         pull(&g_m, msg_queue);
+        
+         pull(&g_m, msg_queue);
+         printf("proc number = %d-%d\n", getproc_nr(g_m->src), getproc_nr(g_m->dest));
 //         sendnb(g_m->src, g_m->msg);
 //         sendnb(g_m->dest, g_m->msg);
     }
@@ -269,6 +272,20 @@ endpoint_t getendpoint(int proc_id){
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if (proc_id > 0 && proc_id == rmp->mp_pid) return rmp->mp_endpoint;
+    }
+    return -1;
+}
+
+int getproc_nr(endpoint_t endpoint){
+    register struct mproc *rmp;
+    int proc_nr;
+    if(endpoint < 0){
+        return -1;
+    }
+    for (proc_nr==0; proc_nr < NR_PROCS-1; proc_nr++){ 
+        rmp = &mproc[proc_nr];
+        if (!(rmp->mp_flags & IN_USE)) continue;
+        if (endpoint == rmp->mp_endpoint) return proc_nr;
     }
     return -1;
 }
