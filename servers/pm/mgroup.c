@@ -20,7 +20,7 @@ static int g_id_ctr = 1;                /* group id counter */
 static message *k_msg;                  /* kernel level message */
 static int k_src;
 static int k_dest;    
-static int k_ipc_type;
+static int k_ipc_callnr;
 
 /* private methods prototype */
 int invalid(int strategy);                                  /* valid strategy */ 
@@ -137,13 +137,13 @@ int do_recovergroup(){
 }
 
 int do_msend(){
-    int rv, src, grp_nr, send_type, *p;
+    int rv, src, grp_nr, ipc_type, *p;
     message m;
     mgroup *g_ptr = NULL;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
-    send_type = m_in.m1_i3;
+    ipc_type = m_in.m1_i3;
     printf("group nr =%d\n", grp_nr);
 //    if(getgroup(grp_nr, &g_ptr) == -1){
 //        return EIVGRP;
@@ -155,28 +155,28 @@ int do_msend(){
 //            PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
 //        if (rv != OK) return(rv);
 //    }
-    printf("now msend %d-%d\n", src, rec_type);    
+    printf("now msend %d-%d\n", src, ipc_type);    
 //    for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
 //        if(*p != src){
 //            rv += sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
 //        }
 //    }
     k_src = src;
-    k_dest = rec_type;
-    k_ipc_type = SEND;
+    k_dest = ipc_type;
+    k_ipc_callnr = SEND;
     k_msg = &m;
     printf("now msend finish\n");  
     return rv;
 }
 
 int do_mreceive(){
-    int rv, src, grp_nr, rec_type;
+    int rv, src, grp_nr, ipc_type;
     message m, *msg;
     mgroup *g_ptr = NULL;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
-    rec_type = m_in.m1_i3;
+    ipc_type = m_in.m1_i3;
     
 //    if(getgroup(grp_nr, &g_ptr) == -1){
 //        return EIVGRP;
@@ -189,10 +189,10 @@ int do_mreceive(){
 //        if (rv != OK) return(rv);
 //    }
     
-    printf("Now mreceive %d-%d\n", src, rec_type);
+    printf("Now mreceive %d-%d\n", src, ipc_type);
     k_src = src;
-    k_dest = rec_type;
-    k_ipc_type = RECEIVE;
+    k_dest = ipc_type;
+    k_ipc_callnr = RECEIVE;
     k_msg = &m;
 //    rv=sys_singleipc(getendpoint(src), getendpoint(rec_type), RECEIVE, msg);
     printf("m receive finish %d\n", rv);
