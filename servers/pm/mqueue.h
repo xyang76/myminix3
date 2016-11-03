@@ -1,9 +1,10 @@
-#define MQUEUESIZE 200
+
+#define MQUEUESIZE 50
 #define true 1
 #define false 0
 struct node
 {
-    void *item;
+    void *data;
     struct node *nextNode; 
 
 };

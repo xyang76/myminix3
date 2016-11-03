@@ -10,14 +10,17 @@
 #include <sys/resource.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <malloc.h>   
 #include "mproc.h"
 #include "param.h"
 #include "mgroup.h"
+#include "mqueue.h"
 
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 static message *k_msg;                  /* kernel level message */
+static mqueue *msg_queue = NULL;        /* message queue(shared to all groups, because message is send to process) */
 static int k_src;
 static int k_dest;    
 static int k_ipc_callnr;
@@ -28,10 +31,6 @@ int deadlock(int src, int dest, int call_nr);               /* valid deadlock */
 int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
-int getmproc(int proc_id);
-int revokeproc(int proc_id);    
-//int rec_from(mgroup *g_ptr, int src, int dest, message *m);
-//int sent_to(mgroup *g_ptr, int src, int dest, message *m);
 
 int do_opengroup()
 {
@@ -41,6 +40,10 @@ int do_opengroup()
     strategy = m_in.m1_i1;
     if(invalid(strategy)){                         // Make sure strategy is valid. 0 is allowed
         return EIVSTTG;                             // Invalid strategy. which defined in sys/errno.h
+    }
+    
+    if(msg_queue == NULL){                          // Init message queue if it is null.
+        initQueue(&msg_queue);
     }
     
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
@@ -140,6 +143,7 @@ int do_msend(){
     int rv=0, src, grp_nr, ipc_type, *p;
     message m;
     mgroup *g_ptr = NULL;
+    grp_message *g_m;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
@@ -161,18 +165,23 @@ int do_msend(){
 //            rv += sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
 //        }
 //    }
-    k_src = src;
-    k_dest = ipc_type;
-    k_ipc_callnr = SEND;
-    k_msg = &m;
-    printf("now msend finish\n");  
-    return rv;
+    // add a new message.
+    g_m = (grp_message *)malloc(sizeof(grp_message));
+    g_m->grp_nr=grp_nr;
+    g_m->src=getendpoint(src);
+    g_m->dest=getendpoint(ipc_type);
+    g_m->call_nr=SEND;
+    g_m->msg= &m;
+    push(g_m, msg_queue);
+    printf("msend finish\n");    
+    return SUSPEND;
 }
 
 int do_mreceive(){
     int rv=0, src, grp_nr, ipc_type;
     message m, *msg;
     mgroup *g_ptr = NULL;
+    grp_message *g_m;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
@@ -190,26 +199,30 @@ int do_mreceive(){
 //    }
     
     printf("Now mreceive %d-%d\n", src, ipc_type);
-    k_src = src;
-    k_dest = ipc_type;
-    k_ipc_callnr = RECEIVE;
-    k_msg = &m;
-//    rv=sys_singleipc(getendpoint(src), getendpoint(rec_type), RECEIVE, msg);
-    printf("m receive finish %d\n", rv);
-    return 0;
+    g_m = (grp_message *)malloc(sizeof(grp_message));
+    g_m->grp_nr=grp_nr;
+    g_m->src=getendpoint(src);
+    g_m->dest=getendpoint(ipc_type);
+    g_m->call_nr=RECEIVE;
+    g_m->msg= &m;
+    push(g_m, msg_queue);
+    printf("m receive finish\n");
+    return SUSPEND;
 }
 
-int kernel_ipc(){
+/*
+ * Check message queue, when find match grp_message, send reply to its src & dest, then unblock both of them.
+ */
+int do_server_ipc(){
     int rv=0;
-    switch(k_dest){
-        case SEND:
-            rv=sys_singleipc(DS_PROC_NR, getendpoint(k_dest), k_ipc_callnr, k_msg);
-        case RECEIVE:
-            rv=sys_singleipc(DS_PROC_NR, getendpoint(k_dest), k_ipc_callnr, k_msg);
+    grp_message *g_m;
+    
+    printf("server ipc start\n");
+    if(msg_queue->num==2){
+//         pull(&g_m, msg_queue);
+//         sendnb(g_m->src, g_m->msg);
+//         sendnb(g_m->dest, g_m->msg);
     }
-//    DS_PROC_NR
-//    printf("Now go to kernel_ipc %d-%d, %d-%d\n", k_src, k_dest, getendpoint(k_src), getendpoint(k_dest));
-//    rv=sys_singleipc(getendpoint(k_src), getendpoint(k_dest), k_ipc_callnr, k_msg);
     printf("kernel ipc finish %d\n", rv);
 }
 
@@ -256,23 +269,6 @@ endpoint_t getendpoint(int proc_id){
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if (proc_id > 0 && proc_id == rmp->mp_pid) return rmp->mp_endpoint;
-    }
-    return -1;
-}
-
-int iswaiting(int proc_id){
-    register struct mproc *rmp;
-    if(proc_id < 0){
-        return -1;
-    }
-    for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
-        if (!(rmp->mp_flags & IN_USE)) continue;
-        if (proc_id > 0 && proc_id == rmp->mp_pid){
-            if(rmp->mp_flags & WAITING){
-                return 1;
-            } 
-            return 0;
-        } 
     }
     return -1;
 }

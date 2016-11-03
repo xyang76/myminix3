@@ -1,34 +1,7 @@
-Ôªø#include "mqueue.h"
+#include "mqueue.h"
 #include <stdio.h>  
 #include <stdlib.h>
 #include <malloc.h>   
-
-int main()  
-{  
-    mqueue *que; 
-    char *str="test1";
-    char *str1="test2";
-	char *str2="test3";
-	char *str3="test4";
-	char *str4="test5";
-    void *value;
-
-    initQueue(&que);  
-    push(str, que);
-    push(str1, que);
-	push(str2, que);
-	push(str3, que);
-	push(str4, que);
-	
-    //
-    pull(&value, que);
-    printf("%s",value);
-	pullindex(&value, que, 3);
-	printf("%s",value);
-
-    getchar();
-    return 0;  
-}  
 
 void initQueue(mqueue **que)  
 {  
@@ -47,7 +20,7 @@ int push(void *item, mqueue *que)
     newNode=(struct node *)malloc(sizeof(struct node));
     if(newNode==NULL)
     {
-        printf("FailÔºÅ ");
+        printf("Fail£° ");
         exit(1);
     }
     if(isFull(que))  
@@ -141,3 +114,4 @@ int isEmpty(mqueue * que)
     else  
         return false;  
 }
+
