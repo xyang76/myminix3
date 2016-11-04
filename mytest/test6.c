@@ -23,7 +23,7 @@ int main()
         //Circle send
         while(mreceive(gid, &m, parent)==0){
 	    if(i==4) i=0;
-	    msend(gid, &m, parent+i+1);	
+	    msend(gid, &m, parent+i);	
 	}   	
     } else {
         //Parent proc    
