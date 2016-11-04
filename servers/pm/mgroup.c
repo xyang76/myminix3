@@ -228,7 +228,7 @@ void do_server_ipc(){
          flag = 0;                        
          while(msg_queue->next(&proc_q, msg_queue)){
              /* find match proc*/
-            if(searchinproc(mqueue *proc_q, grp_message *g_m) > 0) {
+            if(searchinproc(proc_q, g_m) > 0) {
                 flag = 1;
                 break;
             }
