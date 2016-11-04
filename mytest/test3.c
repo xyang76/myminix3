@@ -13,6 +13,7 @@ int main()
         // child
         printf("start send\n");
         addproc(gid, getpid());
+        m.m1_i1 = 10;
         rv = msend(gid, &m, parent);
         printf("finish send %d-%d\n", rv, errno);
     } else {
@@ -20,7 +21,7 @@ int main()
         printf("start rec \n");
         addproc(gid, parent);
         rv = mreceive(gid, &m, child);
-        printf("finish rec %d-%d\n", rv, errno);
+        printf("finish rec %d-%d-%d\n", rv, errno, m.m1_i1);
     }
     printf("finish test\n");
 	return 0;
