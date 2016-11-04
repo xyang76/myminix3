@@ -171,7 +171,7 @@ int do_msend(){
     g_m->sender=getendpoint(src);
     g_m->receiver=getendpoint(ipc_type);
     g_m->call_nr=SEND;
-    g_m->msg= &m;
+    g_m->msg= msg;
     g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
     printf("msend finish\n");    
     return rv==0 ? SUSPEND : rv;
