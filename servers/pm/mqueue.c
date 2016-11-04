@@ -12,12 +12,11 @@ static int next(void **item, mqueue *que);
 static int removeitem(mqueue *que);
 static int hasvalue(void *item, mqueue * que);
 queue_function que_function;
-queue_func = NULL;
 
 
 void initqueue(mqueue **que)  
 {  
-    if(queue_func == NULL){
+    if(queue_func == NULL || queue_func != &que_function){
         /* Bind methods */
         queue_func = &que_function;
         queue_func->isempty = isempty;
