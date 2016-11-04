@@ -2,7 +2,7 @@
 #define true 1
 #define false 0
 
-typedef int (*queue_f0)(mqueue * que);              /* only 1 item */       
+typedef int (*queue_f0)(void * que);              /* only 1 item */       
 typedef int (*queue_f1)(void *item, void * que);  /* not need &return */       
 typedef int (*queue_f2)(void **item, void * que); 
 
