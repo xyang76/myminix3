@@ -165,7 +165,6 @@ int do_msend(){
     caller = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
     ipc_type = m_in.m1_i3;
-    printf("group id %d\n", grp_nr);
     msg = (message*) malloc(sizeof(message));
     if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
@@ -513,8 +512,11 @@ void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr){
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
     }
     
-    // iterative get nextproc.
-//    queue_func->iterator(dest_q);
+    //Init
+    if(dest_q->cur == NULL){ 
+        printf("yes init\n");
+        dest_q->cur = dest_q->head;
+    }
     while(queue_func->next(&value, dest_q)){
         dest_e = (int) value;
         if(!queue_func->hasvalue((void *)dest_e, dest_q)){
