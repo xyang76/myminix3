@@ -338,7 +338,7 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
     
     if(g_m->sender == proc_q->number){                   //Only check/store sender. do not need check twice: sender and receiver
         proc_q->iterator(proc_q);
-    
+    printf("find proc %d\n", g_m->sender);
         while(proc_q->next(&value, proc_q)){
             msg_m=(grp_message *)value;
             if(msg_m->call_nr == g_m->call_nr) continue;           // Only search send->receive
