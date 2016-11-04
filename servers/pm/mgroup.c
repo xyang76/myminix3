@@ -216,9 +216,9 @@ int do_mreceive(){
  * Check message queue, when find match grp_message, send reply to its src & dest, then unblock both of them.
  */
 void do_server_ipc(){
-    int rv=0, src_nr, dest_nr, i, flag;
+    int rv=0, flag;
     mqueue *proc_q;
-    grp_message *g_m, *msg_m;
+    grp_message *g_m;
     message *msg;
     
     // Only check current group
