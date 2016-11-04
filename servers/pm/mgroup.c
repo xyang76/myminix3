@@ -499,7 +499,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
  * Recursive detect deadlock.
  */
 void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr){
-    grp_message *msg_m, *m_test;
+    grp_message *msg_m;
     endpoint_t dest_e;
     void *value;
     
@@ -507,6 +507,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr){
     queue_func->iterator(proc_q);
     while(queue_func->next(&value, proc_q)){
         msg_m = (grp_message *)value;
+        printf("msg_m:%d-%d[%d|%d]\n", msg_m->sender, msg_m->receiver, msg_m->call_nr, call_nr);
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
     }
