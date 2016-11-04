@@ -348,11 +348,13 @@ int deadlock(mgroup *g_ptr, int call_nr){
     // add all pending processes into valid_q
     while(queue_func->dequeue(&value, g_ptr->pending_q)){
         g_m = (grp_message *)value;
-        queue_func->enqueue((void *)g_m->sender, src_q);
+        if(!queue_func->hasvalue((void *)g_m->sender, src_q)){
+            queue_func->enqueue((void *)g_m->sender, src_q);            // Only store once
+        }
         queue_func->enqueue((void *)g_m->receiver, dest_q);
         queue_func->enqueue(g_m, g_ptr->valid_q);
     }
-    printf("in deadlock detect2\n");
+    printf("in deadlock detect2 %d, %d\n", src_q->size, dest_q->size);
     // detect deadlock
     queue_func->iterator(msg_queue);
     if(queue_func->next(&value, msg_queue)){
@@ -420,7 +422,7 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
     message *msg;
     void *value;
     
-    if(g_m->sender == proc_q->number){                   //Only check/store sender. do not need check twice: sender and receiver
+    if(g_m->sender == proc_q->number){                              //Only check/store sender. do not need check twice: sender and receiver
         queue_func->iterator(proc_q);
         
         while(queue_func->next(&value, proc_q)){
