@@ -43,6 +43,8 @@ typedef struct{
     grp_stat g_stat;                /* group state */
     int p_size;                     /* process size */
     int flag;                       /* flag, reserved property */
+    int lock;                       /* simple busy lock, may cause bug. Better solution: 1.kernel call & spinlock 2. semaphore
+                                     *  but i dont have enough time to finish this.   */
 }mgroup;
 
 typedef struct{
@@ -52,6 +54,4 @@ typedef struct{
     int call_nr;                    /* caller_nr: SEND/RECEIVE */     
     int ipc_type;                   /* ipc type */
     message *msg;                   /* message */
-    int lock;                       /* simple busy lock, may cause bug. Better solution: 1.kernel call & spinlock 2. semaphore
-                                     *  but i dont have enough time to finish this.   */
 }grp_message;
