@@ -66,6 +66,7 @@ static int enqueue(void *item, mqueue *que)
     if(que->tail==NULL)
     {
         que->head=que->tail=newNode;
+        que->cur = newNode;
     }else
     {
         que->tail=que->tail->nextNode=newNode;
