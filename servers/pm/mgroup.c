@@ -494,12 +494,8 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     queue_func->iterator(proc_q);
     while(queue_func->next(&value, proc_q)){
         msg_m = (grp_message *)value;
-        if(call_nr == 1){
-            printf("v : %d->%d [%d] %d\n", msg_m->sender, msg_m->receiver, msg_m->call_nr, proc_q->size);
-        }
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
-        printf("enqueue %d: %d->%d [%d] :: ", proc_q->number, msg_m->sender, msg_m->receiver, msg_m->call_nr);
     }
 //    printqueue(src_q, "src_q");
     printqueue(dest_q, "dest_q");
