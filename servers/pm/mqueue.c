@@ -12,16 +12,6 @@ static int next(void **item, mqueue *que);
 static int removeitem(mqueue *que);
 static int hasvalue(void *item, mqueue * que);
 
-/* Bind methods */
-queue_func = &que_function;
-queue_func->isempty = isempty;
-queue_func->enqueue = enqueue;
-queue_func->dequeue = dequeue;
-queue_func->iterator = iterator;
-queue_func->next = next;
-queue_func->removeitem = removeitem;
-queue_func->hasvalue = hasvalue;
-
 void initqueue(mqueue **que)  
 {  
     (*que) = (mqueue *)malloc(sizeof(mqueue));            
@@ -143,3 +133,14 @@ void closequeue(mqueue *que){
     }
     free(que);
 }
+
+
+/* Bind methods */
+queue_func = &que_function;
+queue_func->isempty = isempty;
+queue_func->enqueue = enqueue;
+queue_func->dequeue = dequeue;
+queue_func->iterator = iterator;
+queue_func->next = next;
+queue_func->removeitem = removeitem;
+queue_func->hasvalue = hasvalue;

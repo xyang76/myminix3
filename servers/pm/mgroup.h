@@ -7,38 +7,42 @@ typedef int grp_nr_t;           /* group number ptr */
 typedef int strategy;           /* send/receive/recovery strategy */
 typedef int grp_stat;           /* group state */
 
-/* msg group state */
-#define M_UNUSED       0
+/* msg group state : similar to kernel process states. */
+#define M_UNUSED       0        
 #define M_READY        1  
 #define M_SENDING      2      
 #define M_RECEIVING    3 
 #define M_DEADLOCK     4
 #define M_ERROR        5 
 
-/* ipc_type */
-#define SENDALL        0
-#define RECANY         0
-#define IPCNONBLOCK   -1
-#define RECSENDB      -2
-#define SENDRECB      -3
-#define ANYSOURCE     -4 
+/* msend/mreceive ipc type : IPC_TYPE, eg, msend(gid, &m, SENDALL); */
+#define SENDALL        0            /* send to all other processes */
+#define RECANY         0            /* receive any message when other processes send to current one*/
+#define IPCNONBLOCK   -1            /* send/rec to unblock processes in current group*/ 
+#define SENDRECB      -2            /* only send to receivers who require this sender*/
+/* We also can send/rec a single process by its pid: eg, msend(gid, &m, pid);          */ 
 
+/* send/receive group block stategies: GROUP_STRATEGY, eg, opengroup(UB_ANY_REC) */
+#define UB_ALL_REC    0             /* unblock sender when all receiver get this message */
+#define UB_ANY_REC    1             /* unblock sender when any receiver get this message(did not finish) */
+#define UB_ANY_CLEAR  2             /* when any receiver get this msg, then this message will be clear from message queue(did not finish) */
 
-/* group block stategies */
-#define UB_ALL_REC    0             /* unblock when all receiver get this message */
-#define UB_ANY_REC    1             /* unblock when any receiver get this message */
-#define UB_ANY_CLEAR  2             /* when any receiver get this msg, then this message will be clear from message queue */
+/* group recover stategies: RECOVER_STRATEGY, eg, recovergroup(IGNORE_ELOCK) */
+#define IGNORE_ELOCK  0             /* ignore deadlock processes and continue send/receive to other processes */
+#define CANCEL_IPC    1             /* cancel this ipc operation */
+#define CLEAR_MSG     2             /* clear all messages in current group */
+#define CLEAR_ALL_MSG 3             /* clear all messages in all groups */
 
 typedef struct{
     grp_nr_t g_nr;                  /* group number ptr */
     strategy g_sttg;                /* group strategy */
     int p_lst[NR_MGPROCS];          /* group processes */
-    mqueue *valid_q;                /* valid message queue   [store grp_message]*/
-    mqueue *pending_q;              /* pending message queue [store grp_message]*/
-    mqueue *invalid_q_int;          /* invalid message queue: may deadlock[store int process]*/
+    mqueue *valid_q;                /* valid message queue:   [store grp_message]*/
+    mqueue *pending_q;              /* pending message queue: [store grp_message]*/
+    mqueue *invalid_q_int;          /* invalid message queue:  deadlock queue[store int process]*/
     grp_stat g_stat;                /* group state */
     int p_size;                     /* process size */
-    int flag;                       /* flag */
+    int flag;                       /* flag, reserved property */
 }mgroup;
 
 typedef struct{
