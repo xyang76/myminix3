@@ -4,12 +4,12 @@
 #include <malloc.h>   
 
 /* private methods */
-int isempty(mqueue * que);                  
-int enqueue(void *item, mqueue * que);        
-int dequeue(void **item, mqueue * que);
-int iterator(mqueue * que);
-int next(void **item, mqueue *que);
-int remove(mqueue *que);
+static int isempty(mqueue * que);                  
+static int enqueue(void *item, mqueue * que);        
+static int dequeue(void **item, mqueue * que);
+static int iterator(mqueue * que);
+static int next(void **item, mqueue *que);
+static int remove(mqueue *que);
 
 void initqueue(mqueue **que)  
 {  
@@ -31,7 +31,7 @@ void initqueue(mqueue **que)
 /* 
 enqueue item into queue
  */  
-int enqueue(void *item, mqueue *que)  
+static int enqueue(void *item, mqueue *que)  
 {  
     struct node *newNode;
     newNode=(struct node *)malloc(sizeof(struct node));
@@ -57,7 +57,7 @@ int enqueue(void *item, mqueue *que)
 /* 
 dequeue out first item from the queue
  */  
-int dequeue(void **item, mqueue *que)  
+static int dequeue(void **item, mqueue *que)  
 {  
     struct node *p;
     if(isempty(que))  
@@ -77,12 +77,12 @@ int dequeue(void **item, mqueue *que)
     }  
 }  
 
-int iterator(mqueue * que){
+static int iterator(mqueue * que){
     que->cur = que->head;
     que->prev = NULL;
 }
 
-int next(void **item, mqueue *que)
+static int next(void **item, mqueue *que)
 {
 	int i;
 	struct node *p;
@@ -97,7 +97,7 @@ int next(void **item, mqueue *que)
     return true;
 }
 
-int remove(mqueue *que){
+static int remove(mqueue *que){
     if(que->cur == NULL){
         return false;
     }
@@ -111,7 +111,7 @@ int remove(mqueue *que){
 /* 
 if queue is empty
  */  
-int isempty(mqueue * que)  
+static int isempty(mqueue * que)  
 {  
     if(que->head == NULL)  
         return true;  
