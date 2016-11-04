@@ -11,6 +11,8 @@ static int iterator(mqueue * que);
 static int next(void **item, mqueue *que);
 static int removeitem(mqueue *que);
 static int hasvalue(void *item, mqueue * que);
+queue_func = NULL;
+queue_function que_function;
 
 void initqueue(mqueue **que)  
 {  
