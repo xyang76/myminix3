@@ -146,7 +146,7 @@ int do_recovergroup(){
 
 int do_msend(){
     int rv=SUSPEND, src, grp_nr, ipc_type;
-    message m;
+    message *msg;
     mgroup *g_ptr = NULL;
     grp_message *g_m;
     
@@ -160,10 +160,10 @@ int do_msend(){
     }
     if ((message *) m_in.m1_p1 != (message *) NULL) {
         rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
-            PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
+            PM_PROC_NR, (vir_bytes) msg, (phys_bytes) sizeof(message));
         if (rv != OK) return(rv);
     }
-    printf("now msend %d-%d\n", src, ipc_type);    
+    printf("now msend %d-%d-%d\n", src, ipc_type, msg->m1_i1);    
     // add a new message.
     cur_group = g_ptr;
     g_m = (grp_message *)malloc(sizeof(grp_message));
