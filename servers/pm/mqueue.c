@@ -158,11 +158,13 @@ void closequeue(mqueue *que){
     free(que);
 }
 
-void printqueue(mqueue *que){
+void printqueue(mqueue *que, char *name){
     struct node *c;
     
+    if(name == NULL) name = "queue";
+    printf("[%s items]: ", name);
+    
     c = que->head;
-    printf("[queue items]: ");
     while(c != NULL){
         printf("%d ", (int)c->value);
         c = c->nextNode;

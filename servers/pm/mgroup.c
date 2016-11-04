@@ -394,8 +394,8 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
     }
-    printqueue(dest_q);
-    
+    printqueue(dest_q, "dest_q");
+    printqueue(src_q, "src_q");
     // iterative get nextproc.
     queue_func->iterator(dest_q);
     while(queue_func->dequeue(&value, dest_q)){
