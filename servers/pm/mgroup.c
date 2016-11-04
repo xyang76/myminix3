@@ -168,6 +168,8 @@ int do_msend(){
     printf("now msend %d-%d-%d\n", src, ipc_type, msg->m1_i1);    
     // add a new message.
     cur_group = g_ptr;
+    g_ptr->g_stat == M_SENDING;
+    
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->group=g_ptr;
     g_m->sender=getendpoint(src);
@@ -175,8 +177,14 @@ int do_msend(){
     g_m->call_nr=SEND;
     g_m->msg= msg;
     queue_func->enqueue(g_m, g_ptr->pending_q);
+    
+    rv = deadlock(g_ptr, SEND);                                     // detect deadlock
     printf("msend finish\n");    
-    return rv==0 ? SUSPEND : rv;
+    if (rv == 0){
+        g_ptr->g_stat == M_READY;
+        return SUSPEND;
+    }
+    return rv;
 }
 
 int do_mreceive(){
@@ -193,14 +201,11 @@ int do_mreceive(){
     } else if(getprocindex(g_ptr, src) == -1){
         return -2;
     }
-//    if ((message *) m_in.m1_p1 != (message *) NULL) {
-//        rv = sys_datacopy(PM_PROC_NR,(vir_bytes) msg,
-//            who_e, (vir_bytes) m_in.m1_p1, (phys_bytes) sizeof(m));
-//        if (rv != OK) return(rv);
-//    }
     
     printf("Now mreceive %d-%d\n", src, ipc_type);
     cur_group = g_ptr;
+    g_ptr->g_stat == M_RECEIVING;
+    
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->group=g_ptr;
     g_m->receiver=getendpoint(src);
@@ -209,8 +214,15 @@ int do_mreceive(){
     g_m->msg = NULL;                                             //Receiver do not need store message.
     queue_func->enqueue(g_m, g_ptr->pending_q);
     
+    printf("m receive deadlock detect\n");
+    rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
+    
     printf("m receive finish\n");
-    return rv==0 ? SUSPEND : rv;
+    if (rv == 0){
+        g_ptr->g_stat == M_READY;
+        return SUSPEND;
+    }
+    return rv;
 }
 
 /*
@@ -224,7 +236,9 @@ void do_server_ipc(){
     
     // Only check current group
     printf("server ipc start\n");
-    while(queue_func->dequeue(&value, cur_group->pending_q)){
+    if(cur_group->g_stat != M_READY) return;
+    
+    while(queue_func->dequeue(&value, cur_group->valid_q)){
          g_m = (grp_message *)value;
          queue_func->iterator(msg_queue);
          flag = 0;          

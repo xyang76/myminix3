@@ -1,11 +1,5 @@
-#define MQUEUESIZE 200
 #define true 1
 #define false 0
-
-struct node{
-    void *value;
-    struct node *nextNode; 
-};
 
 typedef struct{  
     int size;      
