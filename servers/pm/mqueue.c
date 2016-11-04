@@ -9,7 +9,7 @@ static int enqueue(void *item, mqueue * que);
 static int dequeue(void **item, mqueue * que);
 static int iterator(mqueue * que);
 static int next(void **item, mqueue *que);
-static int removeitem(mqueue *que);
+static int removeitemitem(mqueue *que);
 
 void initqueue(mqueue **que)  
 {  
@@ -24,7 +24,7 @@ void initqueue(mqueue **que)
     (*que)->dequeue = dequeue;
     (*que)->iterator = iterator;
     (*que)->next = next;
-    (*que)->remove = remove;
+    (*que)->removeitem = removeitem;
      
     return;  
 }  
@@ -97,7 +97,7 @@ static int next(void **item, mqueue *que)
     return true;
 }
 
-static int remove(mqueue *que){
+static int removeitem(mqueue *que){
     if(que->cur == NULL){
         return false;
     }
