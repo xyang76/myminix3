@@ -21,9 +21,8 @@ int main()
         //Fork error
     } else if (status == 0){
         //Child proc
-        while(mreceive(gid, &m, parent)==0){
-            printf("finish receive %d-%d\n", rv, errno);
-        }    	
+        while(mreceive(gid, &m, parent)!=0);    
+        printf("finish receive %d-%d\n", rv, errno);	
     } else {
         //Parent proc    
         printf("this is parent, cur id:%d\n", parent);
@@ -31,7 +30,6 @@ int main()
         for(i=0; i<4; i++){
             printf("msend to %d ----------------- \n", pid[i]);
             rv = msend(gid, &m, pid[i]);
-            printf("finish send %d-%d\n", rv, errno);
         }
         closegroup(gid);
     }
