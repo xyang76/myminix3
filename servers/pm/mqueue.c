@@ -124,7 +124,7 @@ static int removeitem(mqueue *que){
     } 
     
     n = que->head;
-    while (n != NULL && n->nextNode != que->prev) n=n->nextNode;
+    while (n->nextNode != que->prev) n=n->nextNode;
     n->nextNode = que->prev->nextNode;
     if(que->prev == que->tail){
         que->tail = n;
