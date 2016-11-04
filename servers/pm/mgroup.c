@@ -309,7 +309,7 @@ void unblock(endpoint_t proc_e, message *msg){
             setreply(proc_nr, OK);
             if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) == (REPLY | IN_USE)) {
               memcpy(&rmp->mp_reply, msg, sizeof(message));
-              printf("ub_send %d-%d", msg.m1_i1, rmp->mp_reply.m1_i1);
+              printf("ub_send %d-%d", msg->m1_i1, rmp->mp_reply.m1_i1);
               s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
               if (s != OK) {
                   printf("PM can't reply to %d (%s): %d\n",
