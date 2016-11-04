@@ -31,10 +31,6 @@
 
 #include <minix/endpoint.h>
 
-int sef_cb_init_fresh(int type, sef_init_info_t *info){
-    return 0;
-}
-
 int main()
 {
     message m, *msg;
