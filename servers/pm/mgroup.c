@@ -27,7 +27,7 @@ static mgroup *cur_group;               /* current message group*/
 
 /* private methods prototype */
 int invalid(int strategy);                                  /* valid strategy */ 
-int deadlock(mgroup *g_ptr);                                /* valid deadlock */ 
+int deadlock(mgroup *g_ptr, int call_nr);                   /* valid deadlock */ 
 int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
@@ -333,12 +333,15 @@ int deadlock(mgroup *g_ptr, int call_nr){
         g_m = (grp_message *)value;
         src_q->enqueue((void *)g_m->sender, src_q);
         dest_q->enqueue((void *)g_m->receiver, dest_q);
+        g_ptr->valid_q->enqueue(g_m, g_ptr->valid_q);
     }
     msg_queue->iterator(msg_queue);
     if(msg_queue->next(&value, msg_queue)){
         proc_q = (mqueue *)value;
         deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
+    g_ptr->valid_q->iterator(g_ptr->valid_q);
+    
     closequeue(src_q);
     closequeue(dest_q);
     return 0;
