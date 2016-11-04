@@ -25,7 +25,7 @@ static mgroup *cur_group;               /* current message group*/
 
 /* private methods prototype */
 int invalid(int strategy);                                  /* valid strategy */ 
-int deadlock(int src, int dest, int call_nr);               /* valid deadlock */ 
+int deadlock(mgroup *g_ptr);                                /* valid deadlock */ 
 int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
@@ -222,12 +222,19 @@ void do_server_ipc(){
          msg_queue->iterator(msg_queue);
          while(msg_queue->next(&msg_m, msg_queue)){
              // If sender and receiver match.
-             if(msg_m->sender == g_m->sender && msg_m->receiver = g_m->receiver 
-                && msg_m->call_nr+g_m->call_nr == SEND+RECEIVE){
-                    msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
-                    unblock(msg_m->receiver, msg);
-                    unblock(msg_m->sender, msg);
+             if(msg_m->sender == g_m->sender && msg_m->receiver == g_m->receiver 
+                        && msg_m->call_nr+g_m->call_nr == SEND+RECEIVE){
+    
+                msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
+                unblock(msg_m->receiver, msg);
+                unblock(msg_m->sender, msg);
+                
+                msg_queue->remove(msg_queue);           //Remove current item from msg_queue
+                free(msg_m);
+                free(g_m);
+                break;
              }
+             msg_queue->enqueue(g_m);                   //If not find match, then enqueue msg_queue;
          }
     }
     printf("server ipc finish %d\n", rv);
@@ -300,6 +307,18 @@ void unblock(endpoint_t proc_e, message *msg){
               }
               rmp->mp_flags &= ~REPLY;
             }
+        }
+    }
+}
+
+int deadlock(mgroup *g_ptr){
+    grp_message *g_m, *msg_m;
+    
+    while(g_ptr->pending_q->dequeue(&g_m, g_ptr->pending_q)){
+        msg_queue->iterator(msg_queue);
+        while(msg_queue->next(&msg_m, msg_queue)){
+            
+            
         }
     }
 }
