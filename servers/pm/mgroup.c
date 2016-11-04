@@ -325,7 +325,6 @@ void unblock(endpoint_t proc_e, message *msg){
             setreply(proc_nr, OK);
             if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) == (REPLY | IN_USE)) {
               memcpy(&rmp->mp_reply, msg, sizeof(message));
-              printf("ub_send %d-%d\n", msg->m1_i1, rmp->mp_reply.m1_i1);
               s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
               if (s != OK) {
                   printf("PM can't reply to %d (%s): %d\n",
@@ -345,7 +344,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
     
     initqueue(&src_q);
     initqueue(&dest_q);
-    
+    printf("in deadlock detect\n");
     // add all pending processes into valid_q
     while(queue_func->dequeue(&value, g_ptr->pending_q)){
         g_m = (grp_message *)value;
@@ -353,14 +352,14 @@ int deadlock(mgroup *g_ptr, int call_nr){
         queue_func->enqueue((void *)g_m->receiver, dest_q);
         queue_func->enqueue(g_m, g_ptr->valid_q);
     }
-    
+    printf("in deadlock detect2\n");
     // detect deadlock
     queue_func->iterator(msg_queue);
     if(queue_func->next(&value, msg_queue)){
         proc_q = (mqueue *)value;
         deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
-    
+    printf("in deadlock detect3\n");
     // Remove deadlock processes from valid_q
     queue_func->iterator(g_ptr->valid_q);
     while(queue_func->next(&value, g_ptr->valid_q)){
@@ -370,7 +369,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         }
         rv = ELOCKED;
     }
-    
+    printf("finish detect\n");
     closequeue(src_q);
     closequeue(dest_q);
     return rv;
