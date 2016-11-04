@@ -14,7 +14,6 @@
 #include "mproc.h"
 #include "param.h"
 #include "mgroup.h"
-#include "mqueue.h"
 
 /* message queue(shared to all groups, because we need detect deadlock) */
 /* message queue store proc queues */
