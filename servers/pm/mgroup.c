@@ -254,6 +254,9 @@ void do_server_ipc(){
              // create a new proc in queue, and enqueue its first item.
              initqueue(&proc_q);
              proc_q->number = g_m->sender;
+             if(g_m->call_nr == 1){
+                printf("here we enqueue %d->%d\n", g_m->sender, g_m->receiver);
+             }
              queue_func->enqueue(g_m, proc_q);
              queue_func->enqueue(proc_q, msg_queue);
          }
@@ -391,7 +394,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
             queue_func->iterator(proc_q);
             while(queue_func->next(&value, proc_q)){
                 m_test = (grp_message *) value;
-                printf("%d->%d [%d]\n", m_test->sender, m_test->receiver, m_test->call_nr);
+                printf("v : %d->%d [%d]\n", m_test->sender, m_test->receiver, m_test->call_nr);
             }
         }
     }
@@ -439,7 +442,9 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
                 unblock(msg_m->receiver, msg);
                 unblock(msg_m->sender, msg);
                 
+                printf("before remove %d\n", proc_q->size);
                 queue_func->removeitem(proc_q);              //Remove current message from proc_queue(not proc)
+                printf("after remove %d\n", proc_q->size);
                 free(msg_m);
                 free(g_m);
                 return 2;
