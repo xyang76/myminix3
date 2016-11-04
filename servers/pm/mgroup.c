@@ -220,7 +220,6 @@ void do_server_ipc(){
     mqueue *proc_q;
     void *value;
     grp_message *g_m;
-    message *msg;
     
     // Only check current group
     printf("server ipc start\n");
