@@ -394,7 +394,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
                 printf("%d->%d [%d]\n", m_test->sender, m_test->receiver, m_test->call_nr);
             }
         }
-
+    }
 //    printqueue(src_q, "src_q");
     printqueue(dest_q, "dest_q");
     
@@ -446,6 +446,9 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
             }
         }
         queue_func->enqueue(g_m, proc_q);                   //If not match, then enqueue this message.
+        if(g_m->call_nr == 1){
+            printf("Here we enqueue %d-%d\n", g_m->sender, g_m->receiver);
+        }
         return 1;
     }
     return 0;
