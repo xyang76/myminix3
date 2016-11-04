@@ -33,7 +33,8 @@ typedef struct
     queue_f0 removeitem;
     queue_f1 hasvalue;
 } queue_function;
-static queue_function queue_func;
+static queue_function que_function;
+static queue_function *queue_func;
 
 void initqueue(mqueue ** que);                
 void closequeue(mqueue *que);
