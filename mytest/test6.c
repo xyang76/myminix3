@@ -23,9 +23,9 @@ int main()
         //Circle send
         while(mreceive(gid, &m, parent)!=0);
         
-        printf("yes in send %d-%d\n", getpid(), parent+i+2);
+        printf("yes in send %d-%d-%d\n", getpid(), parent+i+2, i);
         if(i==3){
-            i = -1;
+            i -= 4;
         }
 	    msend(gid, &m, parent+i+2);	
     } else {
