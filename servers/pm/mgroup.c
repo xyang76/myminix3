@@ -462,6 +462,8 @@ int deadlock(mgroup *g_ptr, int call_nr){
         initqueue(&dest_q);
         if(getprocqueue(dest_e, &proc_q) != -1){
             deadlock_rec(proc_q, dest_q, call_nr);
+            printf("sender %d :: ");
+            printqueue(dest_q, "src_q_tmp");
             if(queue_func->hasvalue((void *)sender, dest_q)){
                 printf("deadlock:%d - ", sender);
                 printqueue(src_q, "src_q_deadlock");
