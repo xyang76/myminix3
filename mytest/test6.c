@@ -22,8 +22,11 @@ int main()
     } else if (status == 0){
         //Circle send
         while(mreceive(gid, &m, parent)==0){
-	    if(i==4) i=0;
-	    msend(gid, &m, parent+i);	
+	    if(i==3) {
+            i=0;
+            msend(gid, &m, parent+i+1);
+        }
+	    msend(gid, &m, parent+i+1);	
 	}   	
     } else {
         //Parent proc    
