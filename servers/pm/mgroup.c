@@ -23,7 +23,6 @@ static mqueue *msg_queue = NULL;
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
-static message *k_msg;                  /* kernel level message */
 static mgroup *cur_group;               /* current message group*/
 
 /* private methods prototype */
