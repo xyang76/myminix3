@@ -24,7 +24,7 @@ int main()
         while(mreceive(gid, &m, parent)!=0);
         
         printf("yes in send %d-%d\n", getpid(), parent+i+2);
-	    msend(gid, &m, parent+i+2;	
+	    msend(gid, &m, parent+i+2);	
     } else {
         //Parent proc    
         printf("cur id:%d\n", parent);
