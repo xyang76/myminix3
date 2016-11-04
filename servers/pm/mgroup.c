@@ -512,7 +512,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr){
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
     }
     
-    while(queue_func->next(&value, dest_q)){
+    if(queue_func->next(&value, dest_q)){
         dest_e = (int) value;
         if(!queue_func->hasvalue((void *)dest_e, dest_q)){
             queue_func->enqueue((void *)dest_e, dest_q);
