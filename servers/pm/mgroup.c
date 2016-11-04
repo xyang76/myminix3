@@ -33,7 +33,7 @@ int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 void unblock(endpoint_t proc_e, message *msg);              /* unblock a process */
 int searchinproc(mqueue *proc_q, grp_message *g_m);         /* search send->rec chain from proc */
-void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr);  /*recursive detect deadlock */
+void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr);  /*recursive detect deadlock */
 int acquire_lock(mgroup *g_ptr);                            /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
 int release_lock(mgroup *g_ptr);                            /* simple busy lock */
 int getprocqueue(endpoint_t proc_e, mqueue **proc_q);       /* get proc queue */
@@ -447,7 +447,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
     int rv = 0, sender;
     
     initqueue(&src_q);
-    initqueue(&dest_q);
+    
     // add all pending processes into valid_q
     while(queue_func->dequeue(&value, g_ptr->pending_q)){
         g_m = (grp_message *)value;
@@ -457,20 +457,25 @@ int deadlock(mgroup *g_ptr, int call_nr){
     }
     
     // detect deadlock
-    if(getprocqueue(sender, &proc_q) != -1){
-        deadlock_rec(proc_q, src_q, dest_q, call_nr);
-    }
-    if(queue_func->hasvalue((void *)sender, src_q)){
-        printf("deadlock:%d - ", sender);
-        printqueue(src_q, "src_q_deadlock");
-        printqueue(dest_q, "dest_q_deadlock");
-        acquire_lock(cur_group);
-        cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
-        queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);
+    while(queue_func->dequeue(&value, g_ptr->src_q)){
+        int dest_e = (int)value;
+        initqueue(&dest_q);
+        if(getprocqueue(dest_e, &proc_q) != -1){
+            deadlock_rec(proc_q, dest_q, call_nr);
+            if(queue_func->hasvalue((void *)sender, dest_q)){
+                printf("deadlock:%d - ", sender);
+                printqueue(src_q, "src_q_deadlock");
+                printqueue(dest_q, "dest_q_deadlock");
+                acquire_lock(cur_group);
+                cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
+                queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);
+            }
+        } 
+        closequeue(dest_q);
     }
     
 //    printf("d3 %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size);
-    printqueue(src_q, "src_q_dm3");
+//    printqueue(src_q, "src_q_dm3");
     
     // Remove deadlock processes from valid_q
     queue_func->iterator(g_ptr->valid_q);
@@ -483,14 +488,13 @@ int deadlock(mgroup *g_ptr, int call_nr){
     }
 //    printf("d4 va%d, iv%d, src%d,dest %d, rv %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size, src_q->size,dest_q->size, rv);
     closequeue(src_q);
-    closequeue(dest_q);
     return rv;
 }
 
 /*
  * Recursive detect deadlock.
  */
-void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
+void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr){
     grp_message *msg_m, *m_test;
     endpoint_t dest_e;
     void *value;
@@ -507,12 +511,12 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     queue_func->iterator(dest_q);
     while(queue_func->dequeue(&value, dest_q)){
         dest_e = (int) value;
-        if(!queue_func->hasvalue((void *)dest_e, src_q)){
-            queue_func->enqueue((void *)dest_e, src_q);
+        if(!queue_func->hasvalue((void *)dest_e, dest_q)){
+            queue_func->enqueue((void *)dest_e, dest_q);
         }
         
         if(getprocqueue(dest_e, &proc_q) != -1 && proc_q->size > 0){
-            deadlock_rec(proc_q, src_q, dest_q, call_nr);  
+            deadlock_rec(proc_q, dest_q, call_nr);  
         }
     }
 }
