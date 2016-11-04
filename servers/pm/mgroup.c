@@ -207,8 +207,9 @@ int do_mreceive(){
     g_m->receiver=getendpoint(src);
     g_m->sender=getendpoint(ipc_type);
     g_m->call_nr=RECEIVE;
-    g_m->msg= NULL;                                             //Receiver do not need store message.
+    g_m->msg = NULL;                                             //Receiver do not need store message.
     queue_func->enqueue(g_m, g_ptr->pending_q);
+    
     printf("m receive finish\n");
     return rv==0 ? SUSPEND : rv;
 }
@@ -327,6 +328,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
     grp_message *g_m;
     mqueue *proc_q, *src_q, *dest_q, *invalid_q;
     void *value;
+    int rv = 0;
     
     initqueue(&src_q);
     initqueue(&dest_q);
@@ -353,11 +355,12 @@ int deadlock(mgroup *g_ptr, int call_nr){
         if(queue_func->hasvalue((void*)g_m->receiver, g_ptr->invalid_q_int)){
             queue_func->removeitem(g_ptr->valid_q);
         }
+        rv = ELOCKED;
     }
     
     closequeue(src_q);
     closequeue(dest_q);
-    return 0;
+    return rv;
 }
 
 /*
@@ -381,8 +384,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     while(queue_func->dequeue(&value, dest_q)){
         dest_e = (int) value;
         if(queue_func->hasvalue((void *)dest_e, src_q)){
-            cur_group->g_stat = M_DEADLOCK;                                         //Deadlock
-            cur_group->flag = ELOCKED;                                              //Deadlock
+            cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
             queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);           //Deadlock queue
         } else {
             queue_func->enqueue((void *)dest_e, src_q);
