@@ -459,8 +459,10 @@ int deadlock(mgroup *g_ptr, int call_nr){
     // detect deadlock
     while(queue_func->dequeue(&value, src_q)){
         int dest_e = (int)value;
+        
         initqueue(&dest_q);
         if(getprocqueue(dest_e, &proc_q) != -1){
+            queue_func->iterator(dest_q);
             deadlock_rec(proc_q, dest_q, call_nr);
             printf("sender %d :: ", dest_e);
             printqueue(dest_q, "src_q_tmp");
@@ -510,8 +512,8 @@ void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr){
     }
     
     // iterative get nextproc.
-    queue_func->iterator(dest_q);
-    while(queue_func->dequeue(&value, dest_q)){
+//    queue_func->iterator(dest_q);
+    while(queue_func->next(&value, dest_q)){
         dest_e = (int) value;
         if(!queue_func->hasvalue((void *)dest_e, dest_q)){
             queue_func->enqueue((void *)dest_e, dest_q);
