@@ -348,7 +348,7 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
                 unblock(msg_m->receiver, msg);
                 unblock(msg_m->sender, msg);
                 
-                proc_q->remove(proc_q);                 //Remove current message from proc_queue(not proc)
+                proc_q->removeitem(proc_q);              //Remove current message from proc_queue(not proc)
                 free(msg_m);
                 free(g_m);
                 return 2;
