@@ -117,17 +117,18 @@ static int next(void **item, mqueue *que){
 
 static int removeitem(mqueue *que){
     struct node *n;
-    if(que->cur == NULL){
+    if(que->prev == NULL){
         return false;
-    } else if(que->cur == que->head){
+    } else if(que->prev == que->head){
         que->head = que->head->nextNode;
-    } else if(que->cur == que->tail){
-        que->tail = que->prev;
+    } 
+    
+    n = que->head;
+    while (n != NULL && n->nextNode != que->prev) n=n->nextNode;
+    n->nextNode = que->prev->nextNode;
+    if(que->prev == que->tail){
+        que->tail = n;
     }
-    if(que->prev != NULL){
-        que->prev->nextNode = que->cur->nextNode;
-    }
-    n = que->cur;
 //    free(n);
     que->cur = NULL;
     que->size--;
