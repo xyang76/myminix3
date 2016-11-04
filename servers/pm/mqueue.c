@@ -98,6 +98,7 @@ static int dequeue(void **item, mqueue *que)
 }  
 
 static int iterator(mqueue * que){
+    que->old_cur = que->cur;
     que->cur = que->head;
     que->prev = NULL;
 }
@@ -105,6 +106,7 @@ static int iterator(mqueue * que){
 static int next(void **item, mqueue *que){
 	if(que->cur == NULL){  
         (*item) = NULL;
+        que->cur = que->old_cur;
         return false;  
     } 
     (*item) = que->cur->value;

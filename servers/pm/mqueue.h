@@ -8,6 +8,7 @@ typedef struct{
     struct node *tail;  
     struct node *cur;
     struct node *prev;
+    struct node *old_cur;
 } mqueue;  
 
 typedef int (*queue_f0)(mqueue *que);              /* only 1 item */       
