@@ -10,6 +10,7 @@
 #include <sys/resource.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <string.h>
 #include <malloc.h>   
 #include "mproc.h"
 #include "param.h"
