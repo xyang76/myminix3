@@ -37,7 +37,6 @@ int main()
             rv = msend(gid, &m, pid[i]);
             printf("finish send %d-%d\n", rv, errno);
         }
-        closegroup(gid);
     }
     return 0;
 }
