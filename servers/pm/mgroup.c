@@ -346,6 +346,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
             queue_func->enqueue((void *)g_m->sender, src_q);            // Only store once
             sender = g_m->sender;
         }
+        queue_func->enqueue((void *)g_m->receiver, dest_q);            // Only store once
         queue_func->enqueue(g_m, g_ptr->valid_q);
     }
     // detect deadlock
