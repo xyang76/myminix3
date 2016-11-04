@@ -390,7 +390,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
         printf("enqueue: %d->%d [%d]", msg_m->sender, msg_m->receiver, msg_m->call_nr);
     }
-//    printf("\n");
+    printf("\n");
 //    printqueue(src_q, "src_q");
 //    printqueue(dest_q, "dest_q");
     
