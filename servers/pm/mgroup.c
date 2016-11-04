@@ -32,7 +32,8 @@ int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its 
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 void unblock(endpoint_t proc_e, message *msg);              /* unblock a process */
-int searchinproc(mqueue *proc_q, grp_message *g_m);   /* search send->rec chain from proc */
+int searchinproc(mqueue *proc_q, grp_message *g_m);         /* search send->rec chain from proc */
+void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr);  /*recursive detect deadlock */
 
 int do_opengroup()
 {
