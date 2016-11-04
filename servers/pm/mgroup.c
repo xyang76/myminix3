@@ -410,7 +410,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         queue_func->iterator(msg_queue);
         while(queue_func->next(&value, msg_queue)){
             proc_q = (mqueue *)value;
-            if(proc_q->number == dest_e){
+            if(proc_q->number == dest_e && proc_q->size > 0){
                 deadlock_rec(proc_q, src_q, dest_q, call_nr);       //Recursive detect.
             }
             break;
