@@ -116,6 +116,7 @@ static int next(void **item, mqueue *que){
 }
 
 static int removeitem(mqueue *que){
+    node *n;
     if(que->cur == NULL){
         return false;
     } else if(que->cur == que->head){
@@ -125,8 +126,9 @@ static int removeitem(mqueue *que){
     }
     if(que->prev != NULL){
         que->prev->nextNode = que->cur->nextNode;
-    } 
-    free(que->cur);
+    }
+    n = que->cur;
+//    free(n);
     que->cur = NULL;
     que->size--;
     return true;
