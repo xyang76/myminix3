@@ -347,7 +347,7 @@ int deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     grp_message *msg_m;
     endpoint_t dest_e;
     
-    // Put all receiver in current proc.
+    // Put all receiver into dest_q from current proc.
     proc_q->iterator(proc_q);
     while(proc_q->next(&msg_m, proc_q)){
         if(msg_m->call_nr != call_nr) continue;
@@ -360,7 +360,7 @@ int deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         if(src_q->hasvalue(dest_e, src_q)){
             cur_group->g_stat = M_DEADLOCK;                                    //Deadlock
             cur_group->flag = ELOCKED;                                         //Deadlock
-            g_ptr->invalid_q_int->enqueue(dest_e, g_ptr->invalid_q_int);
+            cur_group->invalid_q_int->enqueue(dest_e, cur_group->invalid_q_int);
         } else {
             src_q->enqueue(dest_e, src_q);
         }
