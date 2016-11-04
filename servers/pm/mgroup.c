@@ -364,7 +364,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
             rv = ELOCKED;
         }
     }
-    printf("d4 %d, %d, %d  ", cur_group->valid_q_int->size, cur_group->invalid_q_int->size, rv);
+    printf("d4 %d, %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size, rv);
     closequeue(src_q);
     closequeue(dest_q);
     return rv;
