@@ -21,13 +21,13 @@ int main()
         //Fork error
     } else if (status == 0){
         //Circle send
-        while(mreceive(gid, &m, parent)==0){
-	    if(i==3) {
+        while(mreceive(gid, &m, parent)!=0);
+        
+        if(i==3) {
             i=0;
             msend(gid, &m, parent+i+1);
         }
 	    msend(gid, &m, parent+i+1);	
-	}   	
     } else {
         //Parent proc    
         printf("cur id:%d\n", parent);
