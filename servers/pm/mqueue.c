@@ -87,9 +87,6 @@ static int iterator(mqueue * que){
 
 static int next(void **item, mqueue *que)
 {
-	int i;
-	struct node *p;
-    
 	if(que->cur == NULL){  
         (*item) = NULL;
         return false;  
