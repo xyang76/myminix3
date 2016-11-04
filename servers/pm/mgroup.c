@@ -150,6 +150,7 @@ int do_msend(){
     message m;
     mgroup *g_ptr = NULL;
     grp_message *g_m;
+    mqueue *pending;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
@@ -167,13 +168,14 @@ int do_msend(){
     printf("now msend %d-%d\n", src, ipc_type);    
     // add a new message.
     cur_group = g_ptr;
+    pending = g_ptr->pending_q;
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->grp_nr=grp_nr;
     g_m->sender=getendpoint(src);
     g_m->receiver=getendpoint(ipc_type);
     g_m->call_nr=SEND;
     g_m->msg= &m;
-    g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
+    pending->enqueue(g_m, pending);
     printf("msend finish\n");    
     return rv;
 }
@@ -183,6 +185,7 @@ int do_mreceive(){
     message m;
 //    mgroup *g_ptr = NULL;
     grp_message *g_m;
+    mqueue *pending;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
@@ -201,13 +204,14 @@ int do_mreceive(){
     
     printf("Now mreceive %d-%d\n", src, ipc_type);
     cur_group = g_ptr;
+    pending = g_ptr->pending_q;
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->grp_nr=grp_nr;
     g_m->receiver=getendpoint(src);
     g_m->sender=getendpoint(ipc_type);
     g_m->call_nr=RECEIVE;
     g_m->msg= NULL;                                             //Receiver do not need store message.
-    g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
+    pending->enqueue(g_m, pending);
     printf("m receive finish\n");
     return rv;
 }
