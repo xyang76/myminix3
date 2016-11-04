@@ -164,8 +164,7 @@ int do_msend(){
         rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
             PM_PROC_NR, (vir_bytes) msg, (phys_bytes) sizeof(message));
         if (rv != OK) return(rv);
-    }
-    printf("now msend %d-%d-%d\n", src, ipc_type, msg->m1_i1);    
+    } 
     // add a new message.
     cur_group = g_ptr;
     g_ptr->g_stat == M_SENDING;
@@ -179,7 +178,6 @@ int do_msend(){
     queue_func->enqueue(g_m, g_ptr->pending_q);
     
     rv = deadlock(g_ptr, SEND);                                     // detect deadlock
-    printf("msend finish\n");    
     if (rv == 0){
         g_ptr->g_stat == M_READY;
         return SUSPEND;
@@ -202,7 +200,6 @@ int do_mreceive(){
         return -2;
     }
     
-    printf("Now mreceive %d-%d\n", src, ipc_type);
     cur_group = g_ptr;
     g_ptr->g_stat == M_RECEIVING;
     
@@ -214,10 +211,7 @@ int do_mreceive(){
     g_m->msg = NULL;                                             //Receiver do not need store message.
     queue_func->enqueue(g_m, g_ptr->pending_q);
     
-    printf("m receive deadlock detect\n");
     rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
-    
-    printf("m receive finish\n");
     if (rv == 0){
         g_ptr->g_stat == M_READY;
         return SUSPEND;
@@ -235,19 +229,16 @@ void do_server_ipc(){
     grp_message *g_m;
     
     // Only check current group
-    printf("server ipc start\n");
     if(cur_group->g_stat != M_READY) return;
     
     while(queue_func->dequeue(&value, cur_group->valid_q)){
          g_m = (grp_message *)value;
          queue_func->iterator(msg_queue);
          flag = 0;          
-         printf("cur %d-%d\n", g_m->sender, g_m->receiver);
          while(queue_func->next(&value, msg_queue)){
             proc_q = (mqueue *)value;
              /* find match proc*/
             if(searchinproc(proc_q, g_m) > 0) {
-                printf("find %d-%d\n", g_m->sender, g_m->receiver);
                 flag = 1;
                 break;
             }
@@ -256,14 +247,12 @@ void do_server_ipc(){
          /* if not find match proc */
          if(flag == 0){
              // create a new proc in queue, and enqueue its first item.
-             printf("not find %d-%d\n", g_m->sender, g_m->receiver);
              initqueue(&proc_q);
              proc_q->number = g_m->sender;
              queue_func->enqueue(g_m, proc_q);
              queue_func->enqueue(proc_q, msg_queue);
          }
     }
-    printf("server ipc finish %d\n", rv);
 }
 
 /*  ========================= private methods ================================*/
