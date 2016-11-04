@@ -369,7 +369,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
             rv = ELOCKED;
         }
     }
-    printf("d4 va%d, iv%d, src%d,dest %d, rv %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size, src_q->size,dest_q->size, rv);
+//    printf("d4 va%d, iv%d, src%d,dest %d, rv %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size, src_q->size,dest_q->size, rv);
     closequeue(src_q);
     closequeue(dest_q);
     return rv;
@@ -389,11 +389,11 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         msg_m = (grp_message *)value;
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
-        printf("enqueue: %d->%d [%d]", msg_m->sender, msg_m->receiver, msg_m->call_nr);
+//        printf("enqueue: %d->%d [%d]", msg_m->sender, msg_m->receiver, msg_m->call_nr);
     }
-    printf("\n");
+//    printf("\n");
 //    printqueue(src_q, "src_q");
-    printqueue(dest_q, "dest_q");
+//    printqueue(dest_q, "dest_q");
     
     // iterative get nextproc.
     queue_func->iterator(dest_q);

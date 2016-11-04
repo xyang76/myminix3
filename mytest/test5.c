@@ -29,6 +29,7 @@ int main()
         printf("this is parent, cur id:%d\n", parent);
         
         for(i=0; i<4; i++){
+            printf("-----------------msend to %d\n", pid[i]);
             rv = msend(gid, &m, pid[i]);
             printf("finish send %d-%d\n", rv, errno);
         }
