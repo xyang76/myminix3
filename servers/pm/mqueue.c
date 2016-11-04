@@ -12,21 +12,21 @@ static int next(void **item, mqueue *que);
 static int removeitem(mqueue *que);
 static int hasvalue(void *item, mqueue * que);
 
+/* Bind methods */
+queue_func.isempty = isempty;
+queue_func.enqueue = enqueue;
+queue_func.dequeue = dequeue;
+queue_func.iterator = iterator;
+queue_func.next = next;
+queue_func.removeitem = removeitem;
+queue_func.hasvalue = hasvalue;
+
 void initqueue(mqueue **que)  
 {  
     (*que) = (mqueue *)malloc(sizeof(mqueue));            
     (*que)->head = NULL;        
     (*que)->tail = NULL;  
     (*que)->size = 0;
-    
-    /*Bind methods*/
-    (*que)->isempty = isempty;
-    (*que)->enqueue = enqueue;
-    (*que)->dequeue = dequeue;
-    (*que)->iterator = iterator;
-    (*que)->next = next;
-    (*que)->removeitem = removeitem;
-    (*que)->hasvalue = hasvalue; 
     return;  
 }  
 /* 

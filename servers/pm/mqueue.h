@@ -2,9 +2,7 @@
 #define true 1
 #define false 0
 
-typedef int (*queue_f0)(void * que);              /* only 1 item */       
-typedef int (*queue_f1)(void *item, void * que);  /* not need &return */       
-typedef int (*queue_f2)(void **item, void * que); 
+
 
 struct node
 {
@@ -20,6 +18,13 @@ typedef struct
     struct node *tail;  
     struct node *cur;
     struct node *prev;
+} mqueue;  
+
+typedef int (*queue_f0)(void * que);              /* only 1 item */       
+typedef int (*queue_f1)(void *item, void * que);  /* not need &return */       
+typedef int (*queue_f2)(void **item, void * que); 
+typedef struct 
+{  
     queue_f0 isempty;
     queue_f1 enqueue;
     queue_f2 dequeue;
@@ -27,7 +32,8 @@ typedef struct
     queue_f2 next;
     queue_f0 removeitem;
     queue_f1 hasvalue;
-} mqueue;  
+} queue_function;
+static queue_function queue_func;
 
 void initqueue(mqueue ** que);                
 void closequeue(mqueue *que);
