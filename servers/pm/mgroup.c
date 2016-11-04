@@ -396,7 +396,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     
     // iterative get nextproc.
     queue_func->iterator(dest_q);
-    while(queue_func->dequeue(&value, dest_q)){
+    if(queue_func->dequeue(&value, dest_q)){
         dest_e = (int) value;
         if(queue_func->hasvalue((void *)dest_e, src_q)){
             printf("deadlock:%d - ", dest_e);
