@@ -334,7 +334,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         dest_q->enqueue((void *)g_m->receiver, dest_q);
     }
     msg_queue->iterator(msg_queue);
-    if(msg_queue->next(&proc_q, msg_queue)){
+    if(msg_queue->next(&value, msg_queue)){
         proc_q = (mqueue *)value;
         deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
@@ -353,7 +353,8 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     
     // Put all receiver into dest_q from current proc.
     proc_q->iterator(proc_q);
-    while(proc_q->next(&msg_m, proc_q)){
+    while(proc_q->next(&value, proc_q)){
+        msg_m = (grp_message *)value;
         if(msg_m->call_nr != call_nr) continue;
         dest_q->enqueue((void *)msg_m->receiver, dest_q);
     }
@@ -362,7 +363,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     dest_q->iterator(dest_q);
     while(dest_q->dequeue(&value, dest_q)){
         dest_e = (int) value;
-        if(src_q->hasvalue(dest_e, src_q)){
+        if(src_q->hasvalue((void *)dest_e, src_q)){
             cur_group->g_stat = M_DEADLOCK;                                         //Deadlock
             cur_group->flag = ELOCKED;                                              //Deadlock
             cur_group->invalid_q_int->enqueue((void *)dest_e, cur_group->invalid_q_int);    //Deadlock queue
@@ -370,7 +371,8 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
             src_q->enqueue((void *)dest_e, src_q);
         }
         msg_queue->iterator(msg_queue);
-        while(msg_queue->next(&proc_q, msg_queue)){
+        while(msg_queue->next(&value, msg_queue)){
+            proc_q = (mqueue *)value;
             if(proc_q->number == dest_e){
                 deadlock_rec(proc_q, src_q, dest_q, call_nr);       //Recursive.
             }
