@@ -338,7 +338,7 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
     if(g_m->sender == proc_q->number){                   //Only check/store sender. do not need check twice: sender and receiver
         proc_q->iterator(proc_q);
     
-        while(proc_q->next(&msg_m, (mqueue *)proc_q)){
+        while(proc_q->next(&msg_m, proc_q)){
              if(msg_m->call_nr == g_m->call_nr) continue;           // Only search send->receive
              // If sender and receiver match: sender = sender, callnr = SEND+RECEIVE, receiver = receiver
              if(msg_m->receiver == g_m->receiver){
@@ -346,13 +346,13 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
                 unblock(msg_m->receiver, msg);
                 unblock(msg_m->sender, msg);
                 
-                proc_q->remove((mqueue *)proc_q);                 //Remove current message from proc_queue(not proc)
+                proc_q->remove(proc_q);                 //Remove current message from proc_queue(not proc)
                 free(msg_m);
                 free(g_m);
                 return 2;
              }
         }
-        proc_q->enqueue(g_m, (mqueue *)proc_q);                   //If not match, then enqueue this message.
+        proc_q->enqueue(g_m, proc_q);                   //If not match, then enqueue this message.
         return 1;
     }
     return 0;
