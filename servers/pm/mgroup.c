@@ -354,7 +354,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         queue_func->enqueue(g_m, g_ptr->valid_q);
     }
     printf("in deadlock detect2 %d, %d\n", src_q->size, dest_q->size);
-    printqueue(src_q);
+    printqueue(src_q, "src_q_dm");
     // detect deadlock
     queue_func->iterator(msg_queue);
     if(queue_func->next(&value, msg_queue)){
@@ -362,7 +362,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
     printf("in deadlock detect3 %d, %d, %d\n", cur_group->valid_q->size, cur_group->invalid_q_int->size, dest_q->size);
-    printqueue(src_q);
+    printqueue(src_q, "src_q_dm3");
     
     // Remove deadlock processes from valid_q
     queue_func->iterator(g_ptr->valid_q);
