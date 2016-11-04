@@ -27,7 +27,8 @@ int main()
             i -= 4;
         }
         printf("yes in send %d-%d-%d\n", getpid(), parent+i+2, i);
-	    msend(gid, &m, parent+i+2);	
+	    int rv = msend(gid, &m, parent+i+2);	
+        printf("rv is %d\n", rv);
     } else {
         //Parent proc    
         printf("cur id:%d\n", parent);
