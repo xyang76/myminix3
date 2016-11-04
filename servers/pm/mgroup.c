@@ -224,11 +224,13 @@ void do_server_ipc(){
     while(cur_group->pending_q->dequeue(&value, cur_group->pending_q)){
          g_m = (grp_message *)value;
          msg_queue->iterator(msg_queue);
-         flag = 0;                        
+         flag = 0;          
+         printf("cur %d-%d\n", g_m->sender, g_m->receiver);
          while(msg_queue->next(&value, msg_queue)){
             proc_q = (mqueue *)value;
              /* find match proc*/
             if(searchinproc(proc_q, g_m) > 0) {
+                printf("find %d-%d\n", g_m->sender, g_m->receiver);
                 flag = 1;
                 break;
             }
@@ -237,6 +239,7 @@ void do_server_ipc(){
          /* if not find match proc */
          if(flag == 0){
              // create a new proc in queue, and enqueue its first item.
+             printf("not find %d-%d\n", g_m->sender, g_m->receiver);
              initqueue(&proc_q);
              proc_q->number = g_m->sender;
              proc_q->enqueue(g_m, proc_q);
