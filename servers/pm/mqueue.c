@@ -121,11 +121,11 @@ static int removeitem(mqueue *que){
         return false;
     } else if(que->prev == que->head){
         que->head = que->head->nextNode;
-    } 
-    
-    n = que->head;
-    while (n->nextNode != que->prev) n=n->nextNode;
-    n->nextNode = que->prev->nextNode;
+    } else {
+        n = que->head;
+        while (n->nextNode != que->prev) n=n->nextNode;
+        n->nextNode = que->prev->nextNode;
+    }
     if(que->prev == que->tail){
         que->tail = n;
     }
