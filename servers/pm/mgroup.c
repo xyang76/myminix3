@@ -24,6 +24,8 @@ static mgroup mgrp[NR_GRPS];            /* group table [this design is similar t
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 static mgroup *cur_group;               /* current message group*/
+static int lock = 0;                    /* simple busy lock, may cause bug. Better solution: 1.kernel call & spinlock 2. semaphore
+                                         *  but i dont have enough time to finish this.    */
 
 /* private methods prototype */
 int invalid(int strategy);                                  /* valid strategy */ 
@@ -34,6 +36,8 @@ endpoint_t getendpoint(int proc_id);                        /* get endpoint from
 void unblock(endpoint_t proc_e, message *msg);              /* unblock a process */
 int searchinproc(mqueue *proc_q, grp_message *g_m);         /* search send->rec chain from proc */
 void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr);  /*recursive detect deadlock */
+int acquire_lock(void);                                     /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
+int release_lock(void);                                     /* simple busy lock */
 
 int do_opengroup()
 {
@@ -342,8 +346,6 @@ int deadlock(mgroup *g_ptr, int call_nr){
         queue_func->enqueue((void *)g_m->receiver, dest_q);
         queue_func->enqueue(g_m, g_ptr->valid_q);
     }
-    printf("in deadlock detect2 %d, %d\n", src_q->size, dest_q->size);
-    printqueue(src_q, "src_q_dm");
     // detect deadlock
     queue_func->iterator(msg_queue);
     if(queue_func->next(&value, msg_queue)){
@@ -440,4 +442,13 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
         return 1;
     }
     return 0;
+}
+
+int acquire_lock(void){
+    while(lock != 0);
+    lock = 1;       // Enter critical region.
+}
+
+int release_lock(void){
+    lock = 0;
 }
