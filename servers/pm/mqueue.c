@@ -116,7 +116,7 @@ static int next(void **item, mqueue *que){
 }
 
 static int removeitem(mqueue *que){
-    node *n;
+    struct node *n;
     if(que->cur == NULL){
         return false;
     } else if(que->cur == que->head){
