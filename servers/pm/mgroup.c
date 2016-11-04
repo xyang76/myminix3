@@ -218,6 +218,7 @@ int do_mreceive(){
 void do_server_ipc(){
     int rv=0, flag;
     mqueue *proc_q;
+    void *value;
     grp_message *g_m;
     message *msg;
     
@@ -226,7 +227,8 @@ void do_server_ipc(){
     while(cur_group->pending_q->dequeue(&g_m, cur_group->pending_q)){
          msg_queue->iterator(msg_queue);
          flag = 0;                        
-         while(msg_queue->next(&proc_q, msg_queue)){
+         while(msg_queue->next(&value, msg_queue)){
+            proc_q = (mqueue *)value;
              /* find match proc*/
             if(searchinproc(proc_q, g_m) > 0) {
                 flag = 1;
@@ -334,14 +336,16 @@ int deadlock(mgroup *g_ptr){
 int searchinproc(mqueue *proc_q, grp_message *g_m){
     grp_message *msg_m;
     message *msg;
+    void *value;
     
     if(g_m->sender == proc_q->number){                   //Only check/store sender. do not need check twice: sender and receiver
         proc_q->iterator(proc_q);
     
-        while(proc_q->next(&msg_m, proc_q)){
-             if(msg_m->call_nr == g_m->call_nr) continue;           // Only search send->receive
+        while(proc_q->next(&value, proc_q)){
+            msg_m=(grp_message *)value;
+            if(msg_m->call_nr == g_m->call_nr) continue;           // Only search send->receive
              // If sender and receiver match: sender = sender, callnr = SEND+RECEIVE, receiver = receiver
-             if(msg_m->receiver == g_m->receiver){
+            if(msg_m->receiver == g_m->receiver){
                 msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
                 unblock(msg_m->receiver, msg);
                 unblock(msg_m->sender, msg);
@@ -350,7 +354,7 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
                 free(msg_m);
                 free(g_m);
                 return 2;
-             }
+            }
         }
         proc_q->enqueue(g_m, proc_q);                   //If not match, then enqueue this message.
         return 1;
