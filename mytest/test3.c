@@ -12,11 +12,13 @@ int main()
     if((child=fork())==0){
         // child
         printf("start send\n");
+        addproc(gid, getpid());
         rv = msend(gid, &m, parent);
         printf("finish send %d-%d\n", rv, errno);
     } else {
         // This is parent
         printf("start rec \n");
+        addproc(gid, parent);
         rv = mreceive(gid, &m, child);
         printf("finish rec %d-%d\n", rv, errno);
     }
