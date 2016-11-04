@@ -130,7 +130,7 @@ static int hasvalue(void *item, mqueue *que){
         if(p->value == item){
             return true;
         }
-        p++;
+        p = p->nextNode;
     }
     return false;
 }
