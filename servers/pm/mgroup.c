@@ -169,7 +169,7 @@ int do_msend(){
     g_m->receiver=getendpoint(ipc_type);
     g_m->call_nr=SEND;
     g_m->msg= &m;
-    enqueue(g_m, g_ptr->pending_q);
+    g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
     printf("msend finish\n");    
     return rv;
 }
@@ -203,7 +203,7 @@ int do_mreceive(){
     g_m->sender=getendpoint(ipc_type);
     g_m->call_nr=RECEIVE;
     g_m->msg= NULL;                                             //Receiver do not need store message.
-    enqueue(g_m, g_ptr->pending_q);
+    g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
     printf("m receive finish\n");
     return rv;
 }
@@ -213,25 +213,24 @@ int do_mreceive(){
  */
 void do_server_ipc(){
     int rv=0, src_nr, dest_nr, i;
-    grp_message *g_m;
+    grp_message *g_m, *msg_m;
+    message *msg;
     
     // Only check current group
     printf("server ipc start\n");
-    while(dequeue(&g_m, cur_group->valid_q) != -1){
-        
-        
-    }
-    msg_queue
-    if(msg_queue->num==2){
-         dequeue(&g_m, msg_queue);
-         unblock(g_m->receiver);
-         switch(g_m->group->g_sttg){
-             case UB_ALL_REC:
-                
-             
+    while(cur_group->valid_q->dequeue(&g_m, cur_group->valid_q)){
+         msg_queue->iterator(msg_queue);
+         while(msg_queue->next(&msg_m, msg_queue)){
+             // If sender and receiver match.
+             if(msg_m->sender == g_m->sender && msg_m->receiver = g_m->receiver 
+                && msg_m->call_nr+g_m->call_nr == SEND+RECEIVE){
+                    msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
+                    unblock(msg_m->receiver, msg);
+                    unblock(msg_m->sender, msg);
+             }
          }
     }
-    printf("kernel ipc finish %d\n", rv);
+    printf("server ipc finish %d\n", rv);
 }
 
 /*  ========================= private methods ================================*/

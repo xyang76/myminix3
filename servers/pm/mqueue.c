@@ -9,8 +9,7 @@ int enqueue(void *item, mqueue * que);
 int dequeue(void **item, mqueue * que);
 int iterator(mqueue * que);
 int next(void **item, mqueue *que);
-int getitem(void **item, mqueue *que);
-static struct node *cur;            /* current */
+int remove(mqueue *que);
 
 void initqueue(mqueue **que)  
 {  
@@ -25,7 +24,8 @@ void initqueue(mqueue **que)
     (*que)->dequeue = dequeue;
     (*que)->iterator = iterator;
     (*que)->next = next;
-    (*que)->getitem = getitem;
+    (*que)->remove = remove;
+     
     return;  
 }  
 /* 
@@ -77,15 +77,37 @@ int dequeue(void **item, mqueue *que)
     }  
 }  
 
+int iterator(mqueue * que){
+    que->cur = que->head;
+    que->prev = NULL;
+}
+
 int next(void **item, mqueue *que)
 {
 	int i;
 	struct node *p;
-	if(isempty(que))  
-    {  
+    
+	if(que->cur == NULL){  
+        (*item) = NULL;
         return false;  
     } 
+    (*item) = que->cur->value;
+    que->prev = que->cur;
+    que->cur = que->cur->nextNode;
+    return true;
 }
+
+int remove(mqueue *que){
+    if(que->cur == NULL){
+        return false;
+    }
+    if(que->prev != NULL){
+        que->prev->nextNode = que->cur->nextNode;
+    }
+    free(que->cur);
+    return true;
+}
+
 /* 
 if queue is empty
  */  

@@ -29,8 +29,6 @@ typedef int grp_stat;           /* group state */
 #define UB_ANY_REC    1             /* unblock when any receiver get this message */
 #define UB_ANY_CLEAR  2             /* when any receiver get this msg, then this message will be clear from message queue */
 
-
-
 typedef struct{
     grp_nr_t g_nr;                  /* group number ptr */
     strategy g_sttg;                /* group strategy */
@@ -47,6 +45,7 @@ typedef struct{
     mgroup *group;                  /* group */
     endpoint_t sender;              /* sender */
     endpoint_t receiver;            /* receiver */
-    int call_nr;                    /* type */                      
+    int call_nr;                    /* caller_nr: SEND/RECEIVE */     
+    int ipc_type;                   /* ipc type */
     message *msg;                   /* message */
 }grp_message;
