@@ -165,6 +165,7 @@ int do_msend(){
     caller = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
     ipc_type = m_in.m1_i3;
+    printf("group id %d\n", grp_nr);
     msg = (message*) malloc(sizeof(message));
     if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
