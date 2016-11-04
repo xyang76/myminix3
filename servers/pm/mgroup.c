@@ -335,7 +335,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
     grp_message *g_m;
     mqueue *proc_q, *src_q, *dest_q, *invalid_q;
     void *value;
-    int rv = 0;
+    int rv = 0, sender;
     
     initqueue(&src_q);
     initqueue(&dest_q);
@@ -344,15 +344,18 @@ int deadlock(mgroup *g_ptr, int call_nr){
         g_m = (grp_message *)value;
         if(!queue_func->hasvalue((void *)g_m->sender, src_q)){
             queue_func->enqueue((void *)g_m->sender, src_q);            // Only store once
+            sender = g_m->sender;
         }
-        queue_func->enqueue((void *)g_m->receiver, dest_q);
         queue_func->enqueue(g_m, g_ptr->valid_q);
     }
     // detect deadlock
     queue_func->iterator(msg_queue);
-    if(queue_func->next(&value, msg_queue)){
+    while(queue_func->next(&value, msg_queue)){
         proc_q = (mqueue *)value;
-        deadlock_rec(proc_q, src_q, dest_q, call_nr);
+        if(proc_q->number == sender){
+            deadlock_rec(proc_q, src_q, dest_q, call_nr);
+            break;
+        }
     }
 //    printf("d3 %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size);
 //    printqueue(src_q, "src_q_dm3");
