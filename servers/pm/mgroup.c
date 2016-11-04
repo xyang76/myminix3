@@ -150,7 +150,6 @@ int do_msend(){
     message m;
     mgroup *g_ptr = NULL;
     grp_message *g_m;
-    mqueue *pending;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
@@ -168,14 +167,13 @@ int do_msend(){
     printf("now msend %d-%d\n", src, ipc_type);    
     // add a new message.
     cur_group = g_ptr;
-    pending = g_ptr->pending_q;
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->grp_nr=grp_nr;
     g_m->sender=getendpoint(src);
     g_m->receiver=getendpoint(ipc_type);
     g_m->call_nr=SEND;
     g_m->msg= &m;
-    pending->enqueue(g_m, pending);
+    g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
     printf("msend finish\n");    
     return rv;
 }
@@ -183,19 +181,18 @@ int do_msend(){
 int do_mreceive(){
     int rv=SUSPEND, src, grp_nr, ipc_type;
     message m;
-//    mgroup *g_ptr = NULL;
+    mgroup *g_ptr = NULL;
     grp_message *g_m;
-    mqueue *pending;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
     ipc_type = m_in.m1_i3;
     
-//    if(getgroup(grp_nr, &g_ptr) == -1){
-//        return EIVGRP;
-//    } else if(getprocindex(g_ptr, src) == -1){
-//        return -2;
-//    }
+    if(getgroup(grp_nr, &g_ptr) == -1){
+        return EIVGRP;
+    } else if(getprocindex(g_ptr, src) == -1){
+        return -2;
+    }
 //    if ((message *) m_in.m1_p1 != (message *) NULL) {
 //        rv = sys_datacopy(PM_PROC_NR,(vir_bytes) msg,
 //            who_e, (vir_bytes) m_in.m1_p1, (phys_bytes) sizeof(m));
@@ -204,14 +201,13 @@ int do_mreceive(){
     
     printf("Now mreceive %d-%d\n", src, ipc_type);
     cur_group = g_ptr;
-    pending = g_ptr->pending_q;
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->grp_nr=grp_nr;
     g_m->receiver=getendpoint(src);
     g_m->sender=getendpoint(ipc_type);
     g_m->call_nr=RECEIVE;
     g_m->msg= NULL;                                             //Receiver do not need store message.
-    pending->enqueue(g_m, pending);
+    g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
     printf("m receive finish\n");
     return rv;
 }
