@@ -322,19 +322,43 @@ void unblock(endpoint_t proc_e, message *msg){
 }
 
 int deadlock(mgroup *g_ptr){
-//    grp_message *g_m, *msg_m;
+    grp_message *g_m;
+    mqueue *proc_q, *src_q, *dest_q, *invalid_q;
     
-//    while(g_ptr->pending_q->dequeue(&g_m, g_ptr->pending_q)){
-//        msg_queue->iterator(msg_queue);
-//        while(msg_queue->next(&msg_m, msg_queue)){
-//            
-//            
-//        }
-//    }
+    initqueue(&src_q);
+    initqueue(&dest_q);
+    while(g_ptr->pending_q->dequeue(&g_m, g_ptr->pending_q)){
+        src_q->enqueue(g_m->sender, src_q);
+        dest_q->enqueue(g_m->receiver, dest_q);
+        
+    }
+    msg_queue->iterator(msg_queue);
+    while(msg_queue->next(&proc_q, msg_queue)){
+        
+        
+    }
+    closequeue(src_q);
+    closequeue(dest_q);
     return 0;
 }
 
+/*
+ * Recursive detect deadlock.
+ */
+int deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int type){
+    grp_message *msg_m;
+    
+    proc_q->iterator(proc_q);
+    while(proc_q->next(&msg_m, proc_q)){
+        if(msg_m->call_nr != type) continue;
+        
+        
+    }
+}
 
+/*
+ * search msg match from queues.
+ */
 int searchinproc(mqueue *proc_q, grp_message *g_m){
     grp_message *msg_m;
     message *msg;
@@ -342,7 +366,7 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
     
     if(g_m->sender == proc_q->number){                   //Only check/store sender. do not need check twice: sender and receiver
         proc_q->iterator(proc_q);
-    printf("find proc %d\n", g_m->sender);
+        
         while(proc_q->next(&value, proc_q)){
             msg_m=(grp_message *)value;
             if(msg_m->call_nr == g_m->call_nr) continue;           // Only search send->receive
