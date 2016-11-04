@@ -451,11 +451,10 @@ int deadlock(mgroup *g_ptr, int call_nr){
     // add all pending processes into valid_q
     while(queue_func->dequeue(&value, g_ptr->pending_q)){
         g_m = (grp_message *)value;
-        if(!queue_func->hasvalue((void *)g_m->sender, src_q)){
-            queue_func->enqueue((void *)g_m->sender, src_q);            // Only store once
-            sender = g_m->sender;
+        if(!queue_func->hasvalue((void *)g_m->sender, src_q)){    
+            sender = g_m->sender;                                     // Only store once
         }
-        queue_func->enqueue((void *)g_m->receiver, dest_q);            // Only store once
+        queue_func->enqueue((void *)g_m->receiver, src_q);            // Only store once
         queue_func->enqueue(g_m, g_ptr->valid_q);
     }
     
@@ -463,9 +462,17 @@ int deadlock(mgroup *g_ptr, int call_nr){
     if(getprocqueue(sender, &proc_q) != -1){
         deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
+    if(queue_func->hasvalue((void *)sender, src_q)){
+        printf("deadlock:%d - ", dest_e);
+        printqueue(src_q, "src_q_deadlock");
+        printqueue(dest_q, "dest_q_deadlock");
+        acquire_lock(cur_group);
+        cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
+        queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);
+    }
     
 //    printf("d3 %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size);
-//    printqueue(src_q, "src_q_dm3");
+    printqueue(src_q, "src_q_dm3");
     
     // Remove deadlock processes from valid_q
     queue_func->iterator(g_ptr->valid_q);
@@ -504,14 +511,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     queue_func->iterator(dest_q);
     while(queue_func->dequeue(&value, dest_q)){
         dest_e = (int) value;
-        if(queue_func->hasvalue((void *)dest_e, src_q)){
-            printf("deadlock:%d - ", dest_e);
-            printqueue(src_q, "src_q_deadlock");
-            printqueue(dest_q, "dest_q_deadlock");
-            acquire_lock(cur_group);
-            cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
-            queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);           //Deadlock queue
-        } else {
+        if(!queue_func->hasvalue((void *)dest_e, src_q)){
             queue_func->enqueue((void *)dest_e, src_q);
         }
         
