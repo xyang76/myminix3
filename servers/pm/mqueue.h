@@ -2,16 +2,12 @@
 #define true 1
 #define false 0
 
-
-
-struct node
-{
+struct node{
     void *value;
     struct node *nextNode; 
 };
 
-typedef struct 
-{  
+typedef struct{  
     int size;      
     int number;
     struct node *head;   

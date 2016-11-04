@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <malloc.h>   
 
+/* private structure */
+struct node{
+    void *value;
+    struct node *nextNode; 
+};
+
 /* private methods */
 static int isempty(mqueue * que);                  
 static int enqueue(void *item, mqueue * que);        
