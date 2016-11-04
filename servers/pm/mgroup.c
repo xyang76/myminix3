@@ -33,7 +33,7 @@ int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its 
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 void unblock(endpoint_t proc_e, message *msg);              /* unblock a process */
-int searchinproc(mqueue *proc_q, grp_message *msg);         /* search in proc */
+int searchinproc(mqueue *proc_q, grp_message *g_m);   /* search send->rec chain from proc */
 
 int do_opengroup()
 {
@@ -333,6 +333,7 @@ int deadlock(mgroup *g_ptr){
 
 int searchinproc(mqueue *proc_q, grp_message *g_m){
     grp_message *msg_m;
+    message *msg;
     
     if(g_m->sender == proc_q->number){                   //Only check/store sender. do not need check twice: sender and receiver
         proc_q->iterator(proc_q);
