@@ -173,7 +173,6 @@ int do_msend(){
     cur_group = g_ptr;
     g_ptr->g_stat == M_SENDING;
     
-    printf("send from %d to %d--------------------- \n", src, ipc_type);
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->group=g_ptr;
     g_m->sender=getendpoint(src);
@@ -208,7 +207,6 @@ int do_mreceive(){
     cur_group = g_ptr;
     g_ptr->g_stat == M_RECEIVING;
     
-    printf("receive from %d to %d--------------------- \n", src, ipc_type);
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->group=g_ptr;
     g_m->receiver=getendpoint(src);
