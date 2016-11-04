@@ -441,8 +441,8 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
                 printf("before remove %d\n", proc_q->size);
                 queue_func->removeitem(proc_q);              //Remove current message from proc_queue(not proc)
                 printf("after remove %d\n", proc_q->size);
-                free(msg_m);
-                free(g_m);
+//                free(msg_m);
+//                free(g_m);
                 return 2;
             }
         }
