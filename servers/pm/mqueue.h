@@ -34,7 +34,7 @@ typedef struct
     queue_f1 hasvalue;
 } queue_function;
 queue_function que_function;
-queue_function *queue_func;
+queue_function *queue_func = NULL;
 
 void initqueue(mqueue ** que);                
 void closequeue(mqueue *que);
