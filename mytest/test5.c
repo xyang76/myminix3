@@ -21,9 +21,9 @@ int main()
         //Fork error
     } else if (status == 0){
         //Child proc
-        rv = mreceive(gid, &m, parent);
-        printf("finish send %d-%d\n", rv, errno);
-            	
+        while(mreceive(gid, &m, parent)==0){
+            printf("finish send %d-%d\n", rv, errno);
+        }    	
     } else {
         //Parent proc    
         printf("cur id:%d\n", parent);
