@@ -174,7 +174,7 @@ int do_msend(){
     g_m->msg= &m;
     g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
     printf("msend finish\n");    
-    return rv;
+    return rv==0 ? SUSPEND : rv;
 }
 
 int do_mreceive(){
@@ -207,7 +207,7 @@ int do_mreceive(){
     g_m->msg= NULL;                                             //Receiver do not need store message.
     g_ptr->pending_q->enqueue(g_m, g_ptr->pending_q);
     printf("m receive finish\n");
-    return rv;
+    return rv==0 ? SUSPEND : rv;
 }
 
 /*
@@ -272,7 +272,6 @@ int getgroup(int grp_nr, mgroup ** g_ptr){
     for(i=0, k=g_nr_ptr; i<NR_GRPS; i++, k--){
         k=(k+NR_GRPS)%NR_GRPS;
         if(mgrp[k].g_stat != M_UNUSED && mgrp[k].g_nr == grp_nr){       // find the group in group table.
-            printf("already find group\n");
             (*g_ptr) = &mgrp[k];
             return 0;
         }
