@@ -8,7 +8,6 @@ int main()
     int gid, rv, child, parent=getpid();
     message m;
     gid=opengroup(0);
-	printf("Start test\n");
     if((child=fork())==0){
         // child
         printf("start send\n");
@@ -23,6 +22,5 @@ int main()
         rv = mreceive(gid, &m, child);
         printf("finish rec %d-%d-%d\n", rv, errno, m.m1_i1);
     }
-    printf("finish test\n");
 	return 0;
 }
