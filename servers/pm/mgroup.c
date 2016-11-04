@@ -318,7 +318,7 @@ void unblock(endpoint_t proc_e, message *msg){
 }
 
 int deadlock(mgroup *g_ptr){
-    grp_message *g_m, *msg_m;
+//    grp_message *g_m, *msg_m;
     
 //    while(g_ptr->pending_q->dequeue(&g_m, g_ptr->pending_q)){
 //        msg_queue->iterator(msg_queue);
