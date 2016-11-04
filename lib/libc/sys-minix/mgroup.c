@@ -2,6 +2,7 @@
 #include "namespace.h"
 #include <lib.h>
 #include <unistd.h>
+#include <string.h>
 
 typedef struct{
     int size;                       /* size */
@@ -66,7 +67,9 @@ int mreceive(int src, char *msg, int type){
     m.m1_i3 = type;
     m.m1_p1 = msg;
     
-    return _syscall(PM_PROC_NR, MRECEIVE, msg);
+    rv = _syscall(PM_PROC_NR, MRECEIVE, &m);
+    memcpy(msg, &m, sizeof(message));
+    return rv;
 }
 
 
