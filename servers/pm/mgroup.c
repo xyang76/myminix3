@@ -368,8 +368,8 @@ int deadlock(mgroup *g_ptr, int call_nr){
         g_m = (grp_message *)value;
         if(queue_func->hasvalue((void*)g_m->receiver, g_ptr->invalid_q_int)){
             queue_func->removeitem(g_ptr->valid_q);
+            rv = ELOCKED;
         }
-        rv = ELOCKED;
     }
     printf("in deadlock detect4 %d, %d, %d\n", cur_group->invalid_q_int->size, src_q->size, dest_q->size);
     closequeue(src_q);
