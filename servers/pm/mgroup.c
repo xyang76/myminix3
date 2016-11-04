@@ -362,7 +362,7 @@ void do_server_ipc(){
              initqueue(&proc_q);
              proc_q->number = g_m->sender;
              if(g_m->call_nr == 1){
-                printf("here we enqueue %d->%d\n", g_m->sender, g_m->receiver);
+                printf("here we enqueue %d->%d - non\n", g_m->sender, g_m->receiver);
              }
              queue_func->enqueue(g_m, proc_q);
              queue_func->enqueue(proc_q, msg_queue);
@@ -462,7 +462,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         initqueue(&dest_q);
         if(getprocqueue(dest_e, &proc_q) != -1){
             deadlock_rec(proc_q, dest_q, call_nr);
-            printf("sender %d :: ");
+            printf("sender %d :: ", dest_e);
             printqueue(dest_q, "src_q_tmp");
             if(queue_func->hasvalue((void *)sender, dest_q)){
                 printf("deadlock:%d - ", sender);
