@@ -20,9 +20,9 @@ typedef struct
     struct node *prev;
 } mqueue;  
 
-typedef int (*queue_f0)(void * que);              /* only 1 item */       
-typedef int (*queue_f1)(void *item, void * que);  /* not need &return */       
-typedef int (*queue_f2)(void **item, void * que); 
+typedef int (*queue_f0)(mqueue *que);              /* only 1 item */       
+typedef int (*queue_f1)(void *item, mqueue *que);  /* not need &return */       
+typedef int (*queue_f2)(void **item, mqueue *que); 
 typedef struct 
 {  
     queue_f0 isempty;
