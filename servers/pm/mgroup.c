@@ -222,7 +222,8 @@ void do_server_ipc(){
     
     // Only check current group
     printf("server ipc start\n");
-    while(cur_group->pending_q->dequeue(&g_m, cur_group->pending_q)){
+    while(cur_group->pending_q->dequeue(&value, cur_group->pending_q)){
+         g_m = (grp_message *)value;
          msg_queue->iterator(msg_queue);
          flag = 0;                        
          while(msg_queue->next(&value, msg_queue)){
