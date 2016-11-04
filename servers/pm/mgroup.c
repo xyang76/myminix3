@@ -38,6 +38,7 @@ int searchinproc(mqueue *proc_q, grp_message *g_m);         /* search send->rec 
 void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr);  /*recursive detect deadlock */
 int acquire_lock(void);                                     /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
 int release_lock(void);                                     /* simple busy lock */
+int getprocqueue(endpoint_t proc_e, mqueue **proc_q);       /* get proc queue */
 
 int do_opengroup()
 {
@@ -347,15 +348,12 @@ int deadlock(mgroup *g_ptr, int call_nr){
         queue_func->enqueue((void *)g_m->receiver, dest_q);            // Only store once
         queue_func->enqueue(g_m, g_ptr->valid_q);
     }
+    
     // detect deadlock
-    queue_func->iterator(msg_queue);
-    while(queue_func->next(&value, msg_queue)){
-        proc_q = (mqueue *)value;
-        if(proc_q->number == sender){
-            deadlock_rec(proc_q, src_q, dest_q, call_nr);
-            break;
-        }
+    if(getprocqueue(sender, &proc_q) != -1){
+        deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
+    
 //    printf("d3 %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size);
 //    printqueue(src_q, "src_q_dm3");
     
@@ -388,11 +386,11 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         msg_m = (grp_message *)value;
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
-        printf("enqueue: %d->%d [%d]", msg_m->sender, msg_m->receiver, msg_m->call_nr);
+        printf("enqueue: %d->%d [%d] ::: ", msg_m->sender, msg_m->receiver, msg_m->call_nr);
     }
-    printf("\n");
+
 //    printqueue(src_q, "src_q");
-//    printqueue(dest_q, "dest_q");
+    printqueue(dest_q, "dest_q");
     
     // iterative get nextproc.
     queue_func->iterator(dest_q);
@@ -406,13 +404,9 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         } else {
             queue_func->enqueue((void *)dest_e, src_q);
         }
-        queue_func->iterator(msg_queue);
-        while(queue_func->next(&value, msg_queue)){
-            proc_q = (mqueue *)value;
-            if(proc_q->number == dest_e && proc_q->size > 0){
-                deadlock_rec(proc_q, src_q, dest_q, call_nr);       //Recursive detect.
-            }
-            break;
+        
+        if(getprocqueue(dest_e, &proc_q) != -1 && proc_q->size > 0){
+            deadlock_rec(proc_q, src_q, dest_q, call_nr);  
         }
     }
 }
@@ -449,6 +443,21 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
         return 1;
     }
     return 0;
+}
+
+int getprocqueue(endpoint_t proc_e, mqueue **proc_q){
+    void *value;
+    mqueue *q;
+    
+    queue_func->iterator(msg_queue);
+    while(queue_func->next(&value, msg_queue)){
+        q = (mqueue *)value;
+        if(q->number == proc_e){
+            (*proc_q) = q;
+            return 0;
+        }
+    }
+    return -1;
 }
 
 int acquire_lock(void){
