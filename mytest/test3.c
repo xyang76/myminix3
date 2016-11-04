@@ -13,12 +13,12 @@ int main()
         // child
         printf("start send\n");
         rv = msend(gid, &m, parent);
-        printf("finish send %d\n", rv);
+        printf("finish send %d-%d\n", rv, errno);
     } else {
         // This is parent
         printf("start rec \n");
         rv = mreceive(gid, &m, child);
-        printf("finish rec %d\n", rv);
+        printf("finish rec %d-%d\n", rv, errno);
     }
     printf("finish test\n");
 	return 0;
