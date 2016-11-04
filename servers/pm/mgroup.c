@@ -426,9 +426,9 @@ void unblock(endpoint_t proc_e, message *msg){
             if (pm_isokendpt(rmp->mp_endpoint, &proc_nr) != OK) {
                 panic("handle_vfs_reply: got bad endpoint from VFS: %d", rmp->mp_endpoint);
             }
+            memcpy(&rmp->mp_reply, msg, sizeof(message));
             setreply(proc_nr, OK);
             if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) == (REPLY | IN_USE)) {
-              memcpy(&rmp->mp_reply, msg, sizeof(message));
               s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
               if (s != OK) {
                   printf("PM can't reply to %d (%s): %d\n",
