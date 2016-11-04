@@ -457,7 +457,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
     }
     
     // detect deadlock
-    while(queue_func->dequeue(&value, g_ptr->src_q)){
+    while(queue_func->dequeue(&value, src_q)){
         int dest_e = (int)value;
         initqueue(&dest_q);
         if(getprocqueue(dest_e, &proc_q) != -1){
