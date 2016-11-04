@@ -180,5 +180,7 @@
 #define EPROCLEN     (_SIGN 404 )  /* proc length reach max length*/
 #define EIVPROC      (_SIGN 405 )   /* invalid proc number(not exist) */
 #define EPROCEXIST   (_SIGN 406 )   /* proc already exist in group */
+#define ENOPROC	     (_SIGN 407 )   /* proc not exist in group*/
+#define NOIPCOP	     (_SIGN 408 )   /* no ipc operatioin*/
 
 #endif /* !_SYS_ERRNO_H_ */

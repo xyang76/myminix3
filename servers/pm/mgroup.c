@@ -24,8 +24,6 @@ static mgroup mgrp[NR_GRPS];            /* group table [this design is similar t
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 static mgroup *cur_group;               /* current message group*/
-static int lock = 0;                    /* simple busy lock, may cause bug. Better solution: 1.kernel call & spinlock 2. semaphore
-                                         *  but i dont have enough time to finish this.    */
 
 /* private methods prototype */
 int invalid(int strategy);                                  /* valid strategy */ 
@@ -36,8 +34,8 @@ endpoint_t getendpoint(int proc_id);                        /* get endpoint from
 void unblock(endpoint_t proc_e, message *msg);              /* unblock a process */
 int searchinproc(mqueue *proc_q, grp_message *g_m);         /* search send->rec chain from proc */
 void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr);  /*recursive detect deadlock */
-int acquire_lock(void);                                     /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
-int release_lock(void);                                     /* simple busy lock */
+int acquire_lock(mgroup *g_ptr);                            /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
+int release_lock(mgroup *g_ptr);                            /* simple busy lock */
 int getprocqueue(endpoint_t proc_e, mqueue **proc_q);       /* get proc queue */
 
 int do_opengroup()
@@ -69,6 +67,7 @@ int do_opengroup()
     g_ptr->g_nr = g_id_ctr;
     g_ptr->g_sttg = strategy;
     g_ptr->p_size = 0;
+    g_ptr->lock = 0;
     initqueue(&g_ptr->valid_q);
     initqueue(&g_ptr->pending_q);
     initqueue(&g_ptr->invalid_q_int);
@@ -81,6 +80,7 @@ int do_addproc(){
     mgroup *g_ptr = NULL;
     int grp_nr, proc_id;	
     endpoint_t proc_ep;
+    
     grp_nr = m_in.m1_i1;
     proc_id = m_in.m1_i2;
     if(getgroup(grp_nr, &g_ptr) == -1){
@@ -89,10 +89,10 @@ int do_addproc(){
         return EPROCLEN;                    // reach max length
     }else if((proc_ep=getendpoint(proc_id))<0){
         return EIVPROC;
-    }else if(getprocindex(g_ptr, proc_id) != -1){
+    }else if(getprocindex(g_ptr, proc_ep) != -1){
         return EPROCEXIST;                  // proc already exist
     }
-    *(g_ptr->p_lst+g_ptr->p_size) = proc_id;
+    *(g_ptr->p_lst+g_ptr->p_size) = proc_ep;
     g_ptr->p_size++;
     return 0;
 }
@@ -108,8 +108,8 @@ int do_rmproc(){
         return EIVGRP;
     } else if((proc_ep=getendpoint(proc_id))<0){
         return EIVPROC;
-    } else if((i=getprocindex(g_ptr, proc_id)) == -1){
-        return EIVPROC;                     // cant find proc in group
+    } else if((i=getprocindex(g_ptr, proc_ep)) == -1){
+        return ENOPROC;                     // cant find proc in group
     } 
     
     for(; i<g_ptr->p_size-1;i++){
@@ -147,81 +147,187 @@ int do_recovergroup(){
         return EIVGRP;
     }
     
+    // Release lock
+    g_ptr->g_stat == M_READY;
+    release_lock(g_ptr);
     return 0;
 }
 
 int do_msend(){
-    int rv=SUSPEND, src, grp_nr, ipc_type;
+    int rv=SUSPEND, src, caller, grp_nr, ipc_type, i, s;
     message *msg;
     mgroup *g_ptr = NULL;
-    grp_message *g_m;
+    grp_message *g_m, *msg_m;
+    mqueue *proc_q;
+    void *value;
     
-    src = m_in.m1_i1;
+    // Init and valid
+    caller = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
     ipc_type = m_in.m1_i3;
     msg = (message*) malloc(sizeof(message));
     if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
+    } else if((src=getendpoint(caller)) < 0){
+        return EIVPROC;
     } else if(getprocindex(g_ptr, src) == -1){
-        return -2;
+        return ENOPROC;
     }
+    
+    // Copy data from m_in.
     if ((message *) m_in.m1_p1 != (message *) NULL) {
         rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
             PM_PROC_NR, (vir_bytes) msg, (phys_bytes) sizeof(message));
         if (rv != OK) return(rv);
     } 
-    // add a new message.
+    
+    // add a new message by different ipc_type.
     cur_group = g_ptr;
     g_ptr->g_stat == M_SENDING;
-    
-    g_m = (grp_message *)malloc(sizeof(grp_message));
-    g_m->group=g_ptr;
-    g_m->sender=getendpoint(src);
-    g_m->receiver=getendpoint(ipc_type);
-    g_m->call_nr=SEND;
-    g_m->msg= msg;
-    queue_func->enqueue(g_m, g_ptr->pending_q);
-    
-    rv = deadlock(g_ptr, SEND);                                     // detect deadlock
-    if (rv == 0){
-        g_ptr->g_stat == M_READY;
-        return SUSPEND;
+    switch(ipc_type){
+        case SENDALL:
+            for(i=0; i<g_ptr->p_size; i++){
+                if(src != g_ptr->p_lst[i]){
+                    g_m = (grp_message *)malloc(sizeof(grp_message));
+                    g_m->group=g_ptr;
+                    g_m->sender=src;
+                    g_m->receiver=g_ptr->p_lst[i];
+                    g_m->call_nr=SEND;
+                    g_m->msg= msg;
+                    g_m->ipc_type = ipc_type;
+                    queue_func->enqueue(g_m, g_ptr->pending_q);
+                }
+            }
+            break;
+        case IPCTOREQ:
+            if(getprocqueue(src, &proc_q) > -1){    //Only send when proc queue exist
+                queue_func->iterator(proc_q);
+                while(queue_func->next(&value, proc_q)){
+                    msg_m = (grp_message *)value;
+                    if(msg_m->call_nr == RECEIVE){
+                        g_m = (grp_message *)malloc(sizeof(grp_message));
+                        g_m->group=g_ptr;
+                        g_m->sender=src;
+                        g_m->receiver=msg_m->receiver;
+                        g_m->call_nr=SEND;
+                        g_m->msg= msg;
+                        g_m->ipc_type = ipc_type;
+                        queue_func->enqueue(g_m, g_ptr->pending_q);
+                    }
+                }
+            }
+            break;
+        case IPCNONBLOCK:
+            for(i=0; i<g_ptr->p_size; i++){
+                if(src != g_ptr->p_lst[i]){
+                    s = getprocqueue(g_ptr->p_lst[i], &proc_q);
+                    if(s < 0 || proc_q->size == 0){
+                        g_m = (grp_message *)malloc(sizeof(grp_message));
+                        g_m->group=g_ptr;
+                        g_m->sender=src;
+                        g_m->receiver=g_ptr->p_lst[i];
+                        g_m->call_nr=SEND;
+                        g_m->msg= msg;
+                        g_m->ipc_type = ipc_type;
+                        queue_func->enqueue(g_m, g_ptr->pending_q);
+                    }
+                }
+            }
+            break;
+        default: 
+            if((s=getendpoint(ipc_type)) < 0) return s; 
+            g_m = (grp_message *)malloc(sizeof(grp_message));
+            g_m->group=g_ptr;
+            g_m->sender=src;
+            g_m->receiver=s;
+            g_m->call_nr=SEND;
+            g_m->msg= msg;
+            g_m->ipc_type = ipc_type;
+            queue_func->enqueue(g_m, g_ptr->pending_q);
     }
-    return rv;
+    
+    // return value
+    if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
+    if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
+    return rv == 0 ? SUSPEND : rv;
 }
 
 int do_mreceive(){
-    int rv=SUSPEND, src, grp_nr, ipc_type;
+    int rv=SUSPEND, src, caller, grp_nr, ipc_type, i, s;
     mgroup *g_ptr = NULL;
-    grp_message *g_m;
+    grp_message *g_m, *msg_m;
+    mqueue *proc_q;
+    void *value;
     
-    src = m_in.m1_i1;
+    // Init and valid
+    caller = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
     ipc_type = m_in.m1_i3;
-    
     if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
+    } else if((src=getendpoint(caller)) < 0){
+        return EIVPROC;
     } else if(getprocindex(g_ptr, src) == -1){
-        return -2;
+        return ENOPROC;
     }
     
+    // receive a new message by different ipc_type.
     cur_group = g_ptr;
     g_ptr->g_stat == M_RECEIVING;
+
+    switch(ipc_type){
+        case RECANY:
+            for(i=0; i<g_ptr->p_size; i++){
+                if(src != g_ptr->p_lst[i] && getprocqueue(g_ptr->p_lst[i], &proc_q) > -1 && proc_q->size > 0){
+                    queue_func->iterator(proc_q);
+                    while(queue_func->next(&value, proc_q)){
+                        msg_m = (grp_message *)value;
+                        if(msg_m->call_nr == SEND && msg_m->receiver==src){
+                            g_m = (grp_message *)malloc(sizeof(grp_message));
+                            g_m->group=g_ptr;
+                            g_m->receiver=src;
+                            g_m->sender=g_ptr->p_lst[i];
+                            g_m->call_nr=RECEIVE;                                    
+                            queue_func->enqueue(g_m, g_ptr->pending_q);
+                            return SUSPEND;
+                        }
+                    }
+                }
+            }
+            return NOIPCOP;
+        case IPCTOREQ:
+            for(i=0; i<g_ptr->p_size; i++){
+                if(src != g_ptr->p_lst[i] && getprocqueue(g_ptr->p_lst[i], &proc_q) > -1 && proc_q->size > 0){
+                    queue_func->iterator(proc_q);
+                    while(queue_func->next(&value, proc_q)){
+                        msg_m = (grp_message *)value;
+                        if(msg_m->call_nr == SEND && msg_m->receiver==src){
+                            g_m = (grp_message *)malloc(sizeof(grp_message));
+                            g_m->group=g_ptr;
+                            g_m->receiver=src;
+                            g_m->sender=g_ptr->p_lst[i];
+                            g_m->call_nr=RECEIVE;                                    
+                            queue_func->enqueue(g_m, g_ptr->pending_q);
+                            break;
+                        }
+                    }
+                }
+            }
+            break;
+        default:
+            if((s=getendpoint(ipc_type)) < 0) return s; 
+            g_m = (grp_message *)malloc(sizeof(grp_message));
+            g_m->group=g_ptr;
+            g_m->receiver=src;
+            g_m->sender=s;
+            g_m->call_nr=RECEIVE;
+            queue_func->enqueue(g_m, g_ptr->pending_q);
+    }        
     
-    g_m = (grp_message *)malloc(sizeof(grp_message));
-    g_m->group=g_ptr;
-    g_m->receiver=getendpoint(src);
-    g_m->sender=getendpoint(ipc_type);
-    g_m->call_nr=RECEIVE;
-    g_m->msg = NULL;                                             //Receiver do not need store message.
-    queue_func->enqueue(g_m, g_ptr->pending_q);
-    
-    rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
-    if (rv == 0){
-        g_ptr->g_stat == M_READY;
-        return SUSPEND;
-    }
-    return rv;
+    // return value
+    if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
+    if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
+    return rv == 0 ? SUSPEND : rv;
 }
 
 /*
@@ -233,8 +339,9 @@ void do_server_ipc(){
     void *value;
     grp_message *g_m;
     
-    // Only check current group
-    if(cur_group->g_stat != M_READY) return;
+    // Release lock
+    cur_group->g_stat == M_READY;
+    release_lock(cur_group);
     
     while(queue_func->dequeue(&value, cur_group->valid_q)){
          g_m = (grp_message *)value;
@@ -404,6 +511,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         if(queue_func->hasvalue((void *)dest_e, src_q)){
             printf("deadlock:%d - ", dest_e);
             printqueue(src_q, "src_q_deadlock");
+            acquire_lock(cur_group);
             cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
             queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);           //Deadlock queue
         } else {
@@ -470,11 +578,11 @@ int getprocqueue(endpoint_t proc_e, mqueue **proc_q){
     return -1;
 }
 
-int acquire_lock(void){
-    while(lock != 0);
-    lock = 1;       // Enter critical region.
+int acquire_lock(mgroup *g_ptr){
+    while(g_ptr->lock != 0);
+    g_ptr->lock = 1;       // Enter critical region.
 }
 
-int release_lock(void){
-    lock = 0;
+int release_lock(mgroup *g_ptr){
+    g_ptr->lock = 0;
 }

@@ -19,7 +19,7 @@ typedef int grp_stat;           /* group state */
 #define SENDALL        0            /* send to all other processes */
 #define RECANY         0            /* receive any message when other processes send to current one*/
 #define IPCNONBLOCK   -1            /* send/rec to unblock processes in current group*/ 
-#define SENDRECB      -2            /* only send to receivers who require this sender*/
+#define IPCTOREQ      -2            /* only send/receiver who requires this sender/receiver*/
 /* We also can send/rec a single process by its pid: eg, msend(gid, &m, pid);          */ 
 
 /* send/receive group block stategies: GROUP_STRATEGY, eg, opengroup(UB_ANY_REC) */
@@ -52,4 +52,6 @@ typedef struct{
     int call_nr;                    /* caller_nr: SEND/RECEIVE */     
     int ipc_type;                   /* ipc type */
     message *msg;                   /* message */
+    int lock;                       /* simple busy lock, may cause bug. Better solution: 1.kernel call & spinlock 2. semaphore
+                                     *  but i dont have enough time to finish this.   */
 }grp_message;
