@@ -26,7 +26,7 @@ int main()
         }    	
     } else {
         //Parent proc    
-        printf("cur id:%d\n", parent);
+        printf("this is parent, cur id:%d\n", parent);
         
         for(i=0; i<4; i++){
             rv = msend(gid, &m, pid[i]);

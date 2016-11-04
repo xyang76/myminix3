@@ -173,6 +173,7 @@ int do_msend(){
     cur_group = g_ptr;
     g_ptr->g_stat == M_SENDING;
     
+    printf("send from %d to %d--------------------- \n", src, ipc_type);
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->group=g_ptr;
     g_m->sender=getendpoint(src);
@@ -207,6 +208,7 @@ int do_mreceive(){
     cur_group = g_ptr;
     g_ptr->g_stat == M_RECEIVING;
     
+    printf("receive from %d to %d--------------------- \n", src, ipc_type);
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->group=g_ptr;
     g_m->receiver=getendpoint(src);
@@ -352,8 +354,8 @@ int deadlock(mgroup *g_ptr, int call_nr){
         proc_q = (mqueue *)value;
         deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
-    printf("d3 %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size);
-    printqueue(src_q, "src_q_dm3");
+//    printf("d3 %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size);
+//    printqueue(src_q, "src_q_dm3");
     
     // Remove deadlock processes from valid_q
     queue_func->iterator(g_ptr->valid_q);
@@ -364,7 +366,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
             rv = ELOCKED;
         }
     }
-    printf("d4 %d, %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size, rv);
+    printf("d4 va%d, iv%d, src%d,dest %d, rv %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size, src_q->size,dest_q->size, rv);
     closequeue(src_q);
     closequeue(dest_q);
     return rv;
@@ -385,8 +387,10 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
     }
-    printqueue(dest_q, "dest_q");
+    printf("sender: %d ->", proc_q->number);
     printqueue(src_q, "src_q");
+    printqueue(dest_q, "dest_q");
+    
     // iterative get nextproc.
     queue_func->iterator(dest_q);
     while(queue_func->dequeue(&value, dest_q)){
