@@ -180,7 +180,6 @@ int do_msend(){
 
 int do_mreceive(){
     int rv=SUSPEND, src, grp_nr, ipc_type;
-    message m;
     mgroup *g_ptr = NULL;
     grp_message *g_m;
     
