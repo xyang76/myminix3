@@ -9,7 +9,7 @@ static int enqueue(void *item, mqueue * que);
 static int dequeue(void **item, mqueue * que);
 static int iterator(mqueue * que);
 static int next(void **item, mqueue *que);
-static int removeitemitem(mqueue *que);
+static int removeitem(mqueue *que);
 
 void initqueue(mqueue **que)  
 {  
