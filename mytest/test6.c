@@ -23,6 +23,7 @@ int main()
         //Circle send
         while(mreceive(gid, &m, parent)!=0);
         
+        printf("yes in send\n");
         if(i==3) {
             i=0;
             msend(gid, &m, parent+i+1);
