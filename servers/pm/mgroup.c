@@ -507,6 +507,7 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         if(queue_func->hasvalue((void *)dest_e, src_q)){
             printf("deadlock:%d - ", dest_e);
             printqueue(src_q, "src_q_deadlock");
+            printqueue(dest_q, "dest_q_deadlock");
             acquire_lock(cur_group);
             cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
             queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);           //Deadlock queue
