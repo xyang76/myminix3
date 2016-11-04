@@ -461,7 +461,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
     if(queue_func->hasvalue((void *)sender, src_q)){
-        printf("deadlock:%d - ", dest_e);
+        printf("deadlock:%d - ", sender);
         printqueue(src_q, "src_q_deadlock");
         printqueue(dest_q, "dest_q_deadlock");
         acquire_lock(cur_group);
