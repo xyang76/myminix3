@@ -435,7 +435,7 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
             if(msg_m->receiver == g_m->receiver){
                 msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
                 
-                printf("unblock %d-%d-%d\n", msg_m->receiver, msg_m->sender, msg->m1_i1);
+                printf("unblock %d-%d-%d\n", msg_m->sender, msg_m->receiver, msg->m1_i1);
                 unblock(msg_m->receiver, msg);
                 unblock(msg_m->sender, msg);
                 

@@ -22,7 +22,7 @@ int main()
     } else if (status == 0){
         //Child proc
         while(mreceive(gid, &m, parent)==0){
-            printf("finish send %d-%d\n", rv, errno);
+            printf("finish receive %d-%d\n", rv, errno);
         }    	
     } else {
         //Parent proc    
