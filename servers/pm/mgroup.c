@@ -20,10 +20,8 @@ static mgroup mgrp[NR_GRPS];            /* group table [this design is similar t
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 static message *k_msg;                  /* kernel level message */
-static mqueue *msg_queue = NULL;        /* message queue(shared to all groups, because message is send to process) */
-static int k_src;
-static int k_dest;    
-static int k_ipc_callnr;
+static mqueue *msg_queue = NULL;        /* message queue(shared to all groups, because we need detect deadlock) */
+static mgroup *cur_group;               /* current message group*/
 
 /* private methods prototype */
 int invalid(int strategy);                                  /* valid strategy */ 
@@ -31,7 +29,7 @@ int deadlock(int src, int dest, int call_nr);               /* valid deadlock */
 int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
-void unblock(endpoint_t src, endpoint_t dest);              /* unblock src and dest */
+void unblock(endpoint_t proc_e, message *msg);              /* unblock a process */
 
 int do_opengroup()
 {
@@ -44,7 +42,7 @@ int do_opengroup()
     }
     
     if(msg_queue == NULL){                          // Init message queue if it is null.
-        initQueue(&msg_queue);
+        initqueue(&msg_queue);
     }
     
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
@@ -62,6 +60,9 @@ int do_opengroup()
     g_ptr->g_nr = g_id_ctr;
     g_ptr->g_sttg = strategy;
     g_ptr->p_size = 0;
+    initqueue(&g_ptr->valid_q);
+    initqueue(&g_ptr->pending_q);
+    initqueue(&g_ptr->invalid_q);
     g_id_ctr++;
     
     return g_ptr->g_nr;
@@ -143,37 +144,32 @@ int do_recovergroup(){
 int do_msend(){
     int rv=SUSPEND, src, grp_nr, ipc_type;
     message m;
-//    mgroup *g_ptr = NULL;
+    mgroup *g_ptr = NULL;
     grp_message *g_m;
     
     src = m_in.m1_i1;
     grp_nr = m_in.m1_i2;
     ipc_type = m_in.m1_i3;
-    printf("group nr =%d\n", grp_nr);
-//    if(getgroup(grp_nr, &g_ptr) == -1){
-//        return EIVGRP;
-//    } else if(getprocindex(g_ptr, src) == -1){
-//        return -2;
-//    }
-//    if ((message *) m_in.m1_p1 != (message *) NULL) {
-//        rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
-//            PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
-//        if (rv != OK) return(rv);
-//    }
+    if(getgroup(grp_nr, &g_ptr) == -1){
+        return EIVGRP;
+    } else if(getprocindex(g_ptr, src) == -1){
+        return -2;
+    }
+    if ((message *) m_in.m1_p1 != (message *) NULL) {
+        rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
+            PM_PROC_NR, (vir_bytes) &m, (phys_bytes) sizeof(m));
+        if (rv != OK) return(rv);
+    }
     printf("now msend %d-%d\n", src, ipc_type);    
-//    for(p=g_ptr->p_lst; p<g_ptr->p_lst+NR_MGPROCS && p <= g_ptr->p_lst+g_ptr->p_size; p++){  
-//        if(*p != src){
-//            rv += sys_singleipc(getendpoint(src), getendpoint(*p), SENDNB, &m);
-//        }
-//    }
     // add a new message.
+    cur_group = g_ptr;
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->grp_nr=grp_nr;
-    g_m->src=getendpoint(src);
-    g_m->dest=getendpoint(ipc_type);
+    g_m->sender=getendpoint(src);
+    g_m->receiver=getendpoint(ipc_type);
     g_m->call_nr=SEND;
     g_m->msg= &m;
-    push(g_m, msg_queue);
+    enqueue(g_m, g_ptr->pending_q);
     printf("msend finish\n");    
     return rv;
 }
@@ -200,13 +196,14 @@ int do_mreceive(){
 //    }
     
     printf("Now mreceive %d-%d\n", src, ipc_type);
+    cur_group = g_ptr;
     g_m = (grp_message *)malloc(sizeof(grp_message));
     g_m->grp_nr=grp_nr;
-    g_m->src=getendpoint(src);
-    g_m->dest=getendpoint(ipc_type);
+    g_m->receiver=getendpoint(src);
+    g_m->sender=getendpoint(ipc_type);
     g_m->call_nr=RECEIVE;
-    g_m->msg= &m;
-    push(g_m, msg_queue);
+    g_m->msg= NULL;                                             //Receiver do not need store message.
+    enqueue(g_m, g_ptr->pending_q);
     printf("m receive finish\n");
     return rv;
 }
@@ -215,14 +212,24 @@ int do_mreceive(){
  * Check message queue, when find match grp_message, send reply to its src & dest, then unblock both of them.
  */
 void do_server_ipc(){
-    int rv=0, src_nr, dest_nr;
+    int rv=0, src_nr, dest_nr, i;
     grp_message *g_m;
     
+    // Only check current group
     printf("server ipc start\n");
-    
+    while(dequeue(&g_m, cur_group->valid_q) != -1){
+        
+        
+    }
+    msg_queue
     if(msg_queue->num==2){
-         pull(&g_m, msg_queue);
-         unblock(g_m->src, g_m->dest);
+         dequeue(&g_m, msg_queue);
+         unblock(g_m->receiver);
+         switch(g_m->group->g_sttg){
+             case UB_ALL_REC:
+                
+             
+         }
     }
     printf("kernel ipc finish %d\n", rv);
 }
@@ -274,28 +281,25 @@ endpoint_t getendpoint(int proc_id){
     return -1;
 }
 
-void unblock(endpoint_t src, endpoint_t dest){
+void unblock(endpoint_t proc_e, message *msg){
     register struct mproc *rmp;
-    int sendcount = 0, s, proc_nr;
+    int s, proc_nr;
     
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
-        if(src == rmp->mp_endpoint || dest == rmp->mp_endpoint){
+        if(proc_e == rmp->mp_endpoint){
             if (pm_isokendpt(rmp->mp_endpoint, &proc_nr) != OK) {
                 panic("handle_vfs_reply: got bad endpoint from VFS: %d", rmp->mp_endpoint);
             }
             setreply(proc_nr, OK);
             if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) == (REPLY | IN_USE)) {
-              s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
+//              s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
+              s=sendnb(rmp->mp_endpoint, msg);
               if (s != OK) {
                   printf("PM can't reply to %d (%s): %d\n",
                       rmp->mp_endpoint, rmp->mp_name, s);
               }
               rmp->mp_flags &= ~REPLY;
-            }
-            sendcount++;
-            if(sendcount == 2){         //When already send and receive, then return
-                return;
             }
         }
     }

@@ -1,3 +1,5 @@
+#include "mqueue.h"
+
 #define NR_GRPS      256        /* max number of groups */
 #define NR_MGPROCS   NR_PROCS   /* max number of processes in one group */
 
@@ -22,21 +24,29 @@ typedef int grp_stat;           /* group state */
 #define ANYSOURCE     -4 
 
 
-/* group stategies */
+/* group block stategies */
+#define UB_ALL_REC    0             /* unblock when all receiver get this message */
+#define UB_ANY_REC    1             /* unblock when any receiver get this message */
+#define UB_ANY_CLEAR  2             /* when any receiver get this msg, then this message will be clear from message queue */
 
-typedef struct{
-    int grp_nr;                     /* group */
-    endpoint_t src;                 /* sender */
-    endpoint_t dest;                /* receiver */
-    int call_nr;                    /* type */                      
-    message *msg;                   /* message */
-}grp_message;
+
 
 typedef struct{
     grp_nr_t g_nr;                  /* group number ptr */
     strategy g_sttg;                /* group strategy */
     int p_lst[NR_MGPROCS];          /* group processes */
+    mqueue *valid_q;                /* valid message queue */
+    mqueue *pending_q;              /* pending message queue */
+    mqueue *invalid_q;              /* invalid message queue: may deadlock */
     grp_stat g_stat;                /* group state */
     int p_size;                     /* process size */
     int flag;                       /* flag */
 }mgroup;
+
+typedef struct{
+    mgroup *group;                  /* group */
+    endpoint_t sender;              /* sender */
+    endpoint_t receiver;            /* receiver */
+    int call_nr;                    /* type */                      
+    message *msg;                   /* message */
+}grp_message;

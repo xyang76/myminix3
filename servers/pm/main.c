@@ -144,7 +144,6 @@ int main()
     /* When success send/rec, the caller would be blocked */
     /* that means system call do not need send reply, so we continue */
     if ((call_nr == MSEND || call_nr == MRECEIVE) && result == SUSPEND){
-        printf("who_p%d, %d", who_p, who_e);
         do_server_ipc();
         continue;
     }

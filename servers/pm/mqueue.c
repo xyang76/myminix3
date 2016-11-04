@@ -3,31 +3,42 @@
 #include <stdlib.h>
 #include <malloc.h>   
 
-void initQueue(mqueue **que)  
+/* private methods */
+int isempty(mqueue * que);                  
+int enqueue(void *item, mqueue * que);        
+int dequeue(void **item, mqueue * que);
+int iterator(mqueue * que);
+int next(void **item, mqueue *que);
+int getitem(void **item, mqueue *que);
+static struct node *cur;            /* current */
+
+void initqueue(mqueue **que)  
 {  
     (*que) = (mqueue *)malloc(sizeof(mqueue));            
     (*que)->head = NULL;        
     (*que)->tail = NULL;  
     (*que)->num = 0;
+    
+    /*Bind methods*/
+    (*que)->isempty = isempty;
+    (*que)->enqueue = enqueue;
+    (*que)->dequeue = dequeue;
+    (*que)->iterator = iterator;
+    (*que)->next = next;
+    (*que)->getitem = getitem;
     return;  
 }  
 /* 
-push item into queue
+enqueue item into queue
  */  
-int push(void *item, mqueue *que)  
+int enqueue(void *item, mqueue *que)  
 {  
     struct node *newNode;
     newNode=(struct node *)malloc(sizeof(struct node));
     if(newNode==NULL)
     {
-        printf("Fail£¡ ");
-        exit(1);
+        return false;
     }
-    if(isFull(que))  
-    {  
-        printf("Queue is full!\n");  
-        return false;  
-    }  
     else  
     {  
         newNode->value=item; 
@@ -41,17 +52,16 @@ int push(void *item, mqueue *que)
     {
         que->tail=que->tail->nextNode=newNode;
     }
-    return 0;
+    return true;
 }  
 /* 
-pull out first item from the queue
+dequeue out first item from the queue
  */  
-int pull(void **item, mqueue *que)  
+int dequeue(void **item, mqueue *que)  
 {  
     struct node *p;
-    if(isEmpty(que))  
+    if(isempty(que))  
     {  
-        printf("Queue is empty!\n");  
         return false;  
     }  
     else  
@@ -66,48 +76,20 @@ int pull(void **item, mqueue *que)
         return true;  
     }  
 }  
-int pullindex(void **item, mqueue *que, int index)
+
+int next(void **item, mqueue *que)
 {
 	int i;
 	struct node *p;
-	if(isEmpty(que))  
+	if(isempty(que))  
     {  
-        printf("Queue is empty!\n");  
         return false;  
     } 
-	else if(index>(que->num))
-	{
-		printf("wrong index!");
-		return false;
-	}
-	else
-	{
-		for(i=0; i<index; i++)
-		{
-			*item = que->head->value;    
-			p=que->head;
-			que->head=p->nextNode;
-			if(que->head==NULL)
-			{
-				que->tail=NULL;
-			}
-		}
-	}
 }
-/* 
-if queue is full 
- */  
-int isFull(mqueue * que)  
-{  
-    if((que->num) ==MQUEUESIZE)     
-        return true;  
-    else  
-        return false;  
-}  
 /* 
 if queue is empty
  */  
-int isEmpty(mqueue * que)  
+int isempty(mqueue * que)  
 {  
     if(que->head == NULL)  
         return true;  
