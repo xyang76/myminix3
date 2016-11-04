@@ -344,7 +344,6 @@ int deadlock(mgroup *g_ptr, int call_nr){
     
     initqueue(&src_q);
     initqueue(&dest_q);
-    printf("in deadlock detect\n");
     // add all pending processes into valid_q
     while(queue_func->dequeue(&value, g_ptr->pending_q)){
         g_m = (grp_message *)value;

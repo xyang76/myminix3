@@ -162,7 +162,7 @@ void printqueue(mqueue *que){
     struct node *c;
     
     c = que->head;
-    printf("queue items: ");
+    printf("[queue items]: ");
     while(c != NULL){
         printf("%d ", (int)c->value);
         c = c->nextNode;
