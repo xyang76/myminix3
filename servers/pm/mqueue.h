@@ -14,7 +14,8 @@ struct node
 
 typedef struct 
 {  
-    int num;      
+    int size;      
+    int number;
     struct node *head;   
     struct node *tail;  
     struct node *cur;

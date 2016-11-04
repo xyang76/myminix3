@@ -16,7 +16,7 @@ void initqueue(mqueue **que)
     (*que) = (mqueue *)malloc(sizeof(mqueue));            
     (*que)->head = NULL;        
     (*que)->tail = NULL;  
-    (*que)->num = 0;
+    (*que)->size = 0;
     
     /*Bind methods*/
     (*que)->isempty = isempty;
@@ -43,7 +43,7 @@ int enqueue(void *item, mqueue *que)
     {  
         newNode->value=item; 
         newNode->nextNode = NULL; 
-        que->num++;
+        que->size++;
     }  
     if(que->tail==NULL)
     {
@@ -119,3 +119,14 @@ int isempty(mqueue * que)
         return false;  
 }
 
+void closequeue(mqueue *que){
+    struct node *c, *p;
+    
+    c = que->head;
+    while(c != NULL){
+        p = c;
+        c = c->nextNode;
+        free(p);
+    }
+    free(que);
+}

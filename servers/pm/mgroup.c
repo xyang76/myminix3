@@ -16,11 +16,14 @@
 #include "mgroup.h"
 #include "mqueue.h"
 
+/* message queue(shared to all groups, because we need detect deadlock) */
+/* message queue store proc queues */
+static mqueue *msg_queue = NULL;        
+
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 static message *k_msg;                  /* kernel level message */
-static mqueue *msg_queue = NULL;        /* message queue(shared to all groups, because we need detect deadlock) */
 static mgroup *cur_group;               /* current message group*/
 
 /* private methods prototype */
@@ -30,6 +33,7 @@ int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its 
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 void unblock(endpoint_t proc_e, message *msg);              /* unblock a process */
+int searchinproc(mqueue *proc_q, grp_message *msg);         /* search in proc */
 
 int do_opengroup()
 {
@@ -212,29 +216,31 @@ int do_mreceive(){
  * Check message queue, when find match grp_message, send reply to its src & dest, then unblock both of them.
  */
 void do_server_ipc(){
-    int rv=0, src_nr, dest_nr, i;
+    int rv=0, src_nr, dest_nr, i, flag;
+    mqueue *proc_q;
     grp_message *g_m, *msg_m;
     message *msg;
     
     // Only check current group
     printf("server ipc start\n");
-    while(cur_group->valid_q->dequeue(&g_m, cur_group->valid_q)){
+    while(cur_group->pending_q->dequeue(&g_m, cur_group->pending_q)){
          msg_queue->iterator(msg_queue);
-         while(msg_queue->next(&msg_m, msg_queue)){
-             // If sender and receiver match.
-             if(msg_m->sender == g_m->sender && msg_m->receiver == g_m->receiver 
-                        && msg_m->call_nr+g_m->call_nr == SEND+RECEIVE){
-    
-                msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
-                unblock(msg_m->receiver, msg);
-                unblock(msg_m->sender, msg);
-                
-                msg_queue->remove(msg_queue);           //Remove current item from msg_queue
-                free(msg_m);
-                free(g_m);
+         flag = 0;                        
+         while(msg_queue->next(&proc_q, msg_queue)){
+             /* find match proc*/
+            if(searchinproc(mqueue *proc_q, grp_message *g_m) > 0) {
+                flag = 1;
                 break;
-             }
-             msg_queue->enqueue(g_m);                   //If not find match, then enqueue msg_queue;
+            }
+         }
+         
+         /* if not find match proc */
+         if(flag == 0){
+             // create a new proc in queue, and enqueue its first item.
+             initqueue(&proc_q);
+             proc_q->number = g_m->sender;
+             proc_q->enqueue(g_m, proc_q);
+             msg_queue->enqueue(proc_q, msg_queue);
          }
     }
     printf("server ipc finish %d\n", rv);
@@ -314,11 +320,39 @@ void unblock(endpoint_t proc_e, message *msg){
 int deadlock(mgroup *g_ptr){
     grp_message *g_m, *msg_m;
     
-    while(g_ptr->pending_q->dequeue(&g_m, g_ptr->pending_q)){
-        msg_queue->iterator(msg_queue);
-        while(msg_queue->next(&msg_m, msg_queue)){
-            
-            
+//    while(g_ptr->pending_q->dequeue(&g_m, g_ptr->pending_q)){
+//        msg_queue->iterator(msg_queue);
+//        while(msg_queue->next(&msg_m, msg_queue)){
+//            
+//            
+//        }
+//    }
+    return 0;
+}
+
+
+int searchinproc(mqueue *proc_q, grp_message *g_m){
+    grp_message *msg_m;
+    
+    if(g_m->sender == proc_q->number){                   //Only check/store sender. do not need check twice: sender and receiver
+        proc_q->iterator(proc_q);
+    
+        while(proc_q->next(&msg_m, proc_q)){
+             if(msg_m->call_nr == g_m->call_nr) continue;           // Only search send->receive
+             // If sender and receiver match: sender = sender, callnr = SEND+RECEIVE, receiver = receiver
+             if(msg_m->receiver == g_m->receiver){
+                msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
+                unblock(msg_m->receiver, msg);
+                unblock(msg_m->sender, msg);
+                
+                proc_q->remove(proc_q);                 //Remove current message from proc_queue(not proc)
+                free(msg_m);
+                free(g_m);
+                return 2;
+             }
         }
+        proc_q->enqueue(g_m, proc_q);                   //If not match, then enqueue this message.
+        return 1;
     }
+    return 0;
 }
