@@ -324,15 +324,18 @@ void unblock(endpoint_t proc_e, message *msg){
 int deadlock(mgroup *g_ptr, int call_nr){
     grp_message *g_m;
     mqueue *proc_q, *src_q, *dest_q, *invalid_q;
+    void *value;
     
     initqueue(&src_q);
     initqueue(&dest_q);
-    while(g_ptr->pending_q->dequeue(&g_m, g_ptr->pending_q)){
-        src_q->enqueue(g_m->sender, src_q);
-        dest_q->enqueue(g_m->receiver, dest_q);
+    while(g_ptr->pending_q->dequeue(&value, g_ptr->pending_q)){
+        g_m = (grp_message *)value;
+        src_q->enqueue((void *)g_m->sender, src_q);
+        dest_q->enqueue((void *)g_m->receiver, dest_q);
     }
     msg_queue->iterator(msg_queue);
     if(msg_queue->next(&proc_q, msg_queue)){
+        proc_q = (mqueue *)value;
         deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
     closequeue(src_q);
@@ -343,26 +346,28 @@ int deadlock(mgroup *g_ptr, int call_nr){
 /*
  * Recursive detect deadlock.
  */
-int deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
+void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     grp_message *msg_m;
     endpoint_t dest_e;
+    void *value;
     
     // Put all receiver into dest_q from current proc.
     proc_q->iterator(proc_q);
     while(proc_q->next(&msg_m, proc_q)){
         if(msg_m->call_nr != call_nr) continue;
-        dest_q->enqueue(msg_m->receiver, dest_q);
+        dest_q->enqueue((void *)msg_m->receiver, dest_q);
     }
     
     // iterative get nextproc.
     dest_q->iterator(dest_q);
-    while(dest_q->dequeue(&dest_e, dest_q)){
+    while(dest_q->dequeue(&value, dest_q)){
+        dest_e = (int) value;
         if(src_q->hasvalue(dest_e, src_q)){
-            cur_group->g_stat = M_DEADLOCK;                                    //Deadlock
-            cur_group->flag = ELOCKED;                                         //Deadlock
-            cur_group->invalid_q_int->enqueue(dest_e, cur_group->invalid_q_int);
+            cur_group->g_stat = M_DEADLOCK;                                         //Deadlock
+            cur_group->flag = ELOCKED;                                              //Deadlock
+            cur_group->invalid_q_int->enqueue((void *)dest_e, cur_group->invalid_q_int);    //Deadlock queue
         } else {
-            src_q->enqueue(dest_e, src_q);
+            src_q->enqueue((void *)dest_e, src_q);
         }
         msg_queue->iterator(msg_queue);
         while(msg_queue->next(&proc_q, msg_queue)){
@@ -372,7 +377,6 @@ int deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
             break;
         }
     }
-    
 }
 
 /*
