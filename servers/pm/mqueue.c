@@ -3,6 +3,13 @@
 #include <stdlib.h>
 #include <malloc.h>   
 
+/*********************************************************
+  * mqueue : a simple queue for project 2
+  * Author : Yanqing Gong
+  * Modified : Xincheng Yang
+  * Version : 1.1
+ *********************************************************/
+
 /* private structure */
 struct node{
     void *value;
@@ -84,6 +91,8 @@ static int dequeue(void **item, mqueue *que)
         {
             que->tail=NULL;
         }
+        que->size--;
+        free(p);
         return true;  
     }  
 }  
@@ -93,8 +102,7 @@ static int iterator(mqueue * que){
     que->prev = NULL;
 }
 
-static int next(void **item, mqueue *que)
-{
+static int next(void **item, mqueue *que){
 	if(que->cur == NULL){  
         (*item) = NULL;
         return false;  
@@ -148,6 +156,18 @@ void closequeue(mqueue *que){
         free(p);
     }
     free(que);
+}
+
+void printqueue(mqueue *que){
+    struct node *c;
+    
+    c = que->head;
+    printf("queue items: ");
+    while(c != NULL){
+        printf("%d ", (int)c->value);
+        c = c->nextNode;
+    }
+    printf("\n");
 }
 
 
