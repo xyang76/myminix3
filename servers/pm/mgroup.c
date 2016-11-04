@@ -451,11 +451,9 @@ int deadlock(mgroup *g_ptr, int call_nr){
     // add all pending processes into valid_q
     while(queue_func->dequeue(&value, g_ptr->pending_q)){
         g_m = (grp_message *)value;
-        if(!queue_func->hasvalue((void *)g_m->sender, src_q)){    
-            sender = g_m->sender;                                     // Only store once
-        }
-        queue_func->enqueue((void *)g_m->receiver, src_q);            // Only store once
+        queue_func->enqueue((void *)g_m->receiver, src_q);            
         queue_func->enqueue(g_m, g_ptr->valid_q);
+        sender = g_m->sender;   
     }
     
     // detect deadlock
@@ -504,8 +502,6 @@ void deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
     }
-//    printqueue(src_q, "src_q");
-    printqueue(dest_q, "dest_q");
     
     // iterative get nextproc.
     queue_func->iterator(dest_q);
