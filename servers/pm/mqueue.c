@@ -10,6 +10,7 @@ static int dequeue(void **item, mqueue * que);
 static int iterator(mqueue * que);
 static int next(void **item, mqueue *que);
 static int removeitem(mqueue *que);
+static int hasvalue(void *item, mqueue * que);
 
 void initqueue(mqueue **que)  
 {  
@@ -25,7 +26,7 @@ void initqueue(mqueue **que)
     (*que)->iterator = iterator;
     (*que)->next = next;
     (*que)->removeitem = removeitem;
-     
+    (*que)->hasvalue = hasvalue; 
     return;  
 }  
 /* 
@@ -106,6 +107,17 @@ static int removeitem(mqueue *que){
     }
     free(que->cur);
     return true;
+}
+
+static int hasvalue(void *item, mqueue *que){
+    struct node *p = que->head;
+    while(p != NULL){
+        if(p->value == item){
+            return true;
+        }
+        p++;
+    }
+    return false;
 }
 
 /* 

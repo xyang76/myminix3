@@ -26,6 +26,7 @@ typedef struct
     queue_f0 iterator;
     queue_f2 next;
     queue_f0 removeitem;
+    queue_f1 hasvalue;
 } mqueue;  
 
 void initqueue(mqueue ** que);                

@@ -33,9 +33,9 @@ typedef struct{
     grp_nr_t g_nr;                  /* group number ptr */
     strategy g_sttg;                /* group strategy */
     int p_lst[NR_MGPROCS];          /* group processes */
-    mqueue *valid_q;                /* valid message queue */
-    mqueue *pending_q;              /* pending message queue */
-    mqueue *invalid_q;              /* invalid message queue: may deadlock */
+    mqueue *valid_q;                /* valid message queue   [store grp_message]*/
+    mqueue *pending_q;              /* pending message queue [store grp_message]*/
+    mqueue *invalid_q_int;          /* invalid message queue: may deadlock[store int process]*/
     grp_stat g_stat;                /* group state */
     int p_size;                     /* process size */
     int flag;                       /* flag */

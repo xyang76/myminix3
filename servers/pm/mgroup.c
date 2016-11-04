@@ -65,7 +65,7 @@ int do_opengroup()
     g_ptr->p_size = 0;
     initqueue(&g_ptr->valid_q);
     initqueue(&g_ptr->pending_q);
-    initqueue(&g_ptr->invalid_q);
+    initqueue(&g_ptr->invalid_q_int);
     g_id_ctr++;
     
     return g_ptr->g_nr;
@@ -321,7 +321,7 @@ void unblock(endpoint_t proc_e, message *msg){
     }
 }
 
-int deadlock(mgroup *g_ptr){
+int deadlock(mgroup *g_ptr, int call_nr){
     grp_message *g_m;
     mqueue *proc_q, *src_q, *dest_q, *invalid_q;
     
@@ -330,12 +330,10 @@ int deadlock(mgroup *g_ptr){
     while(g_ptr->pending_q->dequeue(&g_m, g_ptr->pending_q)){
         src_q->enqueue(g_m->sender, src_q);
         dest_q->enqueue(g_m->receiver, dest_q);
-        
     }
     msg_queue->iterator(msg_queue);
-    while(msg_queue->next(&proc_q, msg_queue)){
-        
-        
+    if(msg_queue->next(&proc_q, msg_queue)){
+        deadlock_rec(proc_q, src_q, dest_q, call_nr);
     }
     closequeue(src_q);
     closequeue(dest_q);
@@ -345,15 +343,36 @@ int deadlock(mgroup *g_ptr){
 /*
  * Recursive detect deadlock.
  */
-int deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int type){
+int deadlock_rec(mqueue *proc_q, mqueue *src_q, mqueue *dest_q, int call_nr){
     grp_message *msg_m;
+    endpoint_t dest_e;
     
+    // Put all receiver in current proc.
     proc_q->iterator(proc_q);
     while(proc_q->next(&msg_m, proc_q)){
-        if(msg_m->call_nr != type) continue;
-        
-        
+        if(msg_m->call_nr != call_nr) continue;
+        dest_q->enqueue(msg_m->receiver, dest_q);
     }
+    
+    // iterative get nextproc.
+    dest_q->iterator(dest_q);
+    while(dest_q->dequeue(&dest_e, dest_q)){
+        if(src_q->hasvalue(dest_e, src_q)){
+            cur_group->g_stat = M_DEADLOCK;                                    //Deadlock
+            cur_group->flag = ELOCKED;                                         //Deadlock
+            g_ptr->invalid_q_int->enqueue(dest_e, g_ptr->invalid_q_int);
+        } else {
+            src_q->enqueue(dest_e, src_q);
+        }
+        msg_queue->iterator(msg_queue);
+        while(msg_queue->next(&proc_q, msg_queue)){
+            if(proc_q->number == dest_e){
+                deadlock_rec(proc_q, src_q, dest_q, call_nr);       //Recursive.
+            }
+            break;
+        }
+    }
+    
 }
 
 /*
