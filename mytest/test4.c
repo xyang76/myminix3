@@ -3,25 +3,24 @@
 #include <lib.h>    // provides _syscall and message
 #include "minix/ipc.h"
 
-
 int main()
 {
-	message msg, *m;
-	int parent, child, i;
-	m = &msg;
-	parent=getpid();
-	if((child=fork())!=0){
-        //this is parent
-        msg.m1_i1 = 10;
-        printf("send %d - %d\n", child, parent);
-		i = _syscall(PM_PROC_NR, 108, &msg);
-		printf("rv is %d\n", i); 
-	} else {
-        //this is child
-        printf("receive %d - %d\n", child, parent);
-		i = _syscall(PM_PROC_NR, 108, &msg);
-		printf("rv is %d\n", i); 
-	}
-
-	return 0;
+    int gid, rv, child, parent=getpid();
+    message m;
+    gid=opengroup(0);
+    if((child=fork())==0){
+        // child
+        printf("start send\n");
+        addproc(gid, getpid());
+        m.m1_i1 = 10;
+        rv = msend(gid, &m, parent);
+        printf("finish send %d-%d\n", rv, errno);
+    } else {
+        // This is parent
+        printf("start rec \n");
+        addproc(gid, parent);
+        rv = msend(gid, &m, child);
+        printf("finish rec %d-%d-%d\n", rv, errno, m.m1_i1);
+    }
+    return 0;
 }
