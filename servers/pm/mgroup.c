@@ -248,7 +248,7 @@ int do_msend(){
     
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
-    if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
+    if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, SEND);                              // detect deadlock
     return rv == 0 ? SUSPEND : rv;
 }
 
