@@ -168,7 +168,7 @@ int do_msend(){
     // add a new message.
     cur_group = g_ptr;
     g_m = (grp_message *)malloc(sizeof(grp_message));
-    g_m->grp_nr=grp_nr;
+    g_m->group=g_ptr;
     g_m->sender=getendpoint(src);
     g_m->receiver=getendpoint(ipc_type);
     g_m->call_nr=SEND;
@@ -202,7 +202,7 @@ int do_mreceive(){
     printf("Now mreceive %d-%d\n", src, ipc_type);
     cur_group = g_ptr;
     g_m = (grp_message *)malloc(sizeof(grp_message));
-    g_m->grp_nr=grp_nr;
+    g_m->group=g_ptr;
     g_m->receiver=getendpoint(src);
     g_m->sender=getendpoint(ipc_type);
     g_m->call_nr=RECEIVE;
