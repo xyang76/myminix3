@@ -519,7 +519,7 @@ void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr){
         queue_func->enqueue((void *)msg_m->receiver, pend_q);
         printf("enqueue %d->%d\n", msg_m->sender, msg_m->receiver);
     }
-
+}
 
 /*
  * search msg match from queues.
