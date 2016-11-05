@@ -350,7 +350,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     mqueue *proc_q;
     struct node *n;
     int send_num = 0, b_num, flag = 0;
-    grp_message *g_m;
+    grp_message *g_m, *msg_m;
     void *value;
     
     /******************************* unblock condition ********************************
@@ -376,8 +376,8 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
             
                 if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
                     for(n = proc_q->head; n != NULL; n=n->nextNode){
-                        g_m = (grp_message *)n->value;
-                        if(g_m->call_nr == RECEIVE) continue;
+                        msg_m = (grp_message *)n->value;
+                        if(msg_m->call_nr == RECEIVE || msg_m->receiver == g_m->receiver) continue;
                         send_num++;
                     }
                     printf("still have %d left\n", send_num);
