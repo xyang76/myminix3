@@ -285,7 +285,7 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
             initqueue(&proc_q);
             proc_q->number = g_m->sender;
             queue_func->enqueue(g_m, proc_q);
-            block_queue->enqueue(g_m, proc_q);
+            queue_func->enqueue(g_m, block_queue);
             queue_func->enqueue(proc_q, msg_queue);
         } else {                                                // if exist proc in message queue
             queue_func->iterator(proc_q);
@@ -304,7 +304,7 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
             }
             if(stat != 1) {                                       // If did not find match message
                 queue_func->enqueue(g_m, proc_q); 
-                block_queue->enqueue(g_m, proc_q);
+                queue_func->enqueue(g_m, block_queue);
             }
         }
     }
