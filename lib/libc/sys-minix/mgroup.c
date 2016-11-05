@@ -47,25 +47,25 @@ int recovergroup(int grp_nr, int strategy){
     return _syscall(PM_PROC_NR, RECOVERGP, &m);
 }
 
-int msend(int dest, char *msg, int type){
+int msend(int dest, message *msg, int type){
     message m;
     
     m.m1_i1 = getpid();
     m.m1_i2 = dest;
     m.m1_i3 = type;
-    m.m1_p1 = msg;
+    m.m1_p1 = (char*)msg;
    
     return _syscall(PM_PROC_NR, MSEND, &m);
 }
 
-int mreceive(int src, char *msg, int type){
+int mreceive(int src, message *msg, int type){
     message m;
     int rv;
     
     m.m1_i1 = getpid();
     m.m1_i2 = src;
     m.m1_i3 = type;
-    m.m1_p1 = msg;
+    m.m1_p1 = (char*)msg;
     
     rv = _syscall(PM_PROC_NR, MRECEIVE, &m);
     memcpy(msg, &m, sizeof(message));
