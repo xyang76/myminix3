@@ -15,6 +15,15 @@ static inline int ASSERT_EQUAL(int result, int expect)
     exit(0);
 }
 
+static inline int ASSERT_GREATER(int result, int expect)
+{
+    if(result > expect){
+        return TRUE;
+    }
+    printf("ASSERT_EQUAL [%d==%d] Fail.\n", result, expect);
+    exit(0);
+}
+
 static inline void TEST_EQUAL(int result, int expect, char *msg){
     if(result == expect){
         printf("TEST_EQUAL [%s] OK.\n", msg);
