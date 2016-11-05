@@ -2,7 +2,7 @@
 #include <stdio.h>  
 #include <stdlib.h>
 #include <malloc.h>   
-#include "mgroup.h
+#include "mgroup.h"
 
 /*********************************************************
   * mqueue : a simple queue for project 2

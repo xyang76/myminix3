@@ -367,6 +367,8 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     void *value;
     
     printf("executing %d, %d", block_queue->size, unblock_queue->size); 
+    printqueue2(unblock_queue, "unblock queue::::\n");
+    printqueue2(block_queue, "block queue::::\n");
     /******************************* unblock condition ********************************
      * When SEND  sender: block_queue->size == 0
      *            receiver : in unblock queue
@@ -375,8 +377,6 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
      * Did not implement other unblock condtions until now, because of deadline limit.
      * *********************************************************************************/
     while(queue_func->dequeue(&value, unblock_queue)){
-        printqueue2(unblock_queue, "unblock queue::::\n");
-        printqueue2(block_queue, "block queue::::\n");
         switch(call_type){
             case SEND:
 //                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
