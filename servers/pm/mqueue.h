@@ -1,3 +1,6 @@
+#ifndef _MQUEUE_H_ 
+#define _MQUEUE_H_ 
+
 #define true 1
 #define false 0
 
@@ -35,3 +38,5 @@ void initqueue(mqueue ** que);
 void closequeue(mqueue *que);
 void printqueue(mqueue *que, char *name);
 void printqueue2(mqueue *que, char *name);
+
+#endif
