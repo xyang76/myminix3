@@ -143,15 +143,16 @@ int main()
     /* do server level ipc. Add by Xincheng Yang*/
     /* When success send/rec, the caller would be blocked */
     /* that means system call do not need send reply, so we continue */
-    if (call_nr == MSEND || call_nr == MRECEIVE){
-        if(result == SUSPEND){
-            do_server_ipc();
-            continue;
-        } else if(result == ELOCKED){
-            do_deadlock();
-        } else {
-            do_errohandling();
-        }
+    if ((call_nr == MSEND || call_nr == MRECEIVE) && result == SUSPEND){
+//        if(result == SUSPEND){
+//            do_server_ipc();
+//            continue;
+//        } else if(result == ELOCKED){
+//            do_deadlock();
+//        } else {
+//            do_errohandling();
+//        }
+        continue;
     } 
 
 	/* Send reply. */
