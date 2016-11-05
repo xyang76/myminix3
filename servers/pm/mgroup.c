@@ -149,7 +149,7 @@ int do_recovergroup(){
     }
     
     // Release lock
-    g_ptr->g_stat == M_READY;
+    g_ptr->g_stat = M_READY;
     release_lock(g_ptr);
     return 0;
 }
@@ -184,7 +184,7 @@ int do_msend(){
     
     // add a new message by different ipc_type.
     cur_group = g_ptr;
-    g_ptr->g_stat == M_SENDING;
+    g_ptr->g_stat = M_SENDING;
     switch(ipc_type){
         case SENDALL:
             for(i=0; i<g_ptr->p_size; i++){
@@ -277,7 +277,7 @@ int do_mreceive(){
     
     // receive a new message by different ipc_type.
     cur_group = g_ptr;
-    g_ptr->g_stat == M_RECEIVING;
+    g_ptr->g_stat = M_RECEIVING;
 
     switch(ipc_type){
         case RECANY:
@@ -344,7 +344,7 @@ void do_server_ipc(mgroup *g_ptr){
     grp_message *g_m;
     
     // Release lock
-    g_ptr->g_stat == M_READY;
+    g_ptr->g_stat = M_READY;
     release_lock(g_ptr);
     
     while(queue_func->dequeue(&value, g_ptr->valid_q)){
