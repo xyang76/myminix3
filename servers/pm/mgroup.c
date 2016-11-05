@@ -138,6 +138,7 @@ int do_closegroup(){
 int do_recovergroup(){
     mgroup *g_ptr = NULL;
     int grp_nr, strategy;
+    void *value;
     
     grp_nr = m_in.m1_i1;
     strategy = m_in.m1_i2;
@@ -145,6 +146,24 @@ int do_recovergroup(){
         return EIVSTTG;
     }else if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
+    }
+    
+    switch(strategy){
+        case IGNORE_ELOCK:
+            // Clear all invalid chain.
+            while(queue_func->dequeue(&value, g_ptr->invalid_q_int));
+            do_server_ipc();
+            break;
+        case CANCEL_IPC:
+            while(queue_func->dequeue(&value, g_ptr->invalid_q_int));
+            while(queue_func->dequeue(&value, g_ptr->pending_q));
+            while(queue_func->dequeue(&value, g_ptr->valid_q));
+            notify(g_ptr->flag);               //unblock sender.
+            break;
+        case CLEAR_MSG:
+            
+        case CLEAR_ALL_MSG:
+            //TODO
     }
     
     // Release lock
@@ -461,7 +480,8 @@ int deadlock(mgroup *g_ptr, int call_nr){
     initqueue(&src_q);
     
     // add all pending processes into valid_q
-    while(queue_func->dequeue(&value, g_ptr->pending_q)){
+    queue_func->iterator(g_ptr->pending_q);
+    while(queue_func->next(&value, g_ptr->pending_q)){
         g_m = (grp_message *)value;
         queue_func->enqueue((void *)g_m->receiver, src_q);            
         queue_func->enqueue(g_m, g_ptr->valid_q);
@@ -482,15 +502,13 @@ int deadlock(mgroup *g_ptr, int call_nr){
                 printf("deadlock:%d - ", sender);
                 printqueue(src_q, "src_q_deadlock");
                 printqueue(dest_q, "dest_q_deadlock");
-                cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
-                queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);
+                g_ptr->flag = who_e;
+                g_ptr->g_stat = M_DEADLOCK;                                          //Deadlock
+                queue_func->enqueue((void *)dest_e, g_ptr->invalid_q_int);
             }
         } 
         closequeue(dest_q);
     }
-    
-//    printf("d3 %d, %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size);
-//    printqueue(src_q, "src_q_dm3");
     
     // Remove deadlock processes from valid_q
     queue_func->iterator(g_ptr->valid_q);
@@ -501,7 +519,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
             rv = ELOCKED;
         }
     }
-//    printf("d4 va%d, iv%d, src%d,dest %d, rv %d  ", cur_group->valid_q->size, cur_group->invalid_q_int->size, src_q->size,dest_q->size, rv);
+    
     closequeue(src_q);
     return rv;
 }
