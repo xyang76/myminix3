@@ -472,7 +472,7 @@ void unblock(endpoint_t proc_e, message *msg){
 int deadlock(mgroup *g_ptr, int call_nr){
     grp_message *g_m;
     mqueue *proc_q, *valid_q, *pend_q, *invalid_q;
-    int rv = 0, deadlock;
+    int rv = 0, deadlock, dest_e;
     
     // Iterative valid pending_q
     while(queue_func->dequeue((grp_message *)&g_m, g_ptr->pending_q)){
