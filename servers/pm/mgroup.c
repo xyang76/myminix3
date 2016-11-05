@@ -212,7 +212,7 @@ int do_msend(){
     cur_group = g_ptr;
     g_ptr->g_stat = M_SENDING;
     
-    acquire_lock(g_ptr);
+//    acquire_lock(g_ptr);
     rv = send_pending(g_ptr, msg, src, ipc_type);
     
     // return value
@@ -245,7 +245,7 @@ int do_mreceive(){
     cur_group = g_ptr;
     g_ptr->g_stat = M_RECEIVING;
     
-    acquire_lock(g_ptr);
+//    acquire_lock(g_ptr);
     rv = rec_pending(g_ptr, NULL, src, ipc_type);
     
     // return value
@@ -259,37 +259,7 @@ int do_mreceive(){
  * Check message queue, when find match grp_message, send reply to its src & dest, then try unblock both of them.
  */
 void do_server_ipc(){
-    int rv=0, flag;
-    mqueue *proc_q;
-    void *value;
-    grp_message *g_m;
-    
-    while(queue_func->dequeue(&value, cur_group->valid_q)){
-         g_m = (grp_message *)value;
-         queue_func->iterator(msg_queue);
-         flag = 0;          
-         while(queue_func->next(&value, msg_queue)){
-            proc_q = (mqueue *)value;
-             /* find match proc*/
-            if(searchinproc(proc_q, g_m) > 0) {
-                flag = 1;
-                break;
-            }
-         }
-         
-         /* if not find match proc */
-         if(flag == 0){
-             // create a new proc in queue, and enqueue its first item.
-             initqueue(&proc_q);
-             proc_q->number = g_m->sender;
-             queue_func->enqueue(g_m, proc_q);
-             queue_func->enqueue(proc_q, msg_queue);
-         }
-    }
-    
-    // Release lock
-    cur_group->g_stat = M_READY;
-    release_lock(cur_group);
+//    release_lock(cur_group);
 }
 
 void do_deadlock(){
@@ -297,7 +267,7 @@ void do_deadlock(){
 }
 
 void do_errohandling(){
-    release_lock(cur_group);
+//    release_lock(cur_group);
 }
 
 /*  ========================= private methods ================================*/
@@ -560,6 +530,7 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
             g_m->ipc_type = ipc_type;
             queue_func->enqueue(g_m, g_ptr->pending_q);
     }
+    return 0;
 }
 
 
