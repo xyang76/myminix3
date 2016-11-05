@@ -19,10 +19,8 @@
 /* message queue(shared to all groups, because we need detect deadlock) */
 /* message queue store proc queues */
 static mqueue *msg_queue = NULL;        
-static mqueue *block_queue = NULL;      /* block list*/
 
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
-
 static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 static mgroup *cur_group;               /* current message group*/
@@ -35,7 +33,7 @@ int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
 void unblock(endpoint_t proc_e, message *msg);              /* unblock a process */
 int searchinproc(mqueue *proc_q, grp_message *g_m);         /* search send->rec chain from proc */
-void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr) /*recursive detect deadlock */
+void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr);  /*recursive detect deadlock */
 int acquire_lock(mgroup *g_ptr);                            /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
 int release_lock(mgroup *g_ptr);                            /* simple busy lock */
 int getprocqueue(endpoint_t proc_e, mqueue **proc_q);       /* get proc queue */
@@ -52,7 +50,6 @@ int do_opengroup()
     
     if(msg_queue == NULL){                          // Init message queue if it is null.
         initqueue(&msg_queue);
-        initqueue(&block_queue);        
     }
     
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
@@ -182,6 +179,7 @@ int do_msend(){
     mgroup *g_ptr = NULL;
     grp_message *g_m, *msg_m;
     mqueue *proc_q;
+    void *value;
     
     // Init and valid
     caller = m_in.m1_i1;
@@ -226,7 +224,8 @@ int do_msend(){
         case IPCTOREQ:
             if(getprocqueue(src, &proc_q) > -1){    //Only send when proc queue exist
                 queue_func->iterator(proc_q);
-                while(queue_func->next((grp_message *)&msg_m, proc_q)){
+                while(queue_func->next(&value, proc_q)){
+                    msg_m = (grp_message *)value;
                     if(msg_m->call_nr == RECEIVE){
                         g_m = (grp_message *)malloc(sizeof(grp_message));
                         g_m->group=g_ptr;
@@ -280,6 +279,7 @@ int do_mreceive(){
     mgroup *g_ptr = NULL;
     grp_message *g_m, *msg_m;
     mqueue *proc_q;
+    void *value;
     
     // Init and valid
     caller = m_in.m1_i1;
@@ -304,7 +304,8 @@ int do_mreceive(){
             for(i=0; i<g_ptr->p_size; i++){
                 if(src != g_ptr->p_lst[i] && getprocqueue(g_ptr->p_lst[i], &proc_q) > -1 && proc_q->size > 0){
                     queue_func->iterator(proc_q);
-                    while(queue_func->next((grp_message *)&msg_m, proc_q)){
+                    while(queue_func->next(&value, proc_q)){
+                        msg_m = (grp_message *)value;
                         if(msg_m->call_nr == SEND && msg_m->receiver==src){
                             g_m = (grp_message *)malloc(sizeof(grp_message));
                             g_m->group=g_ptr;
@@ -322,7 +323,8 @@ int do_mreceive(){
             for(i=0; i<g_ptr->p_size; i++){
                 if(src != g_ptr->p_lst[i] && getprocqueue(g_ptr->p_lst[i], &proc_q) > -1 && proc_q->size > 0){
                     queue_func->iterator(proc_q);
-                    while(queue_func->next((grp_message *)&msg_m, proc_q)){
+                    while(queue_func->next(&value, proc_q)){
+                        msg_m = (grp_message *)value;
                         if(msg_m->call_nr == SEND && msg_m->receiver==src){
                             g_m = (grp_message *)malloc(sizeof(grp_message));
                             g_m->group=g_ptr;
@@ -358,12 +360,15 @@ int do_mreceive(){
 void do_server_ipc(){
     int rv=0, flag;
     mqueue *proc_q;
+    void *value;
     grp_message *g_m;
     
-    while(queue_func->dequeue((grp_message *)&g_m, cur_group->valid_q)){
+    while(queue_func->dequeue(&value, cur_group->valid_q)){
+         g_m = (grp_message *)value;
          queue_func->iterator(msg_queue);
          flag = 0;          
-         while(queue_func->next((mqueue *)&proc_q, msg_queue)){
+         while(queue_func->next(&value, msg_queue)){
+            proc_q = (mqueue *)value;
              /* find match proc*/
             if(searchinproc(proc_q, g_m) > 0) {
                 flag = 1;
@@ -476,8 +481,8 @@ int deadlock(mgroup *g_ptr, int call_nr){
         deadlock = 0;
         
         if(getprocqueue(g_m->receiver, &proc_q) != -1){
-            while(queue_func->dequeue((int)&dest_e, pend_q)){
-                queue_func->enqueue((int)&dest_e, valid_q);                         // Put cur process into already valid_q
+            while(queue_func->dequeue(&dest_e, pend_q)){
+                queue_func->enqueue(&dest_e, valid_q);                         // Put cur process into already 
                 if(getprocqueue(dest_e, &proc_q) != -1){
                     deadlock_addpend(proc_q, pend_q, call_nr);
                 }
@@ -509,12 +514,12 @@ void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr){
     
     // Put all receiver into pend_q from current proc.
     queue_func->iterator(proc_q);
-    while(queue_func->next((grp_message *)&msg_m, proc_q)){
+    while(queue_func->next(&msg_m, proc_q)){
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, pend_q);
         printf("enqueue %d->%d\n", msg_m->sender, msg_m->receiver);
     }
-}
+
 
 /*
  * search msg match from queues.
@@ -522,11 +527,13 @@ void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr){
 int searchinproc(mqueue *proc_q, grp_message *g_m){
     grp_message *msg_m;
     message *msg;
+    void *value;
     
     if(g_m->sender == proc_q->number){                              //Only check/store sender. do not need check twice: sender and receiver
         queue_func->iterator(proc_q);
         
-        while(queue_func->next((grp_message *)&msg_m, proc_q)){
+        while(queue_func->next(&value, proc_q)){
+            msg_m=(grp_message *)value;
             if(msg_m->call_nr == g_m->call_nr) continue;           // Only search send->receive
              // If sender and receiver match: sender = sender, callnr = SEND+RECEIVE, receiver = receiver
             if(msg_m->receiver == g_m->receiver){
@@ -548,10 +555,12 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
 }
 
 int getprocqueue(endpoint_t proc_e, mqueue **proc_q){
+    void *value;
     mqueue *q;
     
     queue_func->iterator(msg_queue);
-    while(queue_func->next((mqueue *)&q, msg_queue)){
+    while(queue_func->next(&value, msg_queue)){
+        q = (mqueue *)value;
         if(q->number == proc_e){
             (*proc_q) = q;
             return 0;
