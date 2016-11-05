@@ -292,6 +292,9 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
             }
         }
     }
+    printf("executing %d, %d", block_queue->size, unblock_queue->size); 
+    printqueue2(unblock_queue, "unblock queue::::\n");
+    printqueue2(block_queue, "block queue::::\n");
 //    try_unblock(block_queue, unblock_queue, call_type);
     closequeue(unblock_queue);
     closequeue(block_queue);
