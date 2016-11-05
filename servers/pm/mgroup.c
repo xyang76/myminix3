@@ -309,8 +309,8 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
         }
     }
     try_unblock(block_queue, unblock_queue, call_type);
-    closequeue(&unblock_queue);
-    closequeue(&block_queue);
+    closequeue(unblock_queue);
+    closequeue(block_queue);
     return rv;
 }
 
@@ -363,7 +363,6 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     mqueue *proc_q;
     struct node *n;
     int send_num = 0, b_num, flag = 0;
-    message *msg;
     grp_message *g_m;
     void *value;
     
