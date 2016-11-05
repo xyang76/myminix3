@@ -19,7 +19,6 @@
 /* message queue(shared to all groups, because we need detect deadlock) */
 /* message queue store proc queues */
 static mqueue *msg_queue = NULL;        
-static mqueue *block_queue = NULL;   
 
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
@@ -32,7 +31,7 @@ int deadlock(mgroup *g_ptr, int call_nr);                   /* valid deadlock */
 int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
 int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
-void try_unblock(endpoint_t proc_e, message *msg, grp_message *g_m);   /* try unblock a process */
+void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int src);   /* try unblock a process */
 void do_unblock(endpoint_t proc_e, message *msg);           /* unblock a process */
 int searchinproc(mqueue *proc_q, grp_message *g_m);         /* search send->rec chain from proc */
 void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr);  /*recursive detect deadlock */
@@ -56,7 +55,6 @@ int do_opengroup()
     
     if(msg_queue == NULL){                          // Init message queue if it is null.
         initqueue(&msg_queue);
-        initqueue(&block_queue);
     }
     
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
@@ -218,7 +216,7 @@ int do_msend(){
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
     if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, SEND);                              // detect deadlock
-    if(rv == 0) rv = do_server_unblock(g_ptr, src);
+    if(rv == 0) rv = do_server_unblock(g_ptr, SEND);
     return rv == 0 ? SUSPEND : rv;
 }
 
@@ -251,7 +249,7 @@ int do_mreceive(){
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
     if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
-    if(rv == 0) rv = do_server_unblock(g_ptr, src);
+    if(rv == 0) rv = do_server_unblock(g_ptr, RECEIVE);
     return rv == 0 ? SUSPEND : rv;
 }
 
@@ -272,21 +270,22 @@ void do_errohandling(){
 
 /*  ========================= private methods ================================*/
 
-int do_server_unblock(mgroup *g_ptr, int src){
+int do_server_unblock(mgroup *g_ptr, int call_type){
     int rv=0, stat = 0;
-    mqueue *proc_q;
+    mqueue *proc_q, *block_queue, *unblock_queue;
     message *msg;
     void *value;
     grp_message *g_m, *msg_m;
     
-    queue_func->enqueue(src, block_queue);                      // Src blocked.
-    
-    while(queue_func->dequeue(&value, cur_group->valid_q)){
+    initqueue(&unblock_queue);
+    initqueue(&block_queue);
+    while(queue_func->dequeue(&value, g_ptr->valid_q)){
         g_m = (grp_message *)value;
         if(getprocqueue(g_m->sender, &proc_q) == -1){            // If not exist, then build proc queue
             initqueue(&proc_q);
             proc_q->number = g_m->sender;
             queue_func->enqueue(g_m, proc_q);
+            block_queue->enqueue(g_m, proc_q);
             queue_func->enqueue(proc_q, msg_queue);
         } else {                                                // if exist proc in message queue
             queue_func->iterator(proc_q);
@@ -294,10 +293,10 @@ int do_server_unblock(mgroup *g_ptr, int src){
                 msg_m = (grp_message *)value;
                 if(msg_m->call_nr == g_m->call_nr) continue;    // Only when callnr+callnr=send+receive, then goto next step;
                 if(msg_m->receiver == g_m->receiver){
-                    msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
-                    
-                    try_unblock(msg_m->receiver, msg, msg_m);
-                    try_unblock(msg_m->sender, msg, msg_m);
+                    msg_m = msg_m->call_nr == SEND ? msg_m: g_m;
+                    queue_func->enqueue(msg_m, unblock_queue);
+//                    try_unblock(msg_m->receiver, msg, msg_m);
+//                    try_unblock(msg_m->sender, msg, msg_m);
                     queue_func->removeitem(proc_q);             // Proc queue remove this message.
                     stat = 1;
                     break;
@@ -305,11 +304,13 @@ int do_server_unblock(mgroup *g_ptr, int src){
             }
             if(stat != 1) {                                       // If did not find match message
                 queue_func->enqueue(g_m, proc_q); 
+                block_queue->enqueue(g_m, proc_q);
             }
         }
     }
-    
-    
+    try_unblock(block_queue, unblock_queue, call_type);
+    closequeue(&unblock_queue);
+    closequeue(&block_queue);
     return rv;
 }
 
@@ -358,15 +359,59 @@ endpoint_t getendpoint(int proc_id){
     return -1;
 }
 
-void try_unblock(endpoint_t proc_e, message *msg, grp_message *g_m){
+void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     mqueue *proc_q;
     struct node *n;
-    int send_num = 0;
+    int send_num = 0, b_num;
+    message *msg;
+    grp_message *g_m;
+    void *value;
     
-    if(proc_e == g_m->receiver){            // unblock receiver directly
-        do_unblock(proc_e, msg);
-    } else {                                // unblock sender only if all message received
-        if(getprocqueue(g_m->sender, &proc_q) > 0){
+    b_num = block_queue->size;
+    while(queue_func->dequeue(&value, unblock_queue)){
+        switch(call_type){
+            case SEND:
+                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
+                
+                if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
+                    for(n = proc_q->head; n != NULL; n=n->nextNode){
+                        g_m = (grp_message *)n->value;
+                        if(g_m->call_nr == RECEIVE) continue;
+                        send_num++;
+                    }
+                    printf("still have %d left\n", send_num);
+                    if(send_num + b_num == 0){
+                        do_unblock(g_m->sender, g_m->msg);
+                    }
+                }
+                b_num--;
+            
+            case RECEIVE:
+                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
+            
+                if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
+                    for(n = proc_q->head; n != NULL; n=n->nextNode){
+                        g_m = (grp_message *)n->value;
+                        if(g_m->call_nr == RECEIVE) continue;
+                        send_num++;
+                    }
+                    printf("still have %d left\n", send_num);
+                    if(send_num == 0){
+                        do_unblock(g_m->sender, g_m->msg);
+                    }
+                }
+        }
+    }
+    
+    while(queue_func->dequeue(&value, unblock_queue)){
+        
+        
+        
+        g_m = (grp_message *)value;
+        
+        do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
+        
+        if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
             for(n = proc_q->head; n != NULL; n=n->nextNode){
                 g_m = (grp_message *)n->value;
                 if(g_m->call_nr == RECEIVE) continue;
@@ -374,7 +419,7 @@ void try_unblock(endpoint_t proc_e, message *msg, grp_message *g_m){
             }
             printf("still have %d left\n", send_num);
             if(send_num == 0){
-                do_unblock(proc_e, msg);
+                do_unblock(g_m->sender, g_m->msg);
             }
         }
     }
