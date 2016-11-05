@@ -22,7 +22,7 @@ int main()
     } else if (status == 0){
         //Circle send
         while(mreceive(gid, &m, parent)!=0);
-        
+        printf("message %d", m.m1_i1);
         if(i==3){
             i -= 4;
         }
@@ -32,7 +32,7 @@ int main()
     } else {
         //Parent proc    
         printf("cur id:%d\n", parent);
-        
+        m.m1_i1 = 10;
         for(i=0; i<4; i++){
             rv = msend(gid, &m, SENDALL);
             printf("finish send %d-%d\n", rv, errno);
