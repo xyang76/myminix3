@@ -441,7 +441,8 @@ int deadlock(mgroup *g_ptr, int call_nr){
     void *value;
     
     // Iterative valid pending_q
-    while(queue_func->dequeue((grp_message *)&g_m, g_ptr->pending_q)){
+    while(queue_func->dequeue(&value, g_ptr->pending_q)){
+        g_m = (grp_message *)value;
         initqueue(&valid_q);
         initqueue(&pend_q);
         deadlock = 0;
