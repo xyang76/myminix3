@@ -373,14 +373,13 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
      *            receiver : in unblock queue
      * Did not implement other unblock condtions until now, because of deadline limit.
      * *********************************************************************************/
-    b_num = block_queue->size - unblock_queue->size;
     while(queue_func->dequeue(&value, unblock_queue)){
         switch(call_type){
             case SEND:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
                 
                 if(block_queue->size == 0 && flag == 0){    // only unblock sender once.
-                    do_unblock(g_m->receiver, g_m->msg);
+                    do_unblock(g_m->sender, g_m->msg);
                     flag = 1;
                 }
             
