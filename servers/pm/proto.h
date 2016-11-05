@@ -113,3 +113,5 @@ int do_rmproc(void);
 int do_msend(void);
 int do_mreceive(void);
 void do_server_ipc(void);
+void do_deadlock(void);
+void do_errohandling(void);

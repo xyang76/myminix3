@@ -37,7 +37,6 @@ void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr);  /*recursive det
 int acquire_lock(mgroup *g_ptr);                            /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
 int release_lock(mgroup *g_ptr);                            /* simple busy lock */
 int getprocqueue(endpoint_t proc_e, mqueue **proc_q);       /* get proc queue */
-void do_server_ipc(mgroup *g_ptr);                          /* ipc */
 
 int do_opengroup()
 {
@@ -183,6 +182,8 @@ int do_msend(){
     } 
     
     // add a new message by different ipc_type.
+    acquire_lock(g_ptr);
+    
     cur_group = g_ptr;
     g_ptr->g_stat = M_SENDING;
     switch(ipc_type){
@@ -250,9 +251,6 @@ int do_msend(){
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
     if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, SEND);                              // detect deadlock
-    if(rv == 0){
-        do_server_ipc(mgroup *g_ptr);
-    }
     return rv == 0 ? SUSPEND : rv;
 }
 
@@ -278,6 +276,8 @@ int do_mreceive(){
     // receive a new message by different ipc_type.
     cur_group = g_ptr;
     g_ptr->g_stat = M_RECEIVING;
+    
+    acquire_lock(g_ptr);
 
     switch(ipc_type){
         case RECANY:
@@ -337,17 +337,13 @@ int do_mreceive(){
 /*
  * Check message queue, when find match grp_message, send reply to its src & dest, then unblock both of them.
  */
-void do_server_ipc(mgroup *g_ptr){
+void do_server_ipc(){
     int rv=0, flag;
     mqueue *proc_q;
     void *value;
     grp_message *g_m;
     
-    // Release lock
-    g_ptr->g_stat = M_READY;
-    release_lock(g_ptr);
-    
-    while(queue_func->dequeue(&value, g_ptr->valid_q)){
+    while(queue_func->dequeue(&value, cur_group->valid_q)){
          g_m = (grp_message *)value;
          queue_func->iterator(msg_queue);
          flag = 0;          
@@ -372,6 +368,18 @@ void do_server_ipc(mgroup *g_ptr){
              queue_func->enqueue(proc_q, msg_queue);
          }
     }
+    
+    // Release lock
+    cur_group->g_stat = M_READY;
+    release_lock(cur_group);
+}
+
+void do_deadlock(){
+    
+}
+
+void do_errohandling(){
+    release_lock(cur_group);
 }
 
 /*  ========================= private methods ================================*/
@@ -474,9 +482,8 @@ int deadlock(mgroup *g_ptr, int call_nr){
                 printf("deadlock:%d - ", sender);
                 printqueue(src_q, "src_q_deadlock");
                 printqueue(dest_q, "dest_q_deadlock");
-                acquire_lock(g_ptr);
-                g_ptr->g_stat = M_DEADLOCK;                                          //Deadlock
-                queue_func->enqueue((void *)dest_e, g_ptr->invalid_q_int);
+                cur_group->g_stat = M_DEADLOCK;                                          //Deadlock
+                queue_func->enqueue((void *)dest_e, cur_group->invalid_q_int);
             }
         } 
         closequeue(dest_q);
