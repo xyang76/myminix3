@@ -381,9 +381,6 @@ void do_server_ipc(){
              // create a new proc in queue, and enqueue its first item.
              initqueue(&proc_q);
              proc_q->number = g_m->sender;
-             if(g_m->call_nr == 1){
-                printf("here we enqueue %d->%d - non\n", g_m->sender, g_m->receiver);
-             }
              queue_func->enqueue(g_m, proc_q);
              queue_func->enqueue(proc_q, msg_queue);
          }
@@ -497,12 +494,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         if(getprocqueue(dest_e, &proc_q) != -1){
             queue_func->iterator(dest_q);
             deadlock_rec(proc_q, dest_q, call_nr);
-            printf("sender %d :: ", dest_e);
-            printqueue(dest_q, "src_q_tmp");
             if(queue_func->hasvalue((void *)sender, dest_q)){
-                printf("deadlock:%d - ", sender);
-                printqueue(src_q, "src_q_deadlock");
-                printqueue(dest_q, "dest_q_deadlock");
                 g_ptr->flag = who_e;
                 g_ptr->g_stat = M_DEADLOCK;                                          //Deadlock
                 queue_func->enqueue((void *)dest_e, g_ptr->invalid_q_int);
@@ -537,7 +529,6 @@ void deadlock_rec(mqueue *proc_q, mqueue *dest_q, int call_nr){
     queue_func->iterator(proc_q);
     while(queue_func->next(&value, proc_q)){
         msg_m = (grp_message *)value;
-        printf("msg_m:%d-%d[%d|%d]\n", msg_m->sender, msg_m->receiver, msg_m->call_nr, call_nr);
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, dest_q);
     }
@@ -572,22 +563,16 @@ int searchinproc(mqueue *proc_q, grp_message *g_m){
             if(msg_m->receiver == g_m->receiver){
                 msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
                 
-                printf("unblock %d-%d-%d\n", msg_m->sender, msg_m->receiver, msg->m1_i1);
                 unblock(msg_m->receiver, msg);
                 unblock(msg_m->sender, msg);
                 
-                printf("before remove %d\n", proc_q->size);
                 queue_func->removeitem(proc_q);              //Remove current message from proc_queue(not proc)
-                printf("after remove %d\n", proc_q->size);
 //                free(msg_m);
 //                free(g_m);
                 return 2;
             }
         }
         queue_func->enqueue(g_m, proc_q);                   //If not match, then enqueue this message.
-        if(g_m->call_nr == 1){
-            printf("Here we enqueue %d-%d\n", g_m->sender, g_m->receiver);
-        }
         return 1;
     }
     return 0;
