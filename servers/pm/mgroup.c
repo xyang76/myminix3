@@ -390,7 +390,6 @@ endpoint_t getendpoint(int proc_id){
 void try_unblock(endpoint_t proc_e, message *msg, grp_message *g_m){
     mqueue *proc_q;
     struct node *n;
-    grp_message *g_m;
     int send_num = 0;
     
     if(proc_e == g_m->receiver){            // unblock receiver directly
