@@ -436,7 +436,7 @@ void do_unblock(endpoint_t proc_e, message *msg){
 
 int deadlock(mgroup *g_ptr, int call_nr){
     grp_message *g_m;
-    mqueue *proc_q, *valid_q, *pend_q, *invalid_q;
+    mqueue *proc_q, *valid_q, *pend_q;
     int rv = 0, deadlock, dest_e;
     
     // Iterative valid pending_q
@@ -448,7 +448,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         if(getprocqueue(g_m->receiver, &proc_q) != -1){
             queue_func->enqueue(g_m->receiver, pend_q);
             while(queue_func->dequeue(&dest_e, pend_q)){
-                queue_func->enqueue(dest_e, valid_q);                            // Put cur process into already 
+                queue_func->enqueue((void *)dest_e, valid_q);                            // Put cur process into already 
                 if(getprocqueue(dest_e, &proc_q) != -1){
                     deadlock_addpend(proc_q, pend_q, call_nr);
                 }
@@ -479,10 +479,12 @@ int deadlock(mgroup *g_ptr, int call_nr){
  */
 void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr){
     grp_message *msg_m;
+    void *value;
     
     // Put all receiver into pend_q from current proc.
     queue_func->iterator(proc_q);
-    while(queue_func->next(&msg_m, proc_q)){
+    while(queue_func->next(&value, proc_q)){
+        msg_m =(grp_message *)value;
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, pend_q);
     }
