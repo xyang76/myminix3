@@ -154,8 +154,8 @@ int addproc(int grp_nr, int proc);
 int rmproc(int grp_nr, int proc);
 int closegroup(int grp_nr);
 int recovergroup(int grp_nr, int stategy);
-int msend(int dest, message *msg, int ipc_type);
-int mreceive(int src, message *msg, int ipc_type);
+int msend(int dest, void *msg, int ipc_type);
+int mreceive(int src, void *msg, int ipc_type);
 
 /*
  * IEEE Std 1003.2-92, adopted in X/Open Portability Guide Issue 4 and later

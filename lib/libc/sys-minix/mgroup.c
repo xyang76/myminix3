@@ -47,7 +47,7 @@ int recovergroup(int grp_nr, int strategy){
     return _syscall(PM_PROC_NR, RECOVERGP, &m);
 }
 
-int msend(int dest, message *msg, int type){
+int msend(int dest, void *msg, int type){
     message m;
     
     m.m1_i1 = getpid();
@@ -58,7 +58,7 @@ int msend(int dest, message *msg, int type){
     return _syscall(PM_PROC_NR, MSEND, &m);
 }
 
-int mreceive(int src, message *msg, int type){
+int mreceive(int src, void *msg, int type){
     message m;
     int rv;
     
