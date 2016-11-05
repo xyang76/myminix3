@@ -490,7 +490,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
                     deadlock_addpend(proc_q, pend_q, call_nr);
                 }
             }
-            printf("\n");
+            printqueue(valid_q, "valid_q is");
             if(queue_func->hasvalue((void *)g_m->sender, valid_q)){                  // if sender exist in the dest
                 g_ptr->flag = who_e;
                 g_ptr->g_stat = M_DEADLOCK;                                          //Deadlock
