@@ -70,7 +70,7 @@ int do_opengroup()
     g_ptr->lock = 0;
     initqueue(&g_ptr->valid_q);
     initqueue(&g_ptr->pending_q);
-    initqueue(&g_ptr->invalid_q_int);
+    initqueue(&g_ptr->invalid_q);
     g_id_ctr++;
     
     return g_ptr->g_nr;
@@ -151,11 +151,11 @@ int do_recovergroup(){
     switch(strategy){
         case IGNORE_ELOCK:
             // Clear all invalid chain.
-            while(queue_func->dequeue(&value, g_ptr->invalid_q_int));
+            while(queue_func->dequeue(&value, g_ptr->invalid_q));
             do_server_ipc();
             break;
         case CANCEL_IPC:
-            while(queue_func->dequeue(&value, g_ptr->invalid_q_int));
+            while(queue_func->dequeue(&value, g_ptr->invalid_q));
             while(queue_func->dequeue(&value, g_ptr->pending_q));
             while(queue_func->dequeue(&value, g_ptr->valid_q));
             notify(g_ptr->flag);               //unblock sender.

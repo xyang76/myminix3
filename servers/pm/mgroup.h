@@ -44,7 +44,7 @@ typedef struct{
     int p_lst[NR_MGPROCS];          /* group processes */
     mqueue *valid_q;                /* valid message queue:   [store grp_message]*/
     mqueue *pending_q;              /* pending message queue: [store grp_message]*/
-    mqueue *invalid_q_int;          /* invalid message queue:  deadlock queue[store int process]*/
+    mqueue *invalid_q;              /* invalid message queue:  deadlock queue */
     grp_stat g_stat;                /* group state */
     int p_size;                     /* process size */
     int flag;                       /* flag, reserved property */
