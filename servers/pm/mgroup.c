@@ -161,9 +161,10 @@ int do_recovergroup(){
             notify(g_ptr->flag);               //unblock sender.
             break;
         case CLEAR_MSG:
-            
+            break;
         case CLEAR_ALL_MSG:
             //TODO
+            break;
     }
     
     // Release lock
