@@ -1,19 +1,3 @@
-#include "stdio.h"
-#include "pm.h"
-#include <sys/wait.h>
-#include <assert.h>
-#include <minix/callnr.h>
-#include <minix/com.h>
-#include <minix/sched.h>
-#include <minix/vm.h>
-#include <sys/ptrace.h>
-#include <sys/resource.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-#include <malloc.h>   
-#include "mproc.h"
-#include "param.h"
 #include "mgroup.h"
 
 /* message queue(shared to all groups, because we need detect deadlock) */
