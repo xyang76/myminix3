@@ -529,29 +529,39 @@ void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr){
 int searchinproc(mqueue *proc_q, grp_message *g_m){
     grp_message *msg_m;
     message *msg;
+    int receiverNum = 0, rv = 0;
     void *value;
     
     if(g_m->sender == proc_q->number){                              //Only check/store sender. do not need check twice: sender and receiver
         queue_func->iterator(proc_q);
-        
         while(queue_func->next(&value, proc_q)){
             msg_m=(grp_message *)value;
+            if(msg_m->call_nr == SEND) receiverNum++;
             if(msg_m->call_nr == g_m->call_nr) continue;           // Only search send->receive
              // If sender and receiver match: sender = sender, callnr = SEND+RECEIVE, receiver = receiver
             if(msg_m->receiver == g_m->receiver){
                 msg = msg_m->call_nr == SEND ? msg_m->msg : g_m->msg;
                 
                 unblock(msg_m->receiver, msg);
-                unblock(msg_m->sender, msg);
                 
+                
+//                unblock(msg_m->sender, msg);
+
                 queue_func->removeitem(proc_q);              //Remove current message from proc_queue(not proc)
 //                free(msg_m);
 //                free(g_m);
-                return 2;
+                rv = 2;
+            } 
+        }
+        if(rv != 2){
+            queue_func->enqueue(g_m, proc_q);                   //If not match, then enqueue this message.
+            rv = 1;
+        } else {
+            printf("still need %d \n", receiverNum);
+            if(receiverNum <= 1){
+                unblock(g_m->sender, msg);
             }
         }
-        queue_func->enqueue(g_m, proc_q);                   //If not match, then enqueue this message.
-        return 1;
     }
     return 0;
 }
