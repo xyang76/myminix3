@@ -438,6 +438,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
     grp_message *g_m;
     mqueue *proc_q, *valid_q, *pend_q;
     int rv = 0, deadlock, dest_e;
+    void *value;
     
     // Iterative valid pending_q
     while(queue_func->dequeue((grp_message *)&g_m, g_ptr->pending_q)){
@@ -446,8 +447,9 @@ int deadlock(mgroup *g_ptr, int call_nr){
         deadlock = 0;
         
         if(getprocqueue(g_m->receiver, &proc_q) != -1){
-            queue_func->enqueue(g_m->receiver, pend_q);
-            while(queue_func->dequeue(&dest_e, pend_q)){
+            queue_func->enqueue((void*)g_m->receiver, pend_q);
+            while(queue_func->dequeue(&value, pend_q)){
+                dest_e = (int)value;
                 queue_func->enqueue((void *)dest_e, valid_q);                            // Put cur process into already 
                 if(getprocqueue(dest_e, &proc_q) != -1){
                     deadlock_addpend(proc_q, pend_q, call_nr);
