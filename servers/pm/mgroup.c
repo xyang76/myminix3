@@ -489,6 +489,11 @@ void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr){
 }
 
 int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
+    int i, s;
+    grp_message *g_m, *msg_m;
+    mqueue *proc_q;
+    void *value;
+    
     switch(ipc_type){
         case SENDALL:
             for(i=0; i<g_ptr->p_size; i++){
@@ -554,6 +559,11 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
 
 
 int rec_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
+    int i, s;
+    grp_message *g_m, *msg_m;
+    mqueue *proc_q;
+    void *value;
+    
     switch(ipc_type){
         case RECANY:
             for(i=0; i<g_ptr->p_size; i++){
