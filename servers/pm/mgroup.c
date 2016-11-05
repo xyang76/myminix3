@@ -365,17 +365,17 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
         g_m = (grp_message *)value;
         switch(call_type){
             case SEND:
-                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
-                
+//                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
+                printf("unblock %d\n", g_m->receiver);
                 if(block_queue->size == 0 && flag == 0){    // only unblock sender once.
                     printf("unblock %d\n", g_m->sender);
-                    do_unblock(g_m->sender, g_m->msg);
+//                    do_unblock(g_m->sender, g_m->msg);
                     flag = 1;
                 }
             
             case RECEIVE:
-                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
-            
+//                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
+                printf("unblock %d\n", g_m->receiver);
                 if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
                     for(n = proc_q->head; n != NULL; n=n->nextNode){
                         msg_m = (grp_message *)n->value;
@@ -385,7 +385,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
                     printf("still have %d left\n", send_num);
                     if(send_num == 0){
                         printf("unblock %d\n", g_m->sender);
-                        do_unblock(g_m->sender, g_m->msg);
+//                        do_unblock(g_m->sender, g_m->msg);
                     }
                 }
         }
