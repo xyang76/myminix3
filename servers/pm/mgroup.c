@@ -362,29 +362,27 @@ endpoint_t getendpoint(int proc_id){
 void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     mqueue *proc_q;
     struct node *n;
-    int send_num = 0, b_num;
+    int send_num = 0, b_num, flag = 0;
     message *msg;
     grp_message *g_m;
     void *value;
     
-    b_num = block_queue->size;
+    /******************************* unblock condition ********************************
+     * When SEND  sender: block_queue->size == 0
+     *            receiver : in unblock queue
+     * When RECEIVE sender: all message received
+     *            receiver : in unblock queue
+     * *********************************************************************************/
+    b_num = block_queue->size - unblock_queue->size;
     while(queue_func->dequeue(&value, unblock_queue)){
         switch(call_type){
             case SEND:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
                 
-                if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
-                    for(n = proc_q->head; n != NULL; n=n->nextNode){
-                        g_m = (grp_message *)n->value;
-                        if(g_m->call_nr == RECEIVE) continue;
-                        send_num++;
-                    }
-                    printf("still have %d left\n", send_num);
-                    if(send_num + b_num == 0){
-                        do_unblock(g_m->sender, g_m->msg);
-                    }
+                if(block_queue->size == 0 && flag == 0){    // only unblock sender once.
+                    do_unblock(g_m->receiver, g_m->msg);
+                    flag = 1;
                 }
-                b_num--;
             
             case RECEIVE:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
@@ -400,27 +398,6 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
                         do_unblock(g_m->sender, g_m->msg);
                     }
                 }
-        }
-    }
-    
-    while(queue_func->dequeue(&value, unblock_queue)){
-        
-        
-        
-        g_m = (grp_message *)value;
-        
-        do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
-        
-        if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
-            for(n = proc_q->head; n != NULL; n=n->nextNode){
-                g_m = (grp_message *)n->value;
-                if(g_m->call_nr == RECEIVE) continue;
-                send_num++;
-            }
-            printf("still have %d left\n", send_num);
-            if(send_num == 0){
-                do_unblock(g_m->sender, g_m->msg);
-            }
         }
     }
 }
