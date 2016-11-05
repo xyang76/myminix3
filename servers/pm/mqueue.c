@@ -2,6 +2,7 @@
 #include <stdio.h>  
 #include <stdlib.h>
 #include <malloc.h>   
+#include "mgroup.h
 
 /*********************************************************
   * mqueue : a simple queue for project 2
@@ -173,6 +174,22 @@ void printqueue(mqueue *que, char *name){
     c = que->head;
     while(c != NULL){
         printf("%d ", (int)c->value);
+        c = c->nextNode;
+    }
+    printf("\n");
+}
+
+void printqueue2(mqueue *que, char *name){
+    struct node *c;
+    grp_message *msg;
+    
+    if(name == NULL) name = "queue";
+    printf("[%s items]: ", name);
+    
+    c = que->head;
+    while(c != NULL){
+        msg = (grp_message *)c->value;
+        printf("%d->%d[%d] ", msg->sender, msg->receiver, msg->call_nr);
         c = c->nextNode;
     }
     printf("\n");

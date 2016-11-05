@@ -34,3 +34,4 @@ queue_function *queue_func;
 void initqueue(mqueue ** que);                
 void closequeue(mqueue *que);
 void printqueue(mqueue *que, char *name);
+void printqueue2(mqueue *que, char *name);
