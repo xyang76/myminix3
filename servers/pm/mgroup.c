@@ -368,6 +368,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
                 
                 if(block_queue->size == 0 && flag == 0){    // only unblock sender once.
+                    printf("unblock %d\n", g_m->sender);
                     do_unblock(g_m->sender, g_m->msg);
                     flag = 1;
                 }
@@ -383,6 +384,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
                     }
                     printf("still have %d left\n", send_num);
                     if(send_num == 0){
+                        printf("unblock %d\n", g_m->sender);
                         do_unblock(g_m->sender, g_m->msg);
                     }
                 }
