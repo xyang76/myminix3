@@ -292,10 +292,7 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
             }
         }
     }
-    printf("executing %d, %d\n", block_queue->size, unblock_queue->size); 
-    printqueue2(unblock_queue, "unblock queue::::");
-    printqueue2(block_queue, "block queue::::");
-//    try_unblock(block_queue, unblock_queue, call_type);
+    try_unblock(block_queue, unblock_queue, call_type);
     closequeue(unblock_queue);
     closequeue(block_queue);
     return rv;
@@ -352,6 +349,10 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     int send_num = 0, b_num, flag = 0;
     grp_message *g_m, *msg_m;
     void *value;
+    
+    printf("executing %d, %d\n", block_queue->size, unblock_queue->size); 
+    printqueue2(unblock_queue, "unblock queue::::");
+    printqueue2(block_queue, "block queue::::");
     
     /******************************* unblock condition ********************************
      * When SEND  sender: block_queue->size == 0
