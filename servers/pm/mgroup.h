@@ -1,11 +1,10 @@
 #include "mqueue.h"
 
+#ifndef _MGROUP_H_ 
+#define _MGROUP_H_ 
+
 #define NR_GRPS      256        /* max number of groups */
 #define NR_MGPROCS   NR_PROCS   /* max number of processes in one group */
-
-typedef int grp_nr_t;           /* group number ptr */
-typedef int strategy;           /* send/receive/recovery strategy */
-typedef int grp_stat;           /* group state */
 
 /* msg group state : similar to kernel process states. */
 #define M_UNUSED       0        
@@ -32,6 +31,12 @@ typedef int grp_stat;           /* group state */
 #define CANCEL_IPC    1             /* cancel this ipc operation */
 #define CLEAR_MSG     2             /* clear all messages in current group */
 #define CLEAR_ALL_MSG 3             /* clear all messages in all groups */
+
+#ENDIF
+
+typedef int grp_nr_t;           /* group number ptr */
+typedef int strategy;           /* send/receive/recovery strategy */
+typedef int grp_stat;           /* group state */
 
 typedef struct{
     grp_nr_t g_nr;                  /* group number ptr */
