@@ -392,7 +392,7 @@ void do_server_ipc(){
 }
 
 void do_deadlock(){
-    
+    // Reserved, we did not do any action until now. (wait user choose any strategy to recover)
 }
 
 void do_errohandling(){
@@ -520,7 +520,6 @@ void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr){
     while(queue_func->next(&msg_m, proc_q)){
         if(msg_m->call_nr != call_nr) continue;
         queue_func->enqueue((void *)msg_m->receiver, pend_q);
-        printf("enqueue %d->%d\n", msg_m->sender, msg_m->receiver);
     }
 }
 

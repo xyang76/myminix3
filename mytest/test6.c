@@ -34,7 +34,7 @@ int main()
         printf("cur id:%d\n", parent);
         
         for(i=0; i<4; i++){
-            rv = msend(gid, &m, pid[i]);
+            rv = msend(gid, &m, SENDALL);
             printf("finish send %d-%d\n", rv, errno);
         }
     }
