@@ -305,6 +305,7 @@ void do_errohandling(){
 int do_server_unblock(mgroup *g_ptr, int src){
     int rv=0, stat = 0;
     mqueue *proc_q;
+    message *msg;
     void *value;
     grp_message *g_m, *msg_m;
     
