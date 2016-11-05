@@ -20,20 +20,17 @@ int main()
     if (status == -1){
         //Fork error
     } else if (status == 0){
-        //Circle send
-        while(mreceive(gid, &m, parent)!=0);
-        printf("message %d", m.m1_i1);
-        if(i==3){
-            i -= 4;
-        }
-        printf("yes in send %d-%d-%d\n", getpid(), parent+i+2, i);
-	    int rv = msend(gid, &m, parent+i+2);	
-        printf("rv is %d-%d\n", rv, errno);
+        //Child proc
+        while(mreceive(gid, &m, parent)!=0);    
+        printf("finish receive %d-%d\n", rv, errno);	
     } else {
         //Parent proc    
-        printf("cur id:%d\n", parent);
-        m.m1_i1 = 10;
-        printf("finish send %d-%d\n", rv, errno);
+        printf("this is parent, cur id:%d\n", parent);
+        
+//        for(i=0; i<4; i++){
+//            printf("msend to %d ----------------- \n", pid[i]);
+        rv = msend(gid, &m, SENDALL);
+        closegroup(gid);
     }
     return 0;
 }
