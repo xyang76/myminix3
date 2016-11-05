@@ -32,7 +32,7 @@
 #define CLEAR_MSG     2             /* clear all messages in current group */
 #define CLEAR_ALL_MSG 3             /* clear all messages in all groups */
 
-#ENDIF
+#endif
 
 typedef int grp_nr_t;           /* group number ptr */
 typedef int strategy;           /* send/receive/recovery strategy */
