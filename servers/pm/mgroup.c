@@ -481,12 +481,15 @@ int deadlock(mgroup *g_ptr, int call_nr){
         deadlock = 0;
         
         if(getprocqueue(g_m->receiver, &proc_q) != -1){
+            printf("valid %d->%d\n", g_m->sender, g_m->receiver);
             while(queue_func->dequeue(&dest_e, pend_q)){
                 queue_func->enqueue(&dest_e, valid_q);                         // Put cur process into already 
                 if(getprocqueue(dest_e, &proc_q) != -1){
+                    printf("check %d :: ", dest_e);
                     deadlock_addpend(proc_q, pend_q, call_nr);
                 }
             }
+            printf("\n");
             if(queue_func->hasvalue((void *)g_m->sender, valid_q)){                  // if sender exist in the dest
                 g_ptr->flag = who_e;
                 g_ptr->g_stat = M_DEADLOCK;                                          //Deadlock
