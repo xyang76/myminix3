@@ -292,7 +292,7 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
             }
         }
     }
-    printf("executing %d, %d", block_queue->size, unblock_queue->size); 
+    printf("executing %d, %d\n", block_queue->size, unblock_queue->size); 
     printqueue2(unblock_queue, "unblock queue::::\n");
     printqueue2(block_queue, "block queue::::\n");
 //    try_unblock(block_queue, unblock_queue, call_type);
@@ -353,9 +353,6 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     grp_message *g_m;
     void *value;
     
-    printf("executing %d, %d", block_queue->size, unblock_queue->size); 
-    printqueue2(unblock_queue, "unblock queue::::\n");
-    printqueue2(block_queue, "block queue::::\n");
     /******************************* unblock condition ********************************
      * When SEND  sender: block_queue->size == 0
      *            receiver : in unblock queue
@@ -364,17 +361,18 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
      * Did not implement other unblock condtions until now, because of deadline limit.
      * *********************************************************************************/
     while(queue_func->dequeue(&value, unblock_queue)){
+        g_m = (grp_message *)value;
         switch(call_type){
             case SEND:
-//                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
+                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
                 
                 if(block_queue->size == 0 && flag == 0){    // only unblock sender once.
-//                    do_unblock(g_m->sender, g_m->msg);
+                    do_unblock(g_m->sender, g_m->msg);
                     flag = 1;
                 }
             
             case RECEIVE:
-//                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
+                do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
             
                 if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
                     for(n = proc_q->head; n != NULL; n=n->nextNode){
@@ -384,7 +382,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
                     }
                     printf("still have %d left\n", send_num);
                     if(send_num == 0){
-//                        do_unblock(g_m->sender, g_m->msg);
+                        do_unblock(g_m->sender, g_m->msg);
                     }
                 }
         }
