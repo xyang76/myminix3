@@ -501,6 +501,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
         if(!deadlock){
             queue_func->enqueue(g_m, g_ptr->valid_q);
         } else {
+            printf("Deadlock occur: %d(endpoint)->%d(endpoint)\n", g_m->sender, g_m->receiver);         // Print deadlock
             queue_func->enqueue(g_m, g_ptr->invalid_q);                          //input invalid_queue
         }
         closequeue(valid_q);
