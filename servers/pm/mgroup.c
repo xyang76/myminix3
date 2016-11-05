@@ -200,7 +200,7 @@ int do_msend(){
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
     if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, SEND);                              // detect deadlock
-//    if(rv == 0) rv = do_server_unblock(g_ptr, SEND);
+    if(rv == 0) rv = do_server_unblock(g_ptr, SEND);
     return rv == 0 ? SUSPEND : rv;
 }
 
@@ -233,7 +233,7 @@ int do_mreceive(){
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
     if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
-//    if(rv == 0) rv = do_server_unblock(g_ptr, RECEIVE);
+    if(rv == 0) rv = do_server_unblock(g_ptr, RECEIVE);
     return rv == 0 ? SUSPEND : rv;
 }
 
@@ -292,7 +292,7 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
             }
         }
     }
-    try_unblock(block_queue, unblock_queue, call_type);
+//    try_unblock(block_queue, unblock_queue, call_type);
     closequeue(unblock_queue);
     closequeue(block_queue);
     return rv;
