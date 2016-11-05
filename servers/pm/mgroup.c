@@ -312,7 +312,7 @@ int do_server_unblock(mgroup *g_ptr, int src){
     
     while(queue_func->dequeue(&value, cur_group->valid_q)){
         g_m = (grp_message *)value;
-        if(getprocqueue(g_m->sender, proc_q) == -1){            // If not exist, then build proc queue
+        if(getprocqueue(g_m->sender, &proc_q) == -1){            // If not exist, then build proc queue
             initqueue(&proc_q);
             proc_q->number = g_m->sender;
             queue_func->enqueue(g_m, proc_q);
@@ -396,7 +396,7 @@ void try_unblock(endpoint_t proc_e, message *msg, grp_message *g_m){
     if(proc_e == g_m->receiver){            // unblock receiver directly
         do_unblock(proc_e, msg);
     } else {                                // unblock sender only if all message received
-        if(getprocqueue(g_m->sender, proc_q) > 0){
+        if(getprocqueue(g_m->sender, &proc_q) > 0){
             for(n = proc_q->head; n != NULL; n=n->nextNode){
                 g_m = (grp_message *)n->value;
                 if(g_m->call_nr == RECEIVE) continue;
