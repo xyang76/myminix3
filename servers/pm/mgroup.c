@@ -371,7 +371,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
      *            receiver : in unblock queue
      * When RECEIVE sender: all message received
      *            receiver : in unblock queue
-     * Did not implement other unblock condtions until now, because of deadline.
+     * Did not implement other unblock condtions until now, because of deadline limit.
      * *********************************************************************************/
     b_num = block_queue->size - unblock_queue->size;
     while(queue_func->dequeue(&value, unblock_queue)){
