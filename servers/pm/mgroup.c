@@ -372,6 +372,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
      *            receiver : in unblock queue
      * When RECEIVE sender: all message received
      *            receiver : in unblock queue
+     * Did not implement other unblock condtions until now, because of deadline.
      * *********************************************************************************/
     b_num = block_queue->size - unblock_queue->size;
     while(queue_func->dequeue(&value, unblock_queue)){
@@ -432,6 +433,17 @@ int deadlock(mgroup *g_ptr, int call_nr){
     int rv = 0, deadlock, dest_e;
     void *value;
     
+    /******************************* deadlock condition/algorithm **********************
+     * 1. push receiver A into pend_q. 
+     * 2. interative check pend_q. eg, dequeue A from pend_q and put A into valid_q
+     * 3. if the value A send to another process, eg, BCD, then push receivers into pend_q.
+     * 4. valid B, C, D each. put them into valid_q
+     * 5. iterative execute step 2,3,4. until the pend_q is empty.
+     * 6. check sender S, if s in valid_q, that means circle send/receive [deadlock].
+     * 7. else, not deadlock.
+     * 8. for multiple message, we put them in group->pending_q and valid each from step 1->7
+     * *********************************************************************************/
+    
     // Iterative valid pending_q
     while(queue_func->dequeue(&value, g_ptr->pending_q)){
         g_m = (grp_message *)value;
@@ -443,12 +455,12 @@ int deadlock(mgroup *g_ptr, int call_nr){
             queue_func->enqueue((void*)g_m->receiver, pend_q);
             while(queue_func->dequeue(&value, pend_q)){
                 dest_e = (int)value;
-                queue_func->enqueue((void *)dest_e, valid_q);                            // Put cur process into already 
+                queue_func->enqueue((void *)dest_e, valid_q);                       // Put cur process into already 
                 if(getprocqueue(dest_e, &proc_q) != -1){
                     deadlock_addpend(proc_q, pend_q, call_nr);
                 }
             }
-            if(queue_func->hasvalue((void *)g_m->sender, valid_q)){                  // if sender exist in the dest
+            if(queue_func->hasvalue((void *)g_m->sender, valid_q)){                  // if sender exist in the valid_q
                 g_ptr->flag = who_e;
                 g_ptr->g_stat = M_DEADLOCK;                                          //Deadlock
                 deadlock = 1;
