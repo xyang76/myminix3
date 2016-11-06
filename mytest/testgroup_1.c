@@ -60,7 +60,7 @@ int test_opengroup_syscall(){
 
 int test_opengroup(){
     message m;  
-    int gid1, gid2;
+    int gid1, gid2, rv;
     
     gid1 = opengroup(0);
     gid2 = opengroup(0);
