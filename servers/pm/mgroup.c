@@ -199,7 +199,6 @@ int do_msend(){
         return ENOPROC;
     }
     
-//    acquire_lock(g_ptr);
     // Copy data from m_in.
     if ((message *) m_in.m1_p1 != (message *) NULL) {
         rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
@@ -211,10 +210,10 @@ int do_msend(){
     cur_group = g_ptr;
     g_ptr->g_stat = M_SENDING;
     
+//    acquire_lock(g_ptr);
     rv = send_pending(g_ptr, msg, src, ipc_type);
     
-    // free msg and return value
-    free(msg);
+    // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
     rv = deadlock(g_ptr, SEND);                                                        // detect deadlock
     if(rv == 0) rv = do_server_unblock(g_ptr, SEND);                                   // try unblock
@@ -240,12 +239,11 @@ int do_mreceive(){
         return ENOPROC;
     }
     
-//    acquire_lock(g_ptr);
-    
     // receive a new message by different ipc_type.
     cur_group = g_ptr;
     g_ptr->g_stat = M_RECEIVING;
     
+//    acquire_lock(g_ptr);
     rv = rec_pending(g_ptr, NULL, src, ipc_type);
     
     // return value
@@ -258,7 +256,7 @@ int do_mreceive(){
 /*  ========================= private methods ================================*/
 
 int do_server_unblock(mgroup *g_ptr, int call_type){
-    int rv=0, stat;
+    int rv=0, stat = 0;
     mqueue *proc_q, *block_queue, *unblock_queue;
     message *msg;
     void *value;
@@ -266,24 +264,17 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
     
     initqueue(&unblock_queue);
     initqueue(&block_queue);
-    if(call_type == SEND){
-        printf("-----------------------------\n");
-        printf("g_ptr->valid_q size %d\n", g_ptr->valid_q->size);
-        printqueue2(g_ptr->valid_q, "g_ptr->valid_q :: ");
-    }
     while(queue_func->dequeue(&value, g_ptr->valid_q)){
         g_m = (grp_message *)value;
         stat = 0;
         if(getprocqueue(g_m->sender, &proc_q) == -1){            // If not exist, then build proc queue
             initqueue(&proc_q);
-            printf("branch1 ");
             proc_q->number = g_m->sender;
             queue_func->enqueue(g_m, proc_q);
             queue_func->enqueue(g_m, block_queue);
             queue_func->enqueue(proc_q, msg_queue);
         } else {                                                // if exist proc in message queue
             queue_func->iterator(proc_q);
-            printf("branch2 ");
             while(queue_func->next(&value, proc_q)){            // find this message
                 msg_m = (grp_message *)value;
                 if(msg_m->call_nr == g_m->call_nr) continue;    // Only when callnr+callnr=send+receive, then goto next step;
@@ -295,15 +286,12 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
                     break;
                 }
             }
-            printf("branch3 ");
             if(stat != 1) {                                       // If did not find match message
                 queue_func->enqueue(g_m, proc_q); 
                 queue_func->enqueue(g_m, block_queue);
-                printf("branch4 ");
             }
         }
     }
-    printf("\n");
     try_unblock(block_queue, unblock_queue, call_type);
     closequeue(unblock_queue);
     closequeue(block_queue);
@@ -359,12 +347,9 @@ endpoint_t getendpoint(int proc_id){
 void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     mqueue *proc_q;
     struct node *n;
-    int send_num = 0, flag = 0;
+    int send_num = 0, b_num, flag = 0;
     grp_message *g_m, *msg_m;
     void *value;
-
-    printqueue2(block_queue, "block_queue ::");
-    printqueue2(unblock_queue, "unblock_queue ::");
     
     /******************************* unblock condition ********************************
      * When SEND  sender: block_queue->size == 0
@@ -379,7 +364,6 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
             case SEND:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
                 if(block_queue->size == 0 && flag == 0){    // only unblock sender once.
-                    printf("do unblock %d-2\n", g_m->sender);
                     do_unblock(g_m->sender, g_m->msg);
                     flag = 1;
                 }
@@ -387,15 +371,12 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
             case RECEIVE:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
                 if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
-                    printqueue2(proc_q, "proc_q ::");
                     for(n = proc_q->head; n != NULL; n=n->nextNode){
                         msg_m = (grp_message *)n->value;
                         if(msg_m->call_nr == RECEIVE || msg_m->receiver == g_m->receiver) continue;
                         send_num++;
                     }
-                    printf("still have %d left\n", send_num);
                     if(send_num == 0){
-                        printf("do unblock %d\n", g_m->sender);
                         do_unblock(g_m->sender, g_m->msg);
                     }
                 }
@@ -500,7 +481,6 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
     int i, s;
     grp_message *g_m, *msg_m;
     mqueue *proc_q;
-    message *m;
     void *value;
     
     switch(ipc_type){
@@ -508,8 +488,6 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
             for(i=0; i<g_ptr->p_size; i++){
                 if(src != g_ptr->p_lst[i]){
                     g_m = (grp_message *)malloc(sizeof(grp_message));
-                    m = (message*) malloc(sizeof(message));
-                    memcpy(m, msg, sizeof(message));
                     g_m->group=g_ptr;
                     g_m->sender=src;
                     g_m->receiver=g_ptr->p_lst[i];
@@ -527,8 +505,6 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
                     msg_m = (grp_message *)value;
                     if(msg_m->call_nr == RECEIVE){
                         g_m = (grp_message *)malloc(sizeof(grp_message));
-                        m = (message*) malloc(sizeof(message));
-                        memcpy(m, msg, sizeof(message));
                         g_m->group=g_ptr;
                         g_m->sender=src;
                         g_m->receiver=msg_m->receiver;
@@ -546,8 +522,6 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
                     s = getprocqueue(g_ptr->p_lst[i], &proc_q);
                     if(s < 0 || proc_q->size == 0){
                         g_m = (grp_message *)malloc(sizeof(grp_message));
-                        m = (message*) malloc(sizeof(message));
-                        memcpy(m, msg, sizeof(message));
                         g_m->group=g_ptr;
                         g_m->sender=src;
                         g_m->receiver=g_ptr->p_lst[i];
@@ -562,8 +536,6 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
         default: 
             if((s=getendpoint(ipc_type)) < 0) return s; 
             g_m = (grp_message *)malloc(sizeof(grp_message));
-            m = (message*) malloc(sizeof(message));
-            memcpy(m, msg, sizeof(message));
             g_m->group=g_ptr;
             g_m->sender=src;
             g_m->receiver=s;
