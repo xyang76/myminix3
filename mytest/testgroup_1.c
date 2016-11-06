@@ -14,11 +14,6 @@ int test_closegroup_syscall();
 int test_closegroup();   
 int test_closegroup_EIVGRP();
 
-//int test_recovergroup_syscall();
-//int test_recovergroup();
-//int test_recovergroupp_EIVSTTG();
-//int test_recovergroupp_EIVGRP();
-
 int test_addproc_syscall();
 int test_addproc();   
 int test_addproc_EIVGRP();
@@ -38,11 +33,6 @@ int main(void) {
     test_closegroup_syscall();
     test_closegroup(); 
     test_closegroup_EIVGRP();
-
-    //test_recovergroup_syscall();
-    //test_recovergroup();
-    //test_recovergroupp_EIVSTTG();
-    //test_recovergroupp_EIVGRP();
 
     test_addproc_syscall();
     test_addproc();  
@@ -95,7 +85,7 @@ int test_opengroup_EGRPBUSY(){
     message m; 
     int gid1, gid2;
     int i;
-    for(i=0,i<NR_GRPS,i++){
+    for(i=0; i<NR_GRPS; i++){
         gid1 = opengroup(0);
     }
     gid2 = opengroup(0);
@@ -296,7 +286,7 @@ int test_rmproc_syscall(){
 
 int test_rmproc(){
     message m;  
-    int gid;
+    int gid, rv;
     int child, parent=getpid();
 
     gid = opengroup(0);
@@ -319,7 +309,7 @@ Test Removeprocess Exception Conditions
 */
 int test_rmproc_EIVGRP(){
     message m;  
-    int gid;
+    int gid, rv;
     int child, parent=getpid();
 
     gid = opengroup(0);
@@ -339,7 +329,7 @@ int test_rmproc_EIVGRP(){
 
 int test_rmproc_EIVPROC(){
     message m;  
-    int gid;
+    int gid, rv;
     int child, parent=getpid();
 
     gid = opengroup(0);
