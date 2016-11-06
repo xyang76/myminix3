@@ -26,8 +26,8 @@ int main()
         //Fork error
     } else if (status == 0){
         //Child proc
-        while(mreceive(gid, &m2, parent)!=0);    
-        TEST_EQUAL(m2.m1_i2, 99, "This may occur 0->4 times, and receive message 99.\n");	
+        rv = mreceive(gid, &m2, parent);    
+        TEST_EQUAL(m2.m1_i2, 99, "This may occur 0->4 times, and receive message 99.");	
     } else {
         //Parent proc    
         printf("this is parent, cur id:%d\n", parent);
