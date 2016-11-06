@@ -266,7 +266,6 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
     
     initqueue(&unblock_queue);
     initqueue(&block_queue);
-    printf("block %d\n", who_e);
     
     while(queue_func->dequeue(&value, g_ptr->valid_q)){
         g_m = (grp_message *)value;
@@ -393,7 +392,6 @@ void do_unblock(endpoint_t proc_e, message *msg){
     register struct mproc *rmp;
     int s, proc_nr;
     
-    printf("unblock %d\n", proc_e);
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if(proc_e == rmp->mp_endpoint){
