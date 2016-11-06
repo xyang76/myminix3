@@ -6,7 +6,7 @@
 
 
 /**************************************************************
- *       test msend/mreceive to single process
+ *       test msend/mreceive for single process
  *************************************************************/
 int main()
 {
@@ -18,7 +18,7 @@ int main()
     
     if((child=fork())==0){
         // child
-        printf("Child start send %d\n", child);
+        printf("Child start send %d\n", getpid());
         rv = addproc(gid, getpid());
         ASSERT_EQUAL(rv, 0);
         
