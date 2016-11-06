@@ -363,12 +363,14 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
      * Did not implement other unblock condtions until now, because of deadline limit.
      * *********************************************************************************/
     if(call_type == RECEIVE){
+        printqueue2(unblock_queue, "[r]ubq ");
+        printqueue2(block_queue, "[r]bloq ");
+    } else {
         printqueue2(unblock_queue, "[s]ubq ");
         printqueue2(block_queue, "[s]bloq ");
     }
     while(queue_func->dequeue(&value, unblock_queue)){
         g_m = (grp_message *)value;
-        flag = 0;
         switch(call_type){
             case SEND:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
