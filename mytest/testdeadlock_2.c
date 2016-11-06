@@ -34,7 +34,7 @@ int main()
         //Wait parent send pid
         while(mreceive(gid, &m, parent)!=0);
 	ASSERT_EQUAL(rv, 0);        
-	ASSERT_EQUAL(m.m1_i2 - m.m1_i1, 4);
+	ASSERT_EQUAL(m.m1_i2 - m.m1_i1, 3);
 
 	if(i==3){
             i -= 4;
