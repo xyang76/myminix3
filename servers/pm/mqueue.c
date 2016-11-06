@@ -184,7 +184,7 @@ void printqueue2(mqueue *que, char *name){
     grp_message *msg;
     
     if(name == NULL) name = "queue";
-    printf("[%s items]: ", name);
+    printf("[%s ]: ", name);
     
     c = que->head;
     while(c != NULL){
