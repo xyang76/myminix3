@@ -137,6 +137,7 @@ int test_addproc_syscall(){
         m.m1_i1 = gid;
         m.m1_i2 = getpid();
         TEST_EQUAL(_syscall(PM_PROC_NR, ADDPROC, &m), 0, "test_addprocess_syscall: addproc should return 0");
+        exit(0);
     } else {
         // in parent process
 		m.m1_i1 = gid;
@@ -157,6 +158,7 @@ int test_addproc(){
         // in child process
         rv = addproc(gid, getpid());    
         TEST_EQUAL(rv, 0, "test_addprocess: addproc should return 0");  
+        exit(0);
     } else {
         // in parent process
 		rv = addproc(gid, parent);    
@@ -181,6 +183,7 @@ int test_addproc_EIVGRP(){
         rv = addproc(-1, getpid());    
         TEST_EQUAL(rv, -1, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP"); 
         TEST_EQUAL(errno, EIVGRP, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP");
+        exit(0);
     } else {
         // in parent process
 		rv = addproc(-1, parent);    
@@ -223,6 +226,7 @@ int test_rmproc_syscall(){
         m.m1_i1 = gid;
         m.m1_i2 = getpid();
         TEST_EQUAL(_syscall(PM_PROC_NR, RMPROC, &m), 0, "test_removeprocess_syscall: rmproc should return 0");
+        exit(0);
     } else {
         // in parent process
 		addproc(gid, parent);
@@ -244,6 +248,7 @@ int test_rmproc(){
         addproc(gid, getpid());
         rv = rmproc(gid, getpid());
         TEST_EQUAL(rv, 0, "test_removeprocess: rmproc should return 0");
+        exit(0);
     } else {
         // in parent process
 		addproc(gid, parent);
