@@ -269,7 +269,7 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
     if(call_type == SEND){
         printf("-----------------------------\n");
         printf("g_ptr->valid_q size %d\n", g_ptr->valid_q->size);
-        printqueue2(g_ptr->valid_q);
+        printqueue2(g_ptr->valid_q, "g_ptr->valid_q :: ");
     }
     while(queue_func->dequeue(&value, g_ptr->valid_q)){
         g_m = (grp_message *)value;
