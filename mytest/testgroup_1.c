@@ -67,6 +67,8 @@ int test_opengroup(){
 
     TEST_GREATER(gid1, -1, "test_open: opengroup should return id bigger than -1");        
     TEST_GREATER(gid2, gid1, "test_open: new group id > old group id");     
+    rv = closegroup(gid1);
+    rv = closegroup(gid2);
 }
 
 /* 
