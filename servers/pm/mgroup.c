@@ -215,7 +215,7 @@ int do_msend(){
     
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
-    if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, SEND);                              // detect deadlock
+    rv = deadlock(g_ptr, SEND);                                                        // detect deadlock
     if(rv == 0) rv = do_server_unblock(g_ptr, SEND);                                   // try unblock
     return rv == 0 ? SUSPEND : rv;
 }
@@ -248,7 +248,7 @@ int do_mreceive(){
     
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
-    if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, RECEIVE);                              // detect deadlock
+    rv = deadlock(g_ptr, RECEIVE);                                                       // detect deadlock
     if(rv == 0) rv = do_server_unblock(g_ptr, RECEIVE);
     return rv == 0 ? SUSPEND : rv;
 }
