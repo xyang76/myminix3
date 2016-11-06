@@ -83,14 +83,18 @@ int test_opengroup_EIVSTTG(){
 
 int test_opengroup_EGRPBUSY(){
     message m; 
-    int gid1, gid2;
-    int i;
+    int gid[NR_GRPS], gid2;
+    int i, rv;
     for(i=0; i<NR_GRPS; i++){
-        gid1 = opengroup(0);
+        gid[i] = opengroup(0);
     }
     gid2 = opengroup(0);
     TEST_EQUAL(gid2, -1, "test_opengroup_EIVSTTG: opengroup more than max number of groups should return -1");
     TEST_EQUAL(errno, EGRPBUSY, "test_opengroup_EIVSTTG: opengroup more than max number of groups errno should be EGRPBUSY");
+    for(i=0; i<NR_GRPS; i++){
+        rv = closegroup(gid[i]);
+        ASSERT_EQUAL(rv, 0);
+    }
 }
 
 /* 
