@@ -349,10 +349,6 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     grp_message *g_m, *msg_m;
     void *value;
     
-    printf("executing %d, %d\n", block_queue->size, unblock_queue->size); 
-    printqueue2(unblock_queue, "unblock queue::::");
-    printqueue2(block_queue, "block queue::::");
-    
     /******************************* unblock condition ********************************
      * When SEND  sender: block_queue->size == 0
      *            receiver : in unblock queue
@@ -365,25 +361,20 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
         switch(call_type){
             case SEND:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
-                printf("unblock %d\n", g_m->receiver);
                 if(block_queue->size == 0 && flag == 0){    // only unblock sender once.
-                    printf("unblock %d\n", g_m->sender);
                     do_unblock(g_m->sender, g_m->msg);
                     flag = 1;
                 }
                 break;
             case RECEIVE:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
-                printf("unblock %d\n", g_m->receiver);
                 if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
                     for(n = proc_q->head; n != NULL; n=n->nextNode){
                         msg_m = (grp_message *)n->value;
                         if(msg_m->call_nr == RECEIVE || msg_m->receiver == g_m->receiver) continue;
                         send_num++;
                     }
-                    printf("still have %d left\n", send_num);
                     if(send_num == 0){
-                        printf("unblock %d\n", g_m->sender);
                         do_unblock(g_m->sender, g_m->msg);
                     }
                 }
@@ -406,8 +397,7 @@ void do_unblock(endpoint_t proc_e, message *msg){
             if ((rmp->mp_flags & (REPLY | IN_USE | EXITING)) == (REPLY | IN_USE)) {
               s=sendnb(rmp->mp_endpoint, &rmp->mp_reply);
               if (s != OK) {
-                  printf("PM can't reply to %d (%s): %d\n",
-                      rmp->mp_endpoint, rmp->mp_name, s);
+                  printf("PM can't reply to %d (%s): %d\n", rmp->mp_endpoint, rmp->mp_name, s);
               }
               rmp->mp_flags &= ~REPLY;
             }
