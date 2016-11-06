@@ -43,6 +43,8 @@ int main()
 	if(rv == -1){
 	    TEST_EQUAL(errno, ELOCKED, "deadlock occur and only occur once.");
             printf("from %d to %d", getpid(), m.m1_i1+i+1);
+	} else {
+	    printf("send from %d to %d success.", getpid(), m.m1_i1+i+1);
 	}	
     } else {
         //Parent proc 
