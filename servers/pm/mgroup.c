@@ -266,6 +266,11 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
     
     initqueue(&unblock_queue);
     initqueue(&block_queue);
+    if(call_type == SEND){
+        printf("-----------------------------\n");
+        printf("g_ptr->valid_q size %d\n", g_ptr->valid_q->size);
+        printqueue2(g_ptr->valid_q);
+    }
     while(queue_func->dequeue(&value, g_ptr->valid_q)){
         g_m = (grp_message *)value;
         if(getprocqueue(g_m->sender, &proc_q) == -1){            // If not exist, then build proc queue
