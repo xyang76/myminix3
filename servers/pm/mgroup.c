@@ -213,7 +213,8 @@ int do_msend(){
 //    acquire_lock(g_ptr);
     rv = send_pending(g_ptr, msg, src, ipc_type);
     
-    // return value
+    // free msg and return value
+    free(msg);
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
     rv = deadlock(g_ptr, SEND);                                                        // detect deadlock
     if(rv == 0) rv = do_server_unblock(g_ptr, SEND);                                   // try unblock
@@ -484,6 +485,7 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
     int i, s;
     grp_message *g_m, *msg_m;
     mqueue *proc_q;
+    message *m;
     void *value;
     
     switch(ipc_type){
@@ -491,6 +493,8 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
             for(i=0; i<g_ptr->p_size; i++){
                 if(src != g_ptr->p_lst[i]){
                     g_m = (grp_message *)malloc(sizeof(grp_message));
+                    m = (message*) malloc(sizeof(message));
+                    memcpy(m, msg, sizeof(message));
                     g_m->group=g_ptr;
                     g_m->sender=src;
                     g_m->receiver=g_ptr->p_lst[i];
@@ -508,6 +512,8 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
                     msg_m = (grp_message *)value;
                     if(msg_m->call_nr == RECEIVE){
                         g_m = (grp_message *)malloc(sizeof(grp_message));
+                        m = (message*) malloc(sizeof(message));
+                        memcpy(m, msg, sizeof(message));
                         g_m->group=g_ptr;
                         g_m->sender=src;
                         g_m->receiver=msg_m->receiver;
@@ -525,6 +531,8 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
                     s = getprocqueue(g_ptr->p_lst[i], &proc_q);
                     if(s < 0 || proc_q->size == 0){
                         g_m = (grp_message *)malloc(sizeof(grp_message));
+                        m = (message*) malloc(sizeof(message));
+                        memcpy(m, msg, sizeof(message));
                         g_m->group=g_ptr;
                         g_m->sender=src;
                         g_m->receiver=g_ptr->p_lst[i];
@@ -539,6 +547,8 @@ int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type){
         default: 
             if((s=getendpoint(ipc_type)) < 0) return s; 
             g_m = (grp_message *)malloc(sizeof(grp_message));
+            m = (message*) malloc(sizeof(message));
+            memcpy(m, msg, sizeof(message));
             g_m->group=g_ptr;
             g_m->sender=src;
             g_m->receiver=s;
