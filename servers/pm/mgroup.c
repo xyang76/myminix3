@@ -383,7 +383,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
                 if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
                     for(n = proc_q->head; n != NULL; n=n->nextNode){
                         msg_m = (grp_message *)n->value;
-                        if(msg_m->call_nr == RECEIVE) continue;
+                        if(msg_m->call_nr == RECEIVE  || msg_m->receiver == g_m->receiver) continue;
                         send_num++;
                     }
                     printf("branch[%d] 3 :: ", send_num);
