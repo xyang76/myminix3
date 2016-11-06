@@ -327,6 +327,7 @@ int getgroup(int grp_nr, mgroup ** g_ptr){
 }
 
 int invalid(int strategy){
+    if(strategy < 0 || strategy > 10) return -1;
     return 0;
 }
 
