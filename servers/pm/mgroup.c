@@ -258,7 +258,7 @@ int do_mreceive(){
 /*  ========================= private methods ================================*/
 
 int do_server_unblock(mgroup *g_ptr, int call_type){
-    int rv=0, stat = 0;
+    int rv=0, stat;
     mqueue *proc_q, *block_queue, *unblock_queue;
     message *msg;
     void *value;
@@ -273,6 +273,7 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
     }
     while(queue_func->dequeue(&value, g_ptr->valid_q)){
         g_m = (grp_message *)value;
+        stat = 0;
         if(getprocqueue(g_m->sender, &proc_q) == -1){            // If not exist, then build proc queue
             initqueue(&proc_q);
             printf("branch1 ");
