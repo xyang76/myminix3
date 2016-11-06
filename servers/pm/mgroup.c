@@ -199,6 +199,7 @@ int do_msend(){
         return ENOPROC;
     }
     
+//    acquire_lock(g_ptr);
     // Copy data from m_in.
     if ((message *) m_in.m1_p1 != (message *) NULL) {
         rv = sys_datacopy(who_e, (vir_bytes) m_in.m1_p1,
@@ -210,7 +211,6 @@ int do_msend(){
     cur_group = g_ptr;
     g_ptr->g_stat = M_SENDING;
     
-//    acquire_lock(g_ptr);
     rv = send_pending(g_ptr, msg, src, ipc_type);
     
     // free msg and return value
@@ -240,11 +240,12 @@ int do_mreceive(){
         return ENOPROC;
     }
     
+//    acquire_lock(g_ptr);
+    
     // receive a new message by different ipc_type.
     cur_group = g_ptr;
     g_ptr->g_stat = M_RECEIVING;
     
-//    acquire_lock(g_ptr);
     rv = rec_pending(g_ptr, NULL, src, ipc_type);
     
     // return value

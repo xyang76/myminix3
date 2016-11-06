@@ -43,13 +43,16 @@ int recovergroup(int grp_nr, int strategy){
 }
 
 int msend(int dest, void *msg, int type){
-    message m;
+    message m, *copy;
+    int rv;
     
+    copy = (message*) malloc(sizeof(message));
+    memcpy(copy, msg, sizeof(message))
     m.m1_i1 = getpid();
     m.m1_i2 = dest;
     m.m1_i3 = type;
-    m.m1_p1 = (char*)msg;
-   
+    m.m1_p1 = (char*)copy;
+    
     return _syscall(PM_PROC_NR, MSEND, &m);
 }
 
