@@ -10,7 +10,7 @@
  *************************************************************/
 int main()
 {
-    message m1, m2, m3;
+    message m1, m;
     int status,i, pid[10], rv, parent=getpid(), value[3];
     int gid = opengroup(0);
     ASSERT_GREATER(gid, 0);
@@ -36,14 +36,21 @@ int main()
         rv = mreceive(gid, &m, parent);    	
         ASSERT_EQUAL(rv, 0);
         TEST_EQUAL(m.m1_i1, 20, "message should be 20.");
+	rv = mreceive(gid, &m, parent);    	
+        ASSERT_EQUAL(rv, 0);
+        TEST_EQUAL(m.m1_i1, 30, "message should be 30.");
     } else {
         //Parent proc   
         m1.m1_i1 = 10;
         rv = msend(gid, &m1, SENDALL);
         ASSERT_EQUAL(rv, 0);
         TEST_EQUAL(rv, 0, "msend finish should return 0");
-        m2.m1_i1 = 20;
-        rv = msend(gid, &m2, SENDALL);
+        m1.m1_i1 = 20;
+        rv = msend(gid, &m1, SENDALL);
+        ASSERT_EQUAL(rv, 0);
+        TEST_EQUAL(rv, 0, "msend finish should return 0");
+	m1.m1_i1 = 30;
+	rv = msend(gid, &m1, SENDALL);
         ASSERT_EQUAL(rv, 0);
         TEST_EQUAL(rv, 0, "msend finish should return 0");
         closegroup(gid);
