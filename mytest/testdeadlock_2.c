@@ -49,7 +49,7 @@ int main()
     } else {
         //Parent proc 
 	m.m1_i1 = pid[0];
-	m.m1_i2 = pid[4];   
+	m.m1_i2 = pid[3];   
         rv = msend(gid, &m, SENDALL);
 	ASSERT_EQUAL(rv, 0);
     }
