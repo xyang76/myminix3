@@ -275,12 +275,14 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
         g_m = (grp_message *)value;
         if(getprocqueue(g_m->sender, &proc_q) == -1){            // If not exist, then build proc queue
             initqueue(&proc_q);
+            printf("branch1 ");
             proc_q->number = g_m->sender;
             queue_func->enqueue(g_m, proc_q);
             queue_func->enqueue(g_m, block_queue);
             queue_func->enqueue(proc_q, msg_queue);
         } else {                                                // if exist proc in message queue
             queue_func->iterator(proc_q);
+            printf("branch2 ");
             while(queue_func->next(&value, proc_q)){            // find this message
                 msg_m = (grp_message *)value;
                 if(msg_m->call_nr == g_m->call_nr) continue;    // Only when callnr+callnr=send+receive, then goto next step;
@@ -292,12 +294,15 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
                     break;
                 }
             }
+            printf("branch3 ");
             if(stat != 1) {                                       // If did not find match message
                 queue_func->enqueue(g_m, proc_q); 
                 queue_func->enqueue(g_m, block_queue);
+                printf("branch4 ");
             }
         }
     }
+    printf("\n");
     try_unblock(block_queue, unblock_queue, call_type);
     closequeue(unblock_queue);
     closequeue(block_queue);
@@ -353,7 +358,7 @@ endpoint_t getendpoint(int proc_id){
 void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     mqueue *proc_q;
     struct node *n;
-    int send_num = 0, b_num, flag = 0;
+    int send_num = 0, flag = 0;
     grp_message *g_m, *msg_m;
     void *value;
 
