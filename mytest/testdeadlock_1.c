@@ -2,6 +2,7 @@
 #include <string.h>
 #include <lib.h>    // provides _syscall and message
 #include "minix/ipc.h"
+#include "testhelper.h"
 
 /**************************************************************
  *       test deadlock (send, send)

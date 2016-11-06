@@ -2,6 +2,7 @@
 #include <string.h>
 #include <lib.h>    
 #include "minix/ipc.h"
+#include "testhelper.h"
 
 
 /**************************************************************
