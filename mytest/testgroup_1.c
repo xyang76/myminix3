@@ -77,8 +77,8 @@ int test_opengroup_EIVSTTG(){
     int rv;
 
     rv=opengroup(-1);
-
-    TEST_EQUAL(rv, EIVSTTG, "test_opengroup_EIVSTTG: test opengourp with invalid strategy should return EIVSTTG");
+    TEST_EQUAL(rv, -1, "test_opengroup_EIVSTTG: test opengourp with invalid strategy should return -1");
+    TEST_EQUAL(errno, EIVSTTG, "test_opengroup_EIVSTTG: test opengourp with invalid strategy errno should be EIVSTTG");
 }
 
 int test_opengroup_EGRPBUSY(){
@@ -89,8 +89,8 @@ int test_opengroup_EGRPBUSY(){
         gid1 = opengroup(0);
     }
     gid2 = opengroup(0);
-
-    TEST_EQUAL(gid2, EGRPBUSY, "test_opengroup_EIVSTTG: opengroup more than max number of groups should return EGRPBUSY");
+    TEST_EQUAL(gid2, EGRPBUSY, "test_opengroup_EIVSTTG: opengroup more than max number of groups should return -1");
+    TEST_EQUAL(errno, EGRPBUSY, "test_opengroup_EIVSTTG: opengroup more than max number of groups errno should be EGRPBUSY");
 }
 
 /* 
@@ -130,47 +130,9 @@ int test_closegroup_EIVGRP(){
     gid = opengroup(0);
 
     rv = closegroup(-1);
-
-    TEST_EQUAL(rv, EIVGRP, "test_close_EIVGRP: closegroup with invalid gid should return 0");    
+    TEST_EQUAL(rv, -1, "test_close_EIVGRP: closegroup with invalid gid should return 0");    
+    TEST_EQUAL(errno, EIVGRP, "test_close_EIVGRP: closegroup with invalid gid should return 0");    
 }
-
-/* 
-Test RECOVERGP syscall and Recovergroup
-*/
-//int test_recovergroup_syscall(){
-//    message m;  
-//    int i;
-//    int strategy=0;
-//
-//    m.m1_i1 = 0;
-//    m.m1_i2 = strategy;
-// 
-//    TEST_EQUAL(_syscall(PM_PROC_NR, RECOVERGP, &m), 0, "test_recovery_syscall: recovergroup should return 0");
-//}
-//
-//int test_recovergroup(){
-//    message m; 
-//    int gid;
-//    int strategy=0;
-//    int f;
-//	
-//    gid1 = opengroup(0);
-//
-//    f1 = recovergroup(gid, strategy);
-//
-//    TEST_EQUAL(f1, 0, "test_recovery: recovergroup should return 0");         
-//}
-//
-///* 
-//Test Recovergroup Exception Conditions
-//*/
-//int test_recovergroupp_EIVSTTG(){
-//      
-//}
-//
-//int test_recovergroupp_EIVGRP(){
-//      
-//}
 
 /* 
 Test ADDPROC syscall and Addprococess
@@ -229,11 +191,13 @@ int test_addproc_EIVGRP(){
     if((child=fork())==0){
         // in child process
         rv = addproc(-1, getpid());    
-        TEST_EQUAL(rv, EIVGRP, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP"); 
+        TEST_EQUAL(rv, -1, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP"); 
+        TEST_EQUAL(errno, EIVGRP, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP");
     } else {
         // in parent process
 		rv = addproc(-1, parent);    
-        TEST_EQUAL(rv, EIVGRP, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP"); 
+        TEST_EQUAL(rv, -1, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP"); 
+        TEST_EQUAL(errno, EIVGRP, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP");
     }
     return 0;
 }
@@ -245,16 +209,13 @@ int test_addproc_EPROCEXIST(){
     int rv;
     
     gid = opengroup(0);
-
-    if((child=fork())==0){
-        // in child process
-        rv = addproc(-1, getpid());    
-        TEST_EQUAL(rv, EPROCEXIST, "test_addprocess_EPROCEXIST: addproc with invalid pid should return EPROCEXIST"); 
-    } else {
-        // in parent process
-		rv = addproc(-1, parent);    
-        TEST_EQUAL(rv, EPROCEXIST, "test_addprocess_EPROCEXIST: addproc with invalid pid should return EPROCEXIST"); 
-    }
+    
+    rv = addproc(gid, getpid()); 
+    ASSERT_EQUAL(rv, 0);
+    
+    rv = addproc(gid, getpid());    
+    TEST_EQUAL(rv, -1, "test_addprocess_EPROCEXIST: addproc with exist pid should return EPROCEXIST"); 
+    TEST_EQUAL(errno, EPROCEXIST, "test_addprocess_EPROCEXIST: addproc with exist pid should return EPROCEXIST");
     return 0;
 }
 
@@ -313,17 +274,11 @@ int test_rmproc_EIVGRP(){
     int child, parent=getpid();
 
     gid = opengroup(0);
-    if((child=fork())==0){ 
-        // in child process
-        addproc(gid, getpid());
-        rv = rmproc(-1, getpid());
-        TEST_EQUAL(rv, EIVGRP, "test_removeprocess: rmproc with invalid gid should return EIVGRP");
-    } else {
-        // in parent process
-		addproc(gid, parent);
-        rv = rmproc(-1, parent);
-        TEST_EQUAL(rv, EIVGRP, "test_removeprocess: rmproc with invalid gid should return EIVGRP");
-    }
+    // in child process
+    addproc(gid, getpid());
+    rv = rmproc(-1, getpid());
+    TEST_EQUAL(rv, -1, "test_removeprocess: rmproc with invalid gid should return EIVGRP");
+    TEST_EQUAL(errno, EIVGRP, "test_removeprocess: rmproc with invalid gid should return EIVGRP");
     return 0;
 }
 
@@ -333,16 +288,10 @@ int test_rmproc_EIVPROC(){
     int child, parent=getpid();
 
     gid = opengroup(0);
-    if((child=fork())==0){ 
-        // in child process
-        addproc(gid, getpid());
-        rv = rmproc(gid, -1);
-        TEST_EQUAL(rv, EIVPROC, "test_removeprocess: rmproc with invalid pid should return EIVPROC");
-    } else {
-        // in parent process
-		addproc(gid, parent);
-        rv = rmproc(gid, -1);
-        TEST_EQUAL(rv, EIVPROC, "test_removeprocess: rmproc with invalid pid should return EIVPROC");
-    }
+    // in child process
+    addproc(gid, getpid());
+    rv = rmproc(gid, -1);
+    TEST_EQUAL(rv, -1, "test_removeprocess: rmproc with invalid pid should return EIVPROC");
+    TEST_EQUAL(errno, EIVPROC, "test_removeprocess: rmproc with invalid pid should return EIVPROC");
     return 0;
 }
