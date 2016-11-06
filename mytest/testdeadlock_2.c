@@ -48,7 +48,7 @@ int main()
 	}	
     } else {
         //Parent proc 
-	for(int i=0; i<4; i++){
+	for(i=0; i<4; i++){
 	    printf("child id %d\n", pid[i]);
 	}
 	m.m1_i1 = pid[0];
