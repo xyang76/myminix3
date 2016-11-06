@@ -93,7 +93,6 @@ int test_opengroup_EGRPBUSY(){
     TEST_EQUAL(errno, EGRPBUSY, "test_opengroup_EIVSTTG: opengroup more than max number of groups errno should be EGRPBUSY");
     for(i=0; i<NR_GRPS; i++){
         rv = closegroup(gid[i]);
-        ASSERT_EQUAL(rv, 0);
     }
 }
 
