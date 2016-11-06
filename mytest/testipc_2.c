@@ -3,34 +3,39 @@
 #include <lib.h>    
 #include "minix/ipc.h"
 
+
+/**************************************************************
+ *       test SENDALL to send all process in the group
+ *************************************************************/
 int main()
 {
-    message m, *msg;
+    message m1, m2;
     int status,i, pid[10], rv, parent=getpid();
     int gid = opengroup(0);
-    addproc(gid, parent);
-    msg = &m;
+    ASSERT_GREATER(gid, 0);
     
-    for (i = 0; i < 4; i++){
+    rv = addproc(gid, parent);
+    ASSERT_EQUAL(rv, 0);
+
+    for (i = 0; i < 5; i++){
         status = fork();
         if (status == 0 || status == -1) break;
         pid[i] = status;
-        addproc(gid, pid[i]);
+        rv = addproc(gid, pid[i]);
+	ASSERT_EQUAL(rv, 0);
     }
     if (status == -1){
         //Fork error
     } else if (status == 0){
         //Child proc
-        while(mreceive(gid, &m, parent)!=0);    
-        printf("finish receive %d-%d\n", rv, errno);	
+        rv = mreceive(gid, &m2, parent);    	
+	TEST_EQUAL(rv, 0, "mreceive finish should return 0");
+        TEST_EQUAL(m2.m1_i1, 10, "message should be 10.");	
     } else {
-        //Parent proc    
-        printf("this is parent, cur id:%d\n", parent);
-        
-        for(i=0; i<4; i++){
-            printf("msend to %d ----------------- \n", pid[i]);
-            rv = msend(gid, &m, pid[i]);
-        }
+        //Parent proc   
+	m1.m1_i1 = 10;
+	rv = msend(gid, &m1, SENDALL);
+	TEST_EQUAL(rv, 0, "msend finish should return 0");
         closegroup(gid);
     }
     return 0;

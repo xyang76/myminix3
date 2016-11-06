@@ -4,6 +4,10 @@
 #include "testhelper.h"
 #include "minix/ipc.h"
 
+
+/**************************************************************
+ *       test msend/mreceive to single process
+ *************************************************************/
 int main()
 {
     int gid, rv, child, parent=getpid();
@@ -32,5 +36,5 @@ int main()
         TEST_EQUAL(rv, 0, "mreceive finish should return 0");
         TEST_EQUAL(m2.m1_i1, 10, "receive value should be 10");
     }
-	return 0;
+    return 0;
 }
