@@ -42,7 +42,7 @@ int main()
         int rv = msend(gid, &m, m.m1_i1+i+1);		//Send to next, eg, pid[0] send to pid[1]
 	if(rv == -1){
 	    TEST_EQUAL(errno, ELOCKED, "deadlock occur and only occur once.");
-            printf("from %d to %d", getpid(), m.m1_i1+i+1);
+            printf("deadlock from %d to %d\n", getpid(), m.m1_i1+i+1);
 	} else {
 	    printf("send from %d to %d success.", getpid(), m.m1_i1+i+1);
 	}
