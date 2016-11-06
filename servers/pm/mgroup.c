@@ -9,23 +9,35 @@ static int g_nr_ptr = 0;                /* group number ptr */
 static int g_id_ctr = 1;                /* group id counter */
 static mgroup *cur_group;               /* current message group*/
 
-/* private methods prototype */
+/******************************************************************
+                        private methods prototype
+ ********************************************************************/
+// Group methods
 int invalid(int strategy);                                  /* valid strategy */ 
-int deadlock(mgroup *g_ptr, int call_nr);                   /* valid deadlock */ 
 int getgroup(int grp_nr, mgroup ** g_ptr);                  /* get group by its gid */
-int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
-endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
+
+// Unblock
 void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int src);   /* try unblock a process */
 void do_unblock(endpoint_t proc_e, message *msg);           /* unblock a process */
-int searchinproc(mqueue *proc_q, grp_message *g_m);         /* search send->rec chain from proc */
-void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr);  /*recursive detect deadlock */
-int acquire_lock(mgroup *g_ptr);                            /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
-int release_lock(mgroup *g_ptr);                            /* simple busy lock */
+int do_server_unblock(mgroup *g_ptr, int src);              /* unblock procs */
+
+// Process 
+endpoint_t getendpoint(int proc_id);                        /* get endpoint from proc list*/
+int getprocindex(mgroup *g_ptr, int proc);                  /* get proc index in group*/
 int getprocqueue(endpoint_t proc_e, mqueue **proc_q);       /* get proc queue */
 
+// Deadlock
+int deadlock(mgroup *g_ptr, int call_nr);                   /* valid deadlock */ 
+void deadlock_addpend(mqueue *proc_q, mqueue *pend_q, int call_nr);  /*recursive detect deadlock */
+
+// Busy lock(reserved)
+int acquire_lock(mgroup *g_ptr);                            /* simple busy lock. better solution: kernel call & spinlock / semaphore*/
+int release_lock(mgroup *g_ptr);                            /* simple busy lock */
+
+// Msend/receive
 int send_pending(mgroup *g_ptr, message *msg, int src, int ipc_type);                           /* send enqueue pending queue */
 int rec_pending(mgroup *g_ptr, message *msg, int src, int ipc_type);                            /* receive enqueue pending queue */
-int do_server_unblock(mgroup *g_ptr, int src);                                                  /* unblock procs */
+
 
 int do_opengroup()
 {
@@ -136,18 +148,22 @@ int do_recovergroup(){
     }else if(getgroup(grp_nr, &g_ptr) == -1){
         return EIVGRP;
     }
+    g_ptr->g_stat -= M_DEADLOCK;                    // find out the method type.
+    if(g_ptr->g_stat != M_SENDING || g_ptr->g_stat != M_RECEIVING){
+        return -1;
+    }
     
     switch(strategy){
         case IGNORE_ELOCK:
             // Clear all invalid chain.
             while(queue_func->dequeue(&value, g_ptr->invalid_q));
-            do_server_ipc();
+            do_server_unblock(g_ptr, g_ptr->g_stat-1);                  // SEND=1, M_SENDING=2, then 2-1 = SEND
             break;
         case CANCEL_IPC:
             while(queue_func->dequeue(&value, g_ptr->invalid_q));
             while(queue_func->dequeue(&value, g_ptr->pending_q));
             while(queue_func->dequeue(&value, g_ptr->valid_q));
-            notify(g_ptr->flag);               //unblock sender.
+            notify(g_ptr->flag);                                        //notify sender.
             break;
         case CLEAR_MSG:
             break;
@@ -200,7 +216,7 @@ int do_msend(){
     // return value
     if(queue_func->isempty(g_ptr->pending_q)) return NOIPCOP;
     if(ipc_type != IPCTOREQ)  rv = deadlock(g_ptr, SEND);                              // detect deadlock
-    if(rv == 0) rv = do_server_unblock(g_ptr, SEND);
+    if(rv == 0) rv = do_server_unblock(g_ptr, SEND);                                   // try unblock
     return rv == 0 ? SUSPEND : rv;
 }
 
@@ -237,21 +253,6 @@ int do_mreceive(){
     return rv == 0 ? SUSPEND : rv;
 }
 
-/*
- * Check message queue, when find match grp_message, send reply to its src & dest, then try unblock both of them.
- */
-void do_server_ipc(){
-//    release_lock(cur_group);
-}
-
-void do_deadlock(){
-    // Reserved, we did not do any action until now. (wait user choose any strategy to recover)
-}
-
-void do_errohandling(){
-//    release_lock(cur_group);
-}
-
 /*  ========================= private methods ================================*/
 
 int do_server_unblock(mgroup *g_ptr, int call_type){
@@ -279,8 +280,6 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
                 if(msg_m->receiver == g_m->receiver){
                     msg_m = msg_m->call_nr == SEND ? msg_m: g_m;
                     queue_func->enqueue(msg_m, unblock_queue);
-//                    try_unblock(msg_m->receiver, msg, msg_m);
-//                    try_unblock(msg_m->sender, msg, msg_m);
                     queue_func->removeitem(proc_q);             // Proc queue remove this message.
                     stat = 1;
                     break;
@@ -451,7 +450,7 @@ int deadlock(mgroup *g_ptr, int call_nr){
             }
             if(queue_func->hasvalue((void *)g_m->sender, valid_q)){                  // if sender exist in the valid_q
                 g_ptr->flag = who_e;
-                g_ptr->g_stat = M_DEADLOCK;                                          //Deadlock
+                g_ptr->g_stat += M_DEADLOCK;                                          //Deadlock(add deadlock)
                 deadlock = 1;
                 rv = ELOCKED;                                                       
             }
