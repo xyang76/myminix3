@@ -89,7 +89,7 @@ int test_opengroup_EGRPBUSY(){
         gid1 = opengroup(0);
     }
     gid2 = opengroup(0);
-    TEST_EQUAL(gid2, EGRPBUSY, "test_opengroup_EIVSTTG: opengroup more than max number of groups should return -1");
+    TEST_EQUAL(gid2, -1, "test_opengroup_EIVSTTG: opengroup more than max number of groups should return -1");
     TEST_EQUAL(errno, EGRPBUSY, "test_opengroup_EIVSTTG: opengroup more than max number of groups errno should be EGRPBUSY");
 }
 
