@@ -36,9 +36,6 @@ int main()
         rv = mreceive(gid, &m, parent);    	
         ASSERT_EQUAL(rv, 0);
         TEST_EQUAL(m.m1_i1, 20, "message should be 20.");
-        rv = mreceive(gid, &m, parent);
-        ASSERT_EQUAL(rv, 0);    	
-        TEST_EQUAL(m.m1_i1, 30, "message should be 30.");	
     } else {
         //Parent proc   
         m1.m1_i1 = 10;
@@ -47,10 +44,6 @@ int main()
         TEST_EQUAL(rv, 0, "msend finish should return 0");
         m2.m1_i1 = 20;
         rv = msend(gid, &m2, SENDALL);
-        ASSERT_EQUAL(rv, 0);
-        TEST_EQUAL(rv, 0, "msend finish should return 0");
-        m3.m1_i1 = 30;
-        rv = msend(gid, &m3, SENDALL);
         ASSERT_EQUAL(rv, 0);
         TEST_EQUAL(rv, 0, "msend finish should return 0");
         closegroup(gid);
