@@ -37,7 +37,7 @@ int main()
         TEST_EQUAL(m.m1_i1, 20, "message should be 20.");
 	rv = mreceive(gid, &m, parent);
 	ASSERT_EQUAL(rv, 0);    	
-        TEST_EQUAL(m.m1_i1, 30, "message should be 20.");	
+        TEST_EQUAL(m.m1_i1, 30, "message should be 30.");	
     } else {
         //Parent proc   
 	m1.m1_i1 = 10;
