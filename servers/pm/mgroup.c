@@ -3,6 +3,7 @@
 /* message queue(shared to all groups, because we need detect deadlock) */
 /* message queue store proc queues */
 static mqueue *msg_queue = NULL;        
+static mqueue *proc_block_q = NULL; 
 
 static mgroup mgrp[NR_GRPS];            /* group table [this design is similar to proc design in minix] */
 static int g_nr_ptr = 0;                /* group number ptr */
@@ -51,6 +52,7 @@ int do_opengroup()
     
     if(msg_queue == NULL){                          // Init message queue if it is null.
         initqueue(&msg_queue);
+        initqueue(&proc_block_q);
     }
     
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
@@ -264,6 +266,8 @@ int do_server_unblock(mgroup *g_ptr, int call_type){
     
     initqueue(&unblock_queue);
     initqueue(&block_queue);
+    printf("block %d\n", who_e);
+    
     while(queue_func->dequeue(&value, g_ptr->valid_q)){
         g_m = (grp_message *)value;
         stat = 0;
@@ -388,6 +392,7 @@ void do_unblock(endpoint_t proc_e, message *msg){
     register struct mproc *rmp;
     int s, proc_nr;
     
+    printf("unblock %d\n", proc_e);
     for (rmp = &mproc[NR_PROCS-1]; rmp >= &mproc[0]; rmp--){ 
         if (!(rmp->mp_flags & IN_USE)) continue;
         if(proc_e == rmp->mp_endpoint){
