@@ -45,7 +45,8 @@ int main()
             printf("from %d to %d", getpid(), m.m1_i1+i+1);
 	} else {
 	    printf("send from %d to %d success.", getpid(), m.m1_i1+i+1);
-	}	
+	}
+	exit(0);	
     } else {
         //Parent proc 
 	for(i=0; i<4; i++){
