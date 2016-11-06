@@ -362,13 +362,6 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
      *            receiver : in unblock queue
      * Did not implement other unblock condtions until now, because of deadline limit.
      * *********************************************************************************/
-    if(call_type == SEND){
-        printqueue2(block_queue, "[1]block ::");
-        printqueue2(unblock_queue, "[1]ubq :: ");
-    } else {
-        printqueue2(block_queue, "[2]block ::");
-        printqueue2(unblock_queue, "[2]ubq :: ");
-    }
     while(queue_func->dequeue(&value, unblock_queue)){
         g_m = (grp_message *)value;
         switch(call_type){
@@ -381,16 +374,13 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
                 break;
             case RECEIVE:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
-                printf("branch 2 ");
                 if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
                     for(n = proc_q->head; n != NULL; n=n->nextNode){
                         msg_m = (grp_message *)n->value;
-                        if(msg_m->call_nr == RECEIVE) continue;
+                        if(msg_m->call_nr == RECEIVE || msg_m->receiver == g_m->receiver) continue;
                         send_num++;
                     }
-                    printf("branch[%d] 3 ", send_num);
                     if(send_num == 0){
-                        printf("branch 4 ");
                         do_unblock(g_m->sender, g_m->msg);
                     }
                 }
