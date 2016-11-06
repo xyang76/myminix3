@@ -56,7 +56,7 @@ int do_opengroup()
     for(i=0; i<NR_GRPS; i++, g_nr_ptr++){
         g_nr_ptr %= NR_GRPS;                        // Circle detect.
         if(mgrp[g_nr_ptr].g_stat == M_UNUSED){      // This group is not used until now.
-            g_ptr = mgrp + g_nr_ptr;
+            g_ptr = &mgrp[g_nr_ptr];
             break;
         }
     }
