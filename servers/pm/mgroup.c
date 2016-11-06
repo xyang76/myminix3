@@ -352,8 +352,8 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
     grp_message *g_m, *msg_m;
     void *value;
 
-//    printqueue2(block_queue, "block_queue ::");
-//    printqueue2(unblock_queue, "unblock_queue ::");
+    printqueue2(block_queue, "block_queue ::");
+    printqueue2(unblock_queue, "unblock_queue ::");
     
     /******************************* unblock condition ********************************
      * When SEND  sender: block_queue->size == 0
@@ -368,7 +368,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
             case SEND:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
                 if(block_queue->size == 0 && flag == 0){    // only unblock sender once.
-//                    printf("do unblock %d-2\n", g_m->sender);
+                    printf("do unblock %d-2\n", g_m->sender);
                     do_unblock(g_m->sender, g_m->msg);
                     flag = 1;
                 }
@@ -376,7 +376,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
             case RECEIVE:
                 do_unblock(g_m->receiver, g_m->msg);        // unblock receiver
                 if(getprocqueue(g_m->sender, &proc_q) > 0){ // unblock sender
-//                    printqueue2(proc_q, "proc_q ::");
+                    printqueue2(proc_q, "proc_q ::");
                     for(n = proc_q->head; n != NULL; n=n->nextNode){
                         msg_m = (grp_message *)n->value;
                         if(msg_m->call_nr == RECEIVE || msg_m->receiver == g_m->receiver) continue;
@@ -384,7 +384,7 @@ void try_unblock(mqueue *block_queue, mqueue *unblock_queue, int call_type){
                     }
                     printf("still have %d left\n", send_num);
                     if(send_num == 0){
-//                        printf("do unblock %d\n", g_m->sender);
+                        printf("do unblock %d\n", g_m->sender);
                         do_unblock(g_m->sender, g_m->msg);
                     }
                 }
