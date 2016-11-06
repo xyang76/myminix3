@@ -8,7 +8,6 @@
 int test_opengroup_syscall();
 int test_opengroup();
 int test_opengroup_EIVSTTG();
-int test_opengroup_EGRPBUSY();
 
 int test_closegroup_syscall();
 int test_closegroup();   
@@ -28,7 +27,6 @@ int main(void) {
     test_opengroup_syscall();
     test_opengroup();
     test_opengroup_EIVSTTG();
-    test_opengroup_EGRPBUSY();
 
     test_closegroup_syscall();
     test_closegroup(); 
