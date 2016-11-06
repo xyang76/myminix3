@@ -181,13 +181,13 @@ int test_addproc_EIVGRP(){
     if((child=fork())==0){
         // in child process
         rv = addproc(-1, getpid());    
-        TEST_EQUAL(rv, -1, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP"); 
+        ASSERT_EQUAL(rv, -1); 
         TEST_EQUAL(errno, EIVGRP, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP");
         exit(0);
     } else {
         // in parent process
 		rv = addproc(-1, parent);    
-        TEST_EQUAL(rv, -1, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP"); 
+        ASSERT_EQUAL(rv, -1); 
         TEST_EQUAL(errno, EIVGRP, "test_addprocess_EIVGRP: addproc with invalid gid should return EIVGRP");
     }
     return 0;
@@ -205,7 +205,7 @@ int test_addproc_EPROCEXIST(){
     ASSERT_EQUAL(rv, 0);
     
     rv = addproc(gid, getpid());    
-    TEST_EQUAL(rv, -1, "test_addprocess_EPROCEXIST: addproc with exist pid should return EPROCEXIST"); 
+    ASSERT_EQUAL(rv, -1); 
     TEST_EQUAL(errno, EPROCEXIST, "test_addprocess_EPROCEXIST: addproc with exist pid should return EPROCEXIST");
     return 0;
 }
@@ -270,7 +270,7 @@ int test_rmproc_EIVGRP(){
     // in child process
     addproc(gid, getpid());
     rv = rmproc(-1, getpid());
-    TEST_EQUAL(rv, -1, "test_removeprocess: rmproc with invalid gid should return EIVGRP");
+    ASSERT_EQUAL(rv, -1);
     TEST_EQUAL(errno, EIVGRP, "test_removeprocess: rmproc with invalid gid should return EIVGRP");
     return 0;
 }
@@ -284,7 +284,7 @@ int test_rmproc_EIVPROC(){
     // in child process
     addproc(gid, getpid());
     rv = rmproc(gid, -1);
-    TEST_EQUAL(rv, -1, "test_removeprocess: rmproc with invalid pid should return EIVPROC");
+    ASSERT_EQUAL(rv, -1);
     TEST_EQUAL(errno, EIVPROC, "test_removeprocess: rmproc with invalid pid should return EIVPROC");
     return 0;
 }
