@@ -42,7 +42,7 @@ int main()
 	    ASSERT_EQUAL(rv, 0);
             TEST_EQUAL(m2.m1_i1, 10, "message should be 10.");
 	} else {
-            rv = mreceive(gid1, &m3, parent);   
+            rv = mreceive(gid2, &m3, parent);   
 	    ASSERT_EQUAL(rv, 0);
             TEST_EQUAL(m3.m1_i1, 20, "message should be 20.");
 	} 	
