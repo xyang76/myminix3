@@ -4,11 +4,6 @@
 #include <unistd.h>
 #include <string.h>
 
-typedef struct{
-    int size;                       /* size */
-    int proc[NR_PROCS];             /* proc */
-}proc_list;
-
 int opengroup(int strategy){
     message m;
     

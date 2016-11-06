@@ -106,7 +106,7 @@ int test_closegroup_syscall(){
     int gid;
 
     gid = opengroup(0);
-
+    ASSERT_GREATER(gid, 0);
     m.m1_i1 = gid;
  
     TEST_EQUAL(_syscall(PM_PROC_NR, CLOSEGP, &m), 0, "test_close_syscall: closegroup should return 0");
