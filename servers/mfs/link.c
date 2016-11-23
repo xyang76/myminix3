@@ -160,7 +160,7 @@ int fs_unlink()
   } else {
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
   }
-  printf("in mfs/do_unlink: %d :: %d :: %d\n", rip->i_nlinks, , rip->i_num, rip->i_count);
+  printf("in mfs/do_unlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
 
   /* If unlink was possible, it has been done, otherwise it has not. */
   put_inode(rip);
