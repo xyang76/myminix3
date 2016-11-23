@@ -24,7 +24,7 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 #define FIRST_HALF	0
 #define LAST_HALF	1
 
-
+int debug = 0;
 /*===========================================================================*
  *				fs_link 				     *
  *===========================================================================*/
@@ -97,8 +97,9 @@ int fs_link()
 	  rip->i_update |= CTIME;
 	  IN_MARKDIRTY(rip);
   }
-  printf("in mfs/do_link: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-  
+  if(debuging){
+    printf("in mfs/do_link: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+  }
   /* Done.  Release both inodes. */
   put_inode(rip);
   put_inode(ip);
@@ -160,8 +161,9 @@ int fs_unlink()
   } else {
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
   }
-  printf("in mfs/do_unlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-
+  if(debuging){
+    printf("in mfs/do_unlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+  }
   /* If unlink was possible, it has been done, otherwise it has not. */
   put_inode(rip);
   put_inode(rldirp);
@@ -203,7 +205,9 @@ int fs_rdlink()
 	if (r == OK)
 		fs_m_out.RES_NBYTES = copylen;
   }
-  printf("in mfs/do_rdlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+  if(debuging){
+    printf("in mfs/do_rdlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+  }
   put_inode(rip);
   return(r);
 }
@@ -229,7 +233,9 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   /* search_dir checks that rip is a directory too. */
   if ((r = search_dir(rip, "", NULL, IS_EMPTY, IGN_PERM)) != OK)
   	return(r);
-  printf("in mfs/do_remove_dir: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+    if(debuging){
+        printf("in mfs/do_remove_dir: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+    }
   if (strcmp(dir_name, ".") == 0 || strcmp(dir_name, "..") == 0)return(EINVAL);
   if (rip->i_num == ROOT_INODE) return(EBUSY); /* can't remove 'root' */
  
@@ -275,7 +281,10 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	rip->i_update |= CTIME;
 	IN_MARKDIRTY(rip);
   }
-  printf("in mfs/unlink_file: %s - %d :: %d :: %d\n", file_name, rip->i_nlinks, rip->i_num, rip->i_count);
+  if(strcmp(file_name,"a.txt") == 0 || strcmp(file_name,"b.txt")){
+      debuging = 1;
+    printf("in mfs/unlink_file: %s - %d :: %d :: %d\n", file_name, rip->i_nlinks, rip->i_num, rip->i_count);
+  }
   put_inode(rip);
   return(r);
 }
