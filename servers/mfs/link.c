@@ -24,7 +24,7 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 #define FIRST_HALF	0
 #define LAST_HALF	1
 
-int debug = 0;
+int debuging = 0;
 /*===========================================================================*
  *				fs_link 				     *
  *===========================================================================*/
@@ -103,6 +103,9 @@ int fs_link()
   /* Done.  Release both inodes. */
   put_inode(rip);
   put_inode(ip);
+  if(debuging){
+    printf("in mfs/do_link2: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+  }
   return(r);
 }
 
@@ -167,6 +170,9 @@ int fs_unlink()
   /* If unlink was possible, it has been done, otherwise it has not. */
   put_inode(rip);
   put_inode(rldirp);
+  if(debuging){
+    printf("in mfs/do_unlink2: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+  }
   return(r);
 }
 
@@ -206,9 +212,14 @@ int fs_rdlink()
 		fs_m_out.RES_NBYTES = copylen;
   }
   if(debuging){
+      
     printf("in mfs/do_rdlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
   }
   put_inode(rip);
+  if(debuging){
+      
+    printf("in mfs/do_rdlink2: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+  }
   return(r);
 }
 
@@ -247,6 +258,9 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
    */
   (void) unlink_file(rip, NULL, dot1);
   (void) unlink_file(rip, NULL, dot2);
+  if(debuging){
+        printf("in mfs/do_remove_dir: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
+    }
   return(OK);
 }
 
@@ -281,11 +295,15 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	rip->i_update |= CTIME;
 	IN_MARKDIRTY(rip);
   }
-  if(strcmp(file_name,"a.txt") == 0 || strcmp(file_name,"b.txt")){
+  if(strcmp(file_name,"a.txt") == 0 || strcmp(file_name,"b.txt") == 0){
       debuging = 1;
     printf("in mfs/unlink_file: %s - %d :: %d :: %d\n", file_name, rip->i_nlinks, rip->i_num, rip->i_count);
   }
   put_inode(rip);
+  if(strcmp(file_name,"a.txt") == 0 || strcmp(file_name,"b.txt") == 0){
+      debuging = 1;
+    printf("in mfs/unlink_file2: %s - %d :: %d :: %d\n", file_name, rip->i_nlinks, rip->i_num, rip->i_count);
+  }
   return(r);
 }
 
