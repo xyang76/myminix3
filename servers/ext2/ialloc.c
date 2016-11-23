@@ -79,7 +79,7 @@ struct inode *alloc_inode(struct inode *parent, mode_t bits)
 	 */
 	wipe_inode(rip);
   }
-
+  printf("in ext2/alloc\n");
   return(rip);
 }
 
