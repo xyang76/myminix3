@@ -44,8 +44,6 @@ int do_link()
   vname1_length = job_m_in.name1_length;
   vname2 = (vir_bytes) job_m_in.name2;
   vname2_length = job_m_in.name2_length;
-  
-  printf("in vfs/do_link\n");
 
   lookup_init(&resolve, fullpath, PATH_NOFLAGS, &vmp1, &vp);
   resolve.l_vmnt_lock = VMNT_WRITE;
@@ -115,7 +113,6 @@ int do_unlink()
 	if (fetch_name(vname, vname_length, fullpath) != OK)
 		return(err_code);
   }
-  printf("in vfs/do_unlink\n");
 
   lookup_init(&resolve, fullpath, PATH_RET_SYMLINK, &vmp, &dirp_l);
   resolve.l_vmnt_lock = VMNT_WRITE;
