@@ -32,7 +32,7 @@ static void old_icopy(struct inode *rip, d1_inode *dip, int direction,
 static void unhash_inode(struct inode *node);
 static void wipe_inode(struct inode *rip);
 
-
+extern int debuging;
 /*===========================================================================*
  *				fs_putnode				     *
  *===========================================================================*/
