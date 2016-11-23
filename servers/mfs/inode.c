@@ -264,6 +264,10 @@ struct inode *alloc_inode(dev_t dev, mode_t bits)
   register struct super_block *sp;
   int major, minor, inumb;
   bit_t b;
+  
+  if(debuging){
+     printf("mfs/alloc_inode\n");
+  }
 
   sp = get_super(dev);	/* get pointer to super_block */
   if (sp->s_rd_only) {	/* can't allocate an inode on a read only device. */

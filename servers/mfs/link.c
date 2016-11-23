@@ -24,7 +24,7 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 #define FIRST_HALF	0
 #define LAST_HALF	1
 
-int debuging = 0;
+
 /*===========================================================================*
  *				fs_link 				     *
  *===========================================================================*/
