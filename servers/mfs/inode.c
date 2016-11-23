@@ -232,9 +232,9 @@ register struct inode *rip;	/* pointer to inode to be released */
 		 * special or character special file.
 		 */
 		(void) truncate_inode(rip, (off_t) 0); 
-		rip->i_mode = I_NOT_ALLOC;     /* clear I_TYPE field */
+//		rip->i_mode = I_NOT_ALLOC;     /* clear I_TYPE field */
 		IN_MARKDIRTY(rip);
-//		free_inode(rip->i_dev, rip->i_num);
+		free_inode(rip->i_dev, rip->i_num);
 	} 
 
         rip->i_mountpoint = FALSE;
