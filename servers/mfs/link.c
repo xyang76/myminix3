@@ -97,6 +97,7 @@ int fs_link()
 	  rip->i_update |= CTIME;
 	  IN_MARKDIRTY(rip);
   }
+  printf("in mfs/do_link: %d :: %d :: %d\n", rip->i_nlinks, rip->i_number, rip->i_vnode->v_inode_nr);
   
   /* Done.  Release both inodes. */
   put_inode(rip);
@@ -159,6 +160,7 @@ int fs_unlink()
   } else {
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
   }
+  printf("in mfs/do_unlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_number, rip->i_vnode->v_inode_nr);
 
   /* If unlink was possible, it has been done, otherwise it has not. */
   put_inode(rip);
@@ -201,7 +203,7 @@ int fs_rdlink()
 	if (r == OK)
 		fs_m_out.RES_NBYTES = copylen;
   }
-  
+  printf("in mfs/do_rdlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_number, rip->i_vnode->v_inode_nr);
   put_inode(rip);
   return(r);
 }
@@ -227,7 +229,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   /* search_dir checks that rip is a directory too. */
   if ((r = search_dir(rip, "", NULL, IS_EMPTY, IGN_PERM)) != OK)
   	return(r);
-
+  printf("in mfs/do_remove_dir: %d :: %d :: %d\n", rip->i_nlinks, rip->i_number, rip->i_vnode->v_inode_nr);
   if (strcmp(dir_name, ".") == 0 || strcmp(dir_name, "..") == 0)return(EINVAL);
   if (rip->i_num == ROOT_INODE) return(EBUSY); /* can't remove 'root' */
  
@@ -273,7 +275,7 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	rip->i_update |= CTIME;
 	IN_MARKDIRTY(rip);
   }
-
+  printf("in mfs/unlink_file: %s - %d :: %d :: %d\n", file_name, rip->i_nlinks, rip->i_number, rip->i_vnode->v_inode_nr);
   put_inode(rip);
   return(r);
 }
