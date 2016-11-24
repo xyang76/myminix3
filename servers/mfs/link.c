@@ -282,15 +282,6 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
   ino_t numb;			/* inode number */
   int	r;
   
-  if(strcmp(file_name,"a.txt") == 0 || strcmp(file_name,"b.txt") == 0){
-      debuging = 1;
-      open = 1;
-      printf("in mfs/unlink_file1\n");
-      return 0;
-  } else {
-      printf("in mfs/unlink_file2\n");
-  }
-
   /* If rip is not NULL, it is used to get faster access to the inode. */
   if (rip == NULL) {
   	/* Search for file in directory and try to get its inode. */
@@ -300,9 +291,22 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
   } else {
 	dup_inode(rip);		/* inode will be returned with put_inode */
   }
+  
+  if(strcmp(file_name,"a.txt") == 0){
+      debuging = 1;
+      open = 1;
+      printf("in mfs/unlink_file1 a.txt\n");
+      return 0;
+  } 
 
   r = search_dir(dirp, file_name, NULL, DELETE, IGN_PERM);
 
+  if(strcmp(file_name,"b.txt") == 0){
+      debuging = 1;
+      open = 1;
+      printf("in mfs/unlink_file1 b.txt\n");
+      return 0;
+  } 
   if (r == OK) {
 	rip->i_nlinks--;	/* entry deleted from parent's dir */
 	rip->i_update |= CTIME;
