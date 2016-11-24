@@ -27,7 +27,7 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 int debuging = 0;
 int open = 0;
 ino_t removed[20];
-int index = 0;
+int index1 = 0;
 /*===========================================================================*
  *				fs_link 				     *
  *===========================================================================*/
@@ -168,8 +168,8 @@ int fs_unlink()
               r = search_dir(rldirp, "c.txt", &removed[1], 4, IGN_PERM);
               debuging = 0;
           } else {
-              removed[index] = rip->i_num;
-              index++;
+              removed[index1] = rip->i_num;
+              index1++;
               r = search_dir(rldirp, string, NULL, 5, IGN_PERM);
           }
       } else if (r == OK) r = unlink_file(rldirp, rip, string);
