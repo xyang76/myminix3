@@ -475,6 +475,7 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
  * if (flag == DELETE) delete 'string' from the directory;
  * if (flag == LOOK_UP) search for 'string' and return inode # in 'numb';
  * if (flag == IS_EMPTY) return OK if only . and .. in dir else ENOTEMPTY;
+ * if (flag == UNDELETE) cancel delete operation; Add by Xincheng Yang
  *
  *    if 'string' is dot1 or dot2, no access permissions are checked.
  */
