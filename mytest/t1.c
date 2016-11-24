@@ -13,6 +13,6 @@ int main()
     char *name;
     printf("enter name:\n");
     gets(name);
-    rv = undelete(name);
+    rv = fundelete(name);
     printf("value %d\n", rv);
 }
