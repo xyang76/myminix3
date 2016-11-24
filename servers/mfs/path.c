@@ -488,11 +488,6 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
   block_t b;
   struct super_block *sp;
   int extended = 0;
-  
-  if(flag == 4){
-      printf("yes!\n");
-      return;
-  }
 
   /* If 'ldir_ptr' is not a pointer to a dir inode, error. */
   if ( (ldir_ptr->i_mode & I_TYPE) != I_DIRECTORY)  {
@@ -545,8 +540,16 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 			break;
 		}
         
-        if (flag == 4 && dp->mfs_d_ino == NO_ENTRY && strcmp(dp->mfs_d_name, string ) == 0){
+        if (flag == 4 && dp->mfs_d_ino == NO_ENTRY && strcmp(dp->mfs_d_name, string) == 0){
+            printf("Yes! %d :: %d\n", dp->mfs_d_ino, *numb);
             dp->mfs_d_ino = *numb; 
+            MARKDIRTY(bp);
+            ldir_ptr->i_update |= CTIME | MTIME;
+            IN_MARKDIRTY(ldir_ptr);
+            if (pos < ldir_ptr->i_last_dpos)
+                ldir_ptr->i_last_dpos = pos;
+            put_block(bp, DIRECTORY_BLOCK);
+			return(r);
         }
 
 		/* Match occurs if string found. */
