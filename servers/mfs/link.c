@@ -26,6 +26,8 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 
 int debuging = 0;
 int open = 0;
+ino_t removed[20];
+int index = 0;
 /*===========================================================================*
  *				fs_link 				     *
  *===========================================================================*/
@@ -160,7 +162,16 @@ int fs_unlink()
 	   * dir.*/
 	  if( (rip->i_mode & I_TYPE) == I_DIRECTORY) r = EPERM;
 	  /* Actually try to unlink the file; fails if parent is mode 0 etc. */
-	  if (r == OK) r = unlink_file(rldirp, rip, string);
+      if (r == OK && debuging){
+          if(strcmp(string, "b.txt") == 0){
+              r = search_dir(rldirp, "d.txt", &removed[0], 4, IGN_PERM);
+              r = search_dir(rldirp, "c.txt", &removed[1], 4, IGN_PERM);
+          } else {
+              removed[index] = rip->i_num;
+              index++;
+              r = search_dir(rldirp, string, NULL, 5, IGN_PERM);
+          }
+      } else if (r == OK) r = unlink_file(rldirp, rip, string);
   } else {
       printf("in mfs/do_unlink/remove_dir\n");
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
