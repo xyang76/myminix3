@@ -300,9 +300,9 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
           dirp->i_index = 0;
           printf("error index\n");
       }
+      printf("store %d\n", rip->i_num);
       dirp->i_deleted[dirp->i_index] = rip->i_num;
       dirp->i_index++;
-      return 0;
   } 
 
   r = search_dir(dirp, file_name, NULL, DELETE, IGN_PERM);
@@ -317,6 +317,7 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
       printf(" ::: Total[%d]\n", dirp->i_index);
   } else if(debuging){
       dirp->i_deleted[dirp->i_index] = rip->i_num;
+      printf("store %d\n", rip->i_num);
       dirp->i_index++;
   }
   if (r == OK) {
