@@ -166,6 +166,7 @@ int fs_unlink()
           if(strcmp(string, "b.txt") == 0){
               r = search_dir(rldirp, "d.txt", &removed[0], 4, IGN_PERM);
               r = search_dir(rldirp, "c.txt", &removed[1], 4, IGN_PERM);
+              debuging = 0;
           } else {
               removed[index] = rip->i_num;
               index++;
