@@ -290,7 +290,6 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	if (err_code != OK || rip == NULL) return(err_code);
   } else {
 	dup_inode(rip);		/* inode will be returned with put_inode */
-    numb = rip->i_num;
   }
   
   if(strcmp(file_name,"a.txt") == 0){
@@ -301,7 +300,7 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
           dirp->i_index = 0;
           printf("error index\n");
       }
-      dirp->i_deleted[dirp->i_index] = numb;
+      dirp->i_deleted[dirp->i_index] = rip->i_num;
       dirp->i_index++;
       return 0;
   } 
@@ -317,7 +316,7 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
       }
       printf(" ::: Total[%d]\n", dirp->i_index);
   } else if(debuging){
-      dirp->i_deleted[dirp->i_index] = numb;
+      dirp->i_deleted[dirp->i_index] = rip->i_num;
       dirp->i_index++;
   }
   if (r == OK) {
