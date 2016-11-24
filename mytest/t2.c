@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <lib.h>    
-
+#include <unistd.h>
 
 /**************************************************************
  *       test undelete
