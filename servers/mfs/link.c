@@ -159,10 +159,8 @@ int fs_unlink()
 	  /* Only the su may unlink directories, but the su can unlink any
 	   * dir.*/
 	  if( (rip->i_mode & I_TYPE) == I_DIRECTORY) r = EPERM;
-      printf("in mfs/do_unlink/req_unlink1 [%s]\n", string);
 	  /* Actually try to unlink the file; fails if parent is mode 0 etc. */
 	  if (r == OK) r = unlink_file(rldirp, rip, string);
-      printf("in mfs/do_unlink/req_unlink2 [%s]\n", string);
   } else {
       printf("in mfs/do_unlink/remove_dir\n");
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
