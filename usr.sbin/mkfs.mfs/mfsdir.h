@@ -11,6 +11,7 @@
 
 struct direct {
   uint32_t mfs_d_ino;
+  uint32_t mfs_d_ino_backup;
   char mfs_d_name[MFS_DIRSIZ];
 #ifdef __NBSD_LIBC 
 } __packed;

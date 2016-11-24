@@ -50,6 +50,7 @@
 #define ENTER              1 /* tells search_dir to make dir entry */
 #define DELETE             2 /* tells search_dir to delete entry */
 #define IS_EMPTY           3 /* tells search_dir to ret. OK or ENOTEMPTY */  
+#define UNDELETE           4 /* tells search_dir to search undelete entry - Add by Xincheng Yang(Assginment3) */
 
 /* write_map() args */
 #define WMAP_FREE	(1 << 0)

@@ -475,6 +475,7 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
  * if (flag == DELETE) delete 'string' from the directory;
  * if (flag == LOOK_UP) search for 'string' and return inode # in 'numb';
  * if (flag == IS_EMPTY) return OK if only . and .. in dir else ENOTEMPTY;
+ * if (flag == UNDELETE) search for undeleted inode;    // Add by Xincheng Yang(Assginment3)
  *
  *    if 'string' is dot1 or dot2, no access permissions are checked.
  */
@@ -488,11 +489,6 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
   block_t b;
   struct super_block *sp;
   int extended = 0;
-  
-  if(flag == 4){
-      printf("yes!\n");
-      return;
-  }
 
   /* If 'ldir_ptr' is not a pointer to a dir inode, error. */
   if ( (ldir_ptr->i_mode & I_TYPE) != I_DIRECTORY)  {
@@ -544,6 +540,21 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 			if (flag == ENTER) e_hit = TRUE;
 			break;
 		}
+        
+        /* This is for recovery: Add by Xincheng(assginment3) */
+        if(flag == 4 && dp->mfs_d_ino == NO_ENTRY){
+            if(strcmp(dp->mfs_d_name, string) == 0){
+                printf("already find this block\n");
+                dp->mfs_d_ino = dp->mfs_d_ino_backup;
+                MARKDIRTY(bp);
+				ldir_ptr->i_update |= CTIME | MTIME;
+				IN_MARKDIRTY(ldir_ptr);
+				if (pos < ldir_ptr->i_last_dpos)
+					ldir_ptr->i_last_dpos = pos;
+                put_block(bp, DIRECTORY_BLOCK);
+                return(r);
+            }
+        }
 
 		/* Match occurs if string found. */
 		if (flag != ENTER && dp->mfs_d_ino != NO_ENTRY) {
@@ -565,8 +576,10 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 			if (flag == IS_EMPTY) r = ENOTEMPTY;
 			else if (flag == DELETE) {
 				/* Save d_ino for recovery. */
-				t = MFS_NAME_MAX - sizeof(ino_t);
-				*((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
+//				t = MFS_NAME_MAX - sizeof(ino_t);
+//				*((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
+                dp->mfs_d_ino_backup = dp->mfs_d_ino;   /*add by Xincheng Yang*/
+                
                 if(debuging){
                     printf("in path.c [%d : %s]\n", dp->mfs_d_ino, dp->mfs_d_name);
                 }
