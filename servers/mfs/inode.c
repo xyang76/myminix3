@@ -242,10 +242,9 @@ register struct inode *rip;	/* pointer to inode to be released */
 
 	if (rip->i_nlinks == NO_LINK) {
 		/* free, put at the front of the LRU list */
-//		unhash_inode(rip);
-//		rip->i_num = NO_ENTRY;
-//		TAILQ_INSERT_HEAD(&unused_inodes, rip, i_unused);
-        TAILQ_INSERT_TAIL(&unused_inodes, rip, i_unused);
+		unhash_inode(rip);
+		rip->i_num = NO_ENTRY;
+		TAILQ_INSERT_HEAD(&unused_inodes, rip, i_unused);
 	} else {
 		/* unused, put at the back of the LRU (cache it) */
 		TAILQ_INSERT_TAIL(&unused_inodes, rip, i_unused);

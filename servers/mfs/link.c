@@ -162,6 +162,7 @@ int fs_unlink()
 	  /* Actually try to unlink the file; fails if parent is mode 0 etc. */
 	  if (r == OK) r = unlink_file(rldirp, rip, string);
   } else {
+      printf("in mfs/do_unlink/remove_dir\n");
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
   }
   if(debuging){
