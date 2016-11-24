@@ -294,13 +294,6 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
       debuging = 1;
       open = 1;
       printf("in mfs/unlink_file1 a.txt\n");
-      if(dirp->i_index > 20 || dirp->i_index < 0){
-          dirp->i_index = 0;
-          printf("error index\n");
-      }
-      printf("store %d\n", rip->i_num);
-      dirp->i_deleted[dirp->i_index] = rip->i_num;
-      dirp->i_index++;
   } 
 
   r = search_dir(dirp, file_name, NULL, DELETE, IGN_PERM);
@@ -309,15 +302,7 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
       debuging = 1;
       open = 1;
       printf("in mfs/unlink_file1 b.txt\n");
-      for(i=0; i<dirp->i_index;i++){
-          printf("%d ", dirp->i_deleted[dirp->i_index]);
-      }
-      printf(" ::: Total[%d]\n", dirp->i_index);
-  } else if(debuging){
-      dirp->i_deleted[dirp->i_index] = rip->i_num;
-      printf("store %d\n", rip->i_num);
-      dirp->i_index++;
-  }
+  } 
   if (r == OK) {
 	rip->i_nlinks--;	/* entry deleted from parent's dir */
 	rip->i_update |= CTIME;
