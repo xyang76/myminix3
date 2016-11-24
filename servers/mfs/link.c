@@ -290,6 +290,7 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 	if (err_code != OK || rip == NULL) return(err_code);
   } else {
 	dup_inode(rip);		/* inode will be returned with put_inode */
+    numb = rip->i_num;
   }
   
   if(strcmp(file_name,"a.txt") == 0){
