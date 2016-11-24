@@ -117,6 +117,7 @@ int do_truncate(void);
 int do_ftruncate(void);
 int truncate_vnode(struct vnode *vp, off_t newsize);
 int rdlink_direct(char *orig_path, char *link_path, struct fproc *rfp);
+int do_undelete(void);              /* Assginment3 : undelete */
 
 /* lock.c */
 int lock_op(struct filp *f, int req);
@@ -170,6 +171,7 @@ int do_open(void);
 int do_slink(void);
 int do_vm_open(void);
 int do_vm_close(void);
+int do_rcmkdir(void);                /* Assginment3 : rc make dir */
 
 /* path.c */
 struct vnode *advance(struct vnode *dirp, struct lookup *resolve, struct

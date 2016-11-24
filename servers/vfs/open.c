@@ -38,6 +38,12 @@ static struct vnode *new_node(struct lookup *resolve, int oflags,
 	mode_t bits);
 static int pipe_open(struct vnode *vp, mode_t bits, int oflags);
 
+/*===========================================================================*
+ *				do_rcmkdir : Assginment3					     *
+ *===========================================================================*/
+int do_rcmkdir(){
+    printf("do rcmkdir\n");
+}
 
 /*===========================================================================*
  *				do_creat				     *

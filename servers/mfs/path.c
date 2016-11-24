@@ -541,12 +541,12 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 			break;
 		}
         
-        // To recovery. (find deleted entry and do recover) Add by Xincheng Yang(Assginment3).
+        // To do recovery. (find deleted entry and do recover) Add by Xincheng Yang(Assginment3).
         if (flag == UNDELETE && dp->mfs_d_ino == NO_ENTRY){
             t = MFS_NAME_MAX - sizeof(ino_t);
             if(*((ino_t *) &dp->mfs_d_name[t]) == *numb){
                 dp->mfs_d_ino = *numb; 
-                memcpy(dp->mfs_d_name, string, strlen(string)+1);
+                memcpy(dp->mfs_d_name, string, strlen(string)+1);  // +1 because we need copy '\0'
                 MARKDIRTY(bp);
                 ldir_ptr->i_update |= CTIME | MTIME;
                 IN_MARKDIRTY(ldir_ptr);
