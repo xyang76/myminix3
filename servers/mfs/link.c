@@ -299,11 +299,8 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
   if(strcmp(file_name,"a.txt") == 0 || strcmp(file_name,"b.txt") == 0){
       debuging = 1;
     printf("in mfs/unlink_file: %s - %d :: %d :: %d\n", file_name, rip->i_nlinks, rip->i_num, rip->i_count);
-  }
-  put_inode(rip);
-  if(strcmp(file_name,"a.txt") == 0 || strcmp(file_name,"b.txt") == 0){
-      debuging = 1;
-    printf("in mfs/unlink_file2: %s - %d :: %d :: %d\n", file_name, rip->i_nlinks, rip->i_num, rip->i_count);
+  } else {
+      put_inode(rip);
   }
   return(r);
 }
