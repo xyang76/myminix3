@@ -540,8 +540,8 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 			break;
 		}
         
-        // To recovery.
-        if (flag == 4 && dp->mfs_d_ino == NO_ENTRY){
+        // To recovery. (find deleted entry and do recover) Add by Xincheng Yang(Assginment3).
+        if (flag == UNDELETE && dp->mfs_d_ino == NO_ENTRY){
             t = MFS_NAME_MAX - sizeof(ino_t);
             if(*((ino_t *) &dp->mfs_d_name[t]) == *numb){
                 dp->mfs_d_ino = *numb; 
