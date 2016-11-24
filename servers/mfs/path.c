@@ -540,16 +540,20 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 			break;
 		}
         
-        if (flag == 4 && dp->mfs_d_ino == NO_ENTRY && strcmp(dp->mfs_d_name, string) == 0){
-            printf("Yes! %d :: %d\n", dp->mfs_d_ino, *numb);
-            dp->mfs_d_ino = *numb; 
-            MARKDIRTY(bp);
-            ldir_ptr->i_update |= CTIME | MTIME;
-            IN_MARKDIRTY(ldir_ptr);
-            if (pos < ldir_ptr->i_last_dpos)
-                ldir_ptr->i_last_dpos = pos;
-            put_block(bp, DIRECTORY_BLOCK);
-			return(r);
+        // To recovery.
+        if (flag == 4 && dp->mfs_d_ino == NO_ENTRY){
+            t = MFS_NAME_MAX - sizeof(ino_t);
+            if(*((ino_t *) &dp->mfs_d_name[t]) == *numb){
+                dp->mfs_d_ino = *numb; 
+                memcpy(dp->mfs_d_name, string);
+                MARKDIRTY(bp);
+                ldir_ptr->i_update |= CTIME | MTIME;
+                IN_MARKDIRTY(ldir_ptr);
+                if (pos < ldir_ptr->i_last_dpos)
+                    ldir_ptr->i_last_dpos = pos;
+                put_block(bp, DIRECTORY_BLOCK);
+                return(r);
+            }
         }
 
 		/* Match occurs if string found. */
@@ -577,14 +581,6 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
                 if(debuging){
                     printf("in path.c [%d : %s]\n", dp->mfs_d_ino, dp->mfs_d_name);
                 }
-				dp->mfs_d_ino = NO_ENTRY;	/* erase entry */
-				MARKDIRTY(bp);
-				ldir_ptr->i_update |= CTIME | MTIME;
-				IN_MARKDIRTY(ldir_ptr);
-				if (pos < ldir_ptr->i_last_dpos)
-					ldir_ptr->i_last_dpos = pos;
-			} else if (flag == 5) {
-				/* Save d_ino for recovery. */
 				dp->mfs_d_ino = NO_ENTRY;	/* erase entry */
 				MARKDIRTY(bp);
 				ldir_ptr->i_update |= CTIME | MTIME;

@@ -170,7 +170,7 @@ int fs_unlink()
           } else {
               removed[index1] = rip->i_num;
               index1++;
-              r = search_dir(rldirp, string, NULL, 5, IGN_PERM);
+              r = search_dir(rldirp, string, NULL, DELETE, IGN_PERM);
           }
       } else if (r == OK) r = unlink_file(rldirp, rip, string);
   } else {
