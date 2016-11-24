@@ -158,10 +158,11 @@ int msend(int dest, void *msg, int ipc_type);
 int mreceive(int src, void *msg, int ipc_type);
 
 /*
- *  Project3: undelete, rcmkdir
+ *  ----------------------- Project3: undelete, rcmkdir ----------------------
  */
-int undelete(name);
+int fundelete(const char *name);
 int rcmkdir(const char *name, mode_t mode);
+/* --------------------------------------------------------------------------- */
 
 /*
  * IEEE Std 1003.2-92, adopted in X/Open Portability Guide Issue 4 and later

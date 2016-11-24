@@ -8,13 +8,13 @@
 __weak_alias(unlink, _unlink)
 #endif
 
-int undelete(name)
+int fundelete(name)
 const char *name;
 {
   message m;
 
   _loadname(name, &m);
-  return(_syscall(VFS_PROC_NR, UNLINK, &m));
+  return(_syscall(VFS_PROC_NR, UNDELETE, &m));
 }
 
 int rcmkdir(const char *name, mode_t mode)
@@ -24,5 +24,5 @@ int rcmkdir(const char *name, mode_t mode)
   m.m1_i1 = strlen(name) + 1;
   m.m1_i2 = mode;
   m.m1_p1 = (char *) __UNCONST(name);
-  return(_syscall(VFS_PROC_NR, MKDIR, &m));
+  return(_syscall(VFS_PROC_NR, RCMKDIR, &m));
 }
