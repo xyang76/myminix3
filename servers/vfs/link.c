@@ -122,6 +122,7 @@ int do_unlink()
 	if (fetch_name(vname, vname_length, fullpath) != OK)
 		return(err_code);
   }
+  printf("fullname : [%s]\n", fullpath);
 
   lookup_init(&resolve, fullpath, PATH_RET_SYMLINK, &vmp, &dirp_l);
   resolve.l_vmnt_lock = VMNT_WRITE;
