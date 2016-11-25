@@ -129,8 +129,6 @@ typedef struct {
  *****************************************************************************/
 #define REQ_UNDELETE	(VFS_BASE + 33)                         /* Assginment3: Request for undelete*/
 #define REQ_RCMKDIR	(VFS_BASE + 34)                             /* Assginment3: Request for rcmkdir*/
-//#define REQ_VRMDIR	(VFS_BASE + 33)                         /* Assginment3: Request for undelete*/
-//#define REQ_VRCMKDIR	(VFS_BASE + 34)                             /* Assginment3: Request for rcmkdir*/
 
 #define NREQS			    35
 
