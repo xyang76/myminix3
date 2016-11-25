@@ -8,8 +8,7 @@
 __weak_alias(unlink, _unlink)
 #endif
 
-int fundelete(file)
-const char *file;
+int fundelete(const char *file)
 {
     struct stat sb;
     message m;

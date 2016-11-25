@@ -10,7 +10,7 @@
 int main()
 {
     int rv;
-    char *name;
+    char name[100];
     printf("enter name:\n");
     gets(name);
     rv = fundelete(name);
