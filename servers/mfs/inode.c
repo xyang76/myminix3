@@ -230,10 +230,10 @@ register struct inode *rip;	/* pointer to inode to be released */
 		/* Ignore errors by truncate_inode in case inode is a block
 		 * special or character special file.
 		 */
-//		(void) truncate_inode(rip, (off_t) 0); 
+		(void) truncate_inode(rip, (off_t) 0); 
 		rip->i_mode = I_NOT_ALLOC;     /* clear I_TYPE field */
-//		IN_MARKDIRTY(rip);
-//		free_inode(rip->i_dev, rip->i_num);
+		IN_MARKDIRTY(rip);
+		free_inode(rip->i_dev, rip->i_num);
 	} 
 
         rip->i_mountpoint = FALSE;
@@ -241,10 +241,9 @@ register struct inode *rip;	/* pointer to inode to be released */
 
 	if (rip->i_nlinks == NO_LINK) {
 		/* free, put at the front of the LRU list */
-//		unhash_inode(rip);
-//		rip->i_num = NO_ENTRY;
-//		TAILQ_INSERT_HEAD(&unused_inodes, rip, i_unused);
-        TAILQ_INSERT_TAIL(&unused_inodes, rip, i_unused);
+		unhash_inode(rip);
+		rip->i_num = NO_ENTRY;
+		TAILQ_INSERT_HEAD(&unused_inodes, rip, i_unused);
 	} else {
 		/* unused, put at the back of the LRU (cache it) */
 		TAILQ_INSERT_TAIL(&unused_inodes, rip, i_unused);
