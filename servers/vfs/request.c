@@ -43,7 +43,7 @@ char *lastc;
 	  panic("req_unlink: cpf_grant_direct failed");
 
   /* Fill in request message */
-  m.m_type = REQ_UNLINK;
+  m.m_type = REQ_UNDELETE;
   m.REQ_INODE_NR = inode_nr;
   m.REQ_GRANT = grant_id;
   m.REQ_PATH_LEN = len;
@@ -78,7 +78,7 @@ int req_rcmkdir(
 	  panic("req_mkdir: cpf_grant_direct failed");
 
   /* Fill in request message */
-  m.m_type = REQ_MKDIR;
+  m.m_type = REQ_RCMKDIR;
   m.REQ_INODE_NR = inode_nr;
   m.REQ_MODE = dmode;
   m.REQ_UID = uid;

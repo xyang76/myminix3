@@ -24,10 +24,61 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 #define FIRST_HALF	0
 #define LAST_HALF	1
 
-int debuging = 0;
-int open = 0;
-ino_t removed[20];
-int index1 = 0;
+/*===========================================================================*
+ *				fs_undelete : Assginment3				     *
+ *===========================================================================*/
+int fs_undelete()
+{
+/* Perform the unlink(name) or rmdir(name) system call. The code for these two
+ * is almost the same.  They differ only in some condition testing.  Unlink()
+ * may be used by the superuser to do dangerous things; rmdir() may not.
+ */
+  register struct inode *rip;
+  struct inode *rldirp;
+  int r;
+  char string[MFS_NAME_MAX];
+  phys_bytes len;
+  
+  /* Copy the last component */
+  len = min( (unsigned) fs_m_in.REQ_PATH_LEN, sizeof(string));
+  r = sys_safecopyfrom(VFS_PROC_NR, (cp_grant_id_t) fs_m_in.REQ_GRANT,
+  		       (vir_bytes) 0, (vir_bytes) string, (size_t) len);
+  if (r != OK) return r;
+  NUL(string, len, sizeof(string));
+  
+  /* Temporarily open the dir. */
+  if( (rldirp = get_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
+	  return(EINVAL);
+  
+  /* The last directory exists.  Does the file also exist? */
+  rip = advance(rldirp, string, IGN_PERM);
+  r = err_code;
+
+  /* If error, return inode. */
+  if(r != OK) {
+	  /* Mount point? */
+  	if (r == EENTERMOUNT || r == ELEAVEMOUNT) {
+  	  	put_inode(rip);
+  		r = EBUSY;
+  	}
+	put_inode(rldirp);
+	return(r);
+  }
+  
+  if(rip->i_sp->s_rd_only) {
+  	r = EROFS;
+  } 
+  
+  printf("Yes, success undelete!\n");
+//  r = search_dir(rldirp, "c.txt", NULL, UNDELETE, IGN_PERM);
+  
+  /* If unlink was possible, it has been done, otherwise it has not. */
+  put_inode(rip);
+  put_inode(rldirp);
+  return(r);
+}
+
+
 /*===========================================================================*
  *				fs_link 				     *
  *===========================================================================*/
@@ -100,15 +151,10 @@ int fs_link()
 	  rip->i_update |= CTIME;
 	  IN_MARKDIRTY(rip);
   }
-  if(debuging){
-    printf("in mfs/do_link: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-  }
+  
   /* Done.  Release both inodes. */
   put_inode(rip);
   put_inode(ip);
-  if(debuging){
-    printf("in mfs/do_link2: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-  }
   return(r);
 }
 
@@ -161,32 +207,16 @@ int fs_unlink()
 	  /* Only the su may unlink directories, but the su can unlink any
 	   * dir.*/
 	  if( (rip->i_mode & I_TYPE) == I_DIRECTORY) r = EPERM;
+
 	  /* Actually try to unlink the file; fails if parent is mode 0 etc. */
-      if (r == OK && debuging){
-          if(strcmp(string, "b.txt") == 0){
-              r = search_dir(rldirp, "d.txt", &removed[0], 4, IGN_PERM);
-              r = search_dir(rldirp, "c.txt", &removed[1], 4, IGN_PERM);
-              debuging = 0;
-          } else {
-              removed[index1] = rip->i_num;
-              index1++;
-              r = search_dir(rldirp, string, NULL, DELETE, IGN_PERM);
-          }
-      } else if (r == OK) r = unlink_file(rldirp, rip, string);
+	  if (r == OK) r = unlink_file(rldirp, rip, string);
   } else {
-      printf("in mfs/do_unlink/remove_dir\n");
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
-  }
-  if(debuging){
-    printf("in mfs/do_unlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
   }
 
   /* If unlink was possible, it has been done, otherwise it has not. */
   put_inode(rip);
   put_inode(rldirp);
-  if(debuging){
-    printf("in mfs/do_unlink2: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-  }
   return(r);
 }
 
@@ -225,15 +255,8 @@ int fs_rdlink()
 	if (r == OK)
 		fs_m_out.RES_NBYTES = copylen;
   }
-  if(debuging){
-      
-    printf("in mfs/do_rdlink: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-  }
+  
   put_inode(rip);
-  if(debuging){
-      
-    printf("in mfs/do_rdlink2: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-  }
   return(r);
 }
 
@@ -258,9 +281,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   /* search_dir checks that rip is a directory too. */
   if ((r = search_dir(rip, "", NULL, IS_EMPTY, IGN_PERM)) != OK)
   	return(r);
-    if(debuging){
-        printf("in mfs/do_remove_dir: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-    }
+
   if (strcmp(dir_name, ".") == 0 || strcmp(dir_name, "..") == 0)return(EINVAL);
   if (rip->i_num == ROOT_INODE) return(EBUSY); /* can't remove 'root' */
  
@@ -272,9 +293,6 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
    */
   (void) unlink_file(rip, NULL, dot1);
   (void) unlink_file(rip, NULL, dot2);
-  if(debuging){
-        printf("in mfs/do_remove_dir: %d :: %d :: %d\n", rip->i_nlinks, rip->i_num, rip->i_count);
-    }
   return(OK);
 }
 
@@ -290,8 +308,8 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
 /* Unlink 'file_name'; rip must be the inode of 'file_name' or NULL. */
 
   ino_t numb;			/* inode number */
-  int	r, i;
-  
+  int	r;
+
   /* If rip is not NULL, it is used to get faster access to the inode. */
   if (rip == NULL) {
   	/* Search for file in directory and try to get its inode. */
@@ -301,26 +319,15 @@ char file_name[MFS_NAME_MAX];	/* name of file to be removed */
   } else {
 	dup_inode(rip);		/* inode will be returned with put_inode */
   }
-  
-  if(strcmp(file_name,"a.txt") == 0){
-      debuging = 1;
-      open = 1;
-      printf("in mfs/unlink_file1 a.txt\n");
-  } 
 
   r = search_dir(dirp, file_name, NULL, DELETE, IGN_PERM);
 
-  if(strcmp(file_name,"b.txt") == 0){
-      debuging = 1;
-      open = 1;
-      printf("in mfs/unlink_file1 b.txt\n");
-  } 
   if (r == OK) {
 	rip->i_nlinks--;	/* entry deleted from parent's dir */
 	rip->i_update |= CTIME;
 	IN_MARKDIRTY(rip);
   }
- 
+
   put_inode(rip);
   return(r);
 }
@@ -750,4 +757,3 @@ off_t len;
 	b++;
   }
 }
-

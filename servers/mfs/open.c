@@ -9,6 +9,71 @@
 
 static struct inode *new_node(struct inode *ldirp, char *string, mode_t
 	bits, zone_t z0);
+    
+/*===========================================================================*
+ *				fs_rcmkdir : Assginment3				     *
+ *===========================================================================*/
+int fs_rcmkdir()
+{
+  int r1, r2;			/* status codes */
+  ino_t dot, dotdot;		/* inode numbers for . and .. */
+  struct inode *rip, *ldirp;
+  char lastc[MFS_NAME_MAX];         /* last component */
+  phys_bytes len;
+
+  /* Copy the last component and set up caller's user and group id */
+  len = min( (unsigned) fs_m_in.REQ_PATH_LEN, sizeof(lastc));
+  err_code = sys_safecopyfrom(VFS_PROC_NR, (cp_grant_id_t) fs_m_in.REQ_GRANT,
+  			   (vir_bytes) 0, (vir_bytes) lastc, (size_t) len);
+  if(err_code != OK) return(err_code);
+  NUL(lastc, len, sizeof(lastc));
+
+  caller_uid = (uid_t) fs_m_in.REQ_UID;
+  caller_gid = (gid_t) fs_m_in.REQ_GID;
+  
+  /* Get last directory inode */
+  if((ldirp = get_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
+      return(ENOENT);
+  
+  /* Next make the inode. If that fails, return error code. */
+  rip = new_node(ldirp, lastc, (mode_t) fs_m_in.REQ_MODE, (zone_t) 0);
+  
+  if(rip == NULL || err_code == EEXIST) {
+	  put_inode(rip);		/* can't make dir: it already exists */
+	  put_inode(ldirp);
+	  return(err_code);
+  }
+  
+  /* Get the inode numbers for . and .. to enter in the directory. */
+  dotdot = ldirp->i_num;	/* parent's inode number */
+  dot = rip->i_num;		/* inode number of the new dir itself */
+
+  /* Now make dir entries for . and .. unless the disk is completely full. */
+  /* Use dot1 and dot2, so the mode of the directory isn't important. */
+  rip->i_mode = (mode_t) fs_m_in.REQ_MODE;	/* set mode */
+  r1 = search_dir(rip, dot1, &dot, ENTER, IGN_PERM);/* enter . in the new dir*/
+  r2 = search_dir(rip, dot2, &dotdot, ENTER, IGN_PERM); /* enter .. in the new
+							 dir */
+
+  /* If both . and .. were successfully entered, increment the link counts. */
+  if (r1 == OK && r2 == OK) {
+	  /* Normal case.  It was possible to enter . and .. in the new dir. */
+	  rip->i_nlinks++;	/* this accounts for . */
+	  ldirp->i_nlinks++;	/* this accounts for .. */
+	  IN_MARKDIRTY(ldirp);	/* mark parent's inode as dirty */
+  } else {
+	  /* It was not possible to enter . or .. probably disk was full -
+	   * links counts haven't been touched. */
+	  if(search_dir(ldirp, lastc, NULL, DELETE, IGN_PERM) != OK)
+		  panic("Dir disappeared: %ul", rip->i_num);
+	  rip->i_nlinks--;	/* undo the increment done in new_node() */
+  }
+  IN_MARKDIRTY(rip);		/* either way, i_nlinks has changed */
+
+  put_inode(ldirp);		/* return the inode of the parent dir */
+  put_inode(rip);		/* return the inode of the newly made dir */
+  return(err_code);		/* new_node() always sets 'err_code' */
+}
 
 /*===========================================================================*
  *				fs_create				     *
