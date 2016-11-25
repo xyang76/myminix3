@@ -561,7 +561,8 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 			if (flag == IS_EMPTY) {
 				/* If this test succeeds, dir is not empty. */
 				if (strcmp(dp->mfs_d_name, "." ) != 0 &&
-				    strcmp(dp->mfs_d_name, "..") != 0) match = 1;
+				    strcmp(dp->mfs_d_name, "..") != 0 && 
+                    strcmp(dp->mfs_d_name, ".backup") != 0) match = 1;
 			} else {
 				if (strncmp(dp->mfs_d_name, string,
 					sizeof(dp->mfs_d_name)) == 0){
