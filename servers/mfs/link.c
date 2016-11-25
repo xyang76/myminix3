@@ -809,7 +809,7 @@ ino_t parentdir;
     
     for(i=0; i<iindex; i++){
         if(parentdir == deltable[i].i_dir && strcmp(deltable[i].i_name, name) == 0){
-            memcpy(idel, deltable[iindex], sizeof(struct idelete));
+            memcpy(idel, &deltable[iindex], sizeof(struct idelete));
             return 0;
         }
     }
