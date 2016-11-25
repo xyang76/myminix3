@@ -797,7 +797,7 @@ char *name;
     deltable[iindex].i_num = rip -> i_num;
     deltable[iindex].i_mode = rip -> i_mode;
     printf("save [%d] :: [%s] :: [%d]\n", rip -> i_num, name, rip -> i_dev);
-    memcpy(deltable[iindex].i_name, name, strlen(name) + 1);
+    strcpy(deltable[iindex].i_name, name);
     iindex++;
     return 0;
 }
