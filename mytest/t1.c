@@ -14,5 +14,6 @@ int main()
     printf("enter name:\n");
     gets(name);
     rv = fundelete(name);
-    printf("value %d\n", rv);
+    if(rv == -1)
+    printf("value %d\n", errno);
 }

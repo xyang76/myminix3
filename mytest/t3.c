@@ -12,6 +12,6 @@ int main()
     char name[100];
     printf("enter name:\n");
     gets(name);
-    rv = remove(name);
-    printf("value %d\n", rv);
+    if(rv == -1)
+    printf("value %d\n", errno);
 }
