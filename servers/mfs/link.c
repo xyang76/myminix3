@@ -24,7 +24,7 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 /*****************************************************************************
 * Assginment3 : Static methods
 *****************************************************************************/
-static int getidelete(struct idelete **idel, char *name, dev_t parentdev);
+static int getidelete(struct idelete *idel, char *name, dev_t parentdev);
 static int saveidelete(struct inode *rip, char *name);
 
 /* Args to zerozone_half() */
@@ -50,7 +50,7 @@ int fs_undelete()
   int r;
   char string[MFS_NAME_MAX];
   phys_bytes len;
-  struct idelete *idel;
+  struct idelete idel;
   
   /* Copy the last component */
   len = min( (unsigned) fs_m_in.REQ_PATH_LEN, sizeof(string));
@@ -81,10 +81,10 @@ int fs_undelete()
   printf("1\n");
   r = getidelete(&idel, string, rldirp->i_dev);
   printf("2\n");
-  printf("Yes, success undelete! [%s], [%d]\n", string, idel->i_num);
+  printf("Yes, success undelete! [%s], [%d]\n", string, idel.i_num);
   if(r == OK) 
-    r = search_dir(rldirp, string, &idel->i_num, UNDELETE, IGN_PERM);
-  printf("Yes, success undelete! [%s], [%d]\n", string, idel->i_num);
+    r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
+  printf("Yes, success undelete! [%s], [%d]\n", string, idel.i_num);
   
   
   /* If inode already allocated, r will be ENOENT*/
@@ -806,7 +806,7 @@ char *name;
  *				get inode from idelete				     *
  *===========================================================================*/
 static int getidelete(idel, name, parentdev)
-struct idelete **idel;
+struct idelete *idel;
 char *name;
 dev_t parentdev;
 {
@@ -814,8 +814,10 @@ dev_t parentdev;
     
     for(i=0; i<iindex; i++){
         if(strcmp(deltable[iindex].i_name, name) == 0){
-            *idel = &deltable[iindex];
-            printf("get [%d] :: [%s] :: [%d]\n", (*idel)->i_num, (*idel)->i_name, parentdev);
+            idel->i_num = deltable[iindex]->i_num;
+            idel->i_dev = deltable[iindex]->i_dev;
+            idel->i_mode = deltable[iindex].i_mode;
+            printf("get [%d] :: [%s] :: [%d]\n", idel->i_num, idel->i_name, parentdev);
             return 0;
         }
     }
