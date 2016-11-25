@@ -313,12 +313,13 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   if((rip->i_mode & I_RECOVERABLE) == I_RECOVERABLE){
       r = saveidelete(rip, dir_name, rldirp->i_num);
       r = unlink_file(rldirp, rip, dir_name);
+      rip->i_nlinks--;
       return r;
-  }
+  } else {
   
   /* Actually try to unlink the file; fails if parent is mode 0 etc. */
   if ((r = unlink_file(rldirp, rip, dir_name)) != OK) return r;
-
+  
   /* Unlink . and .. from the dir. The super user can link and unlink any dir,
    * so don't make too many assumptions about them.
    */
