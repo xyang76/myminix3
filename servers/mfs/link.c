@@ -806,8 +806,8 @@ dev_t parentdev;
     
     for(i=0; i<iindex; i++){
         if(strcmp(deltable[iindex].i_name, name) == 0){
-            *idel = deltable[iindex];
-            printf("get [%d] :: [%s] :: [%d]\n", idel->i_num, idel->i_name, parentdev);
+            *idel = &deltable[iindex];
+            printf("get [%d] :: [%s] :: [%d]\n", (*idel)->i_num, (*idel)->i_name, parentdev);
             return 0;
         }
     }
