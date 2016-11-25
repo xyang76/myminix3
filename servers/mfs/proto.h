@@ -36,6 +36,7 @@ int fs_rdlink(void);
 int fs_rename(void);
 int fs_unlink(void);
 int truncate_inode(struct inode *rip, off_t len);
+int fs_undelete(void);              /* Assginment3 */
 
 /* misc.c */
 int fs_flush(void);
@@ -53,6 +54,7 @@ int fs_inhibread(void);
 int fs_mkdir(void);
 int fs_mknod(void);
 int fs_slink(void);
+int fs_rcmkdir(void);               /* Assginment3 */
 
 /* path.c */
 int fs_lookup(void);

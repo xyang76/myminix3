@@ -59,6 +59,7 @@ EXTERN LIST_HEAD(inodelist, inode)         hash_inodes[INODE_HASH_SIZE];
 EXTERN unsigned int inode_cache_hit;
 EXTERN unsigned int inode_cache_miss;
 
+
 /* Field values.  Note that CLEAN and DIRTY are defined in "const.h" */
 #define NO_SEEK            0	/* i_seek = NO_SEEK if last op was not SEEK */
 #define ISEEK              1	/* i_seek = ISEEK if last op was SEEK */
