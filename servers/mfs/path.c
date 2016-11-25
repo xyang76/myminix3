@@ -30,7 +30,6 @@ static int ltraverse(struct inode *rip, char *suffix);
 static int parse_path(ino_t dir_ino, ino_t root_ino, int flags, struct
 	inode **res_inop, size_t *offsetp, int *symlinkp);
 
-extern int debuging;
 /*===========================================================================*
  *                             fs_lookup				     *
  *===========================================================================*/
@@ -579,9 +578,6 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 				/* Save d_ino for recovery. */
 				t = MFS_NAME_MAX - sizeof(ino_t);
 				*((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
-                if(debuging){
-                    printf("in path.c [%d : %s]\n", dp->mfs_d_ino, dp->mfs_d_name);
-                }
 				dp->mfs_d_ino = NO_ENTRY;	/* erase entry */
 				MARKDIRTY(bp);
 				ldir_ptr->i_update |= CTIME | MTIME;
