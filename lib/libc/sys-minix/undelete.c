@@ -10,19 +10,9 @@ __weak_alias(unlink, _unlink)
 
 int fundelete(const char *file)
 {
-    struct stat sb;
     message m;
-    
-    _DIAGASSERT(file != NULL);
 
-    if (lstat(file, &sb) < 0)
-        return -1;
-
-    if (S_ISDIR(sb.st_mode))
-        m.m3_i2 = 1;
-    else
-        m.m3_i2 = 2;
-    _loadname(file, &m);
+    _loadname(name, &m);
     return(_syscall(VFS_PROC_NR, FUNDELETE, &m));
 }
 
