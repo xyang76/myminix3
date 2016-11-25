@@ -128,10 +128,12 @@
 #define X_BIT           0000001	/* rwX protection bit */
 #define I_NOT_ALLOC     0000000	/* this inode is free */
 /*****************************************************************************
-* Assginment3 : Add for Assginment3 - I_RECOVERABLE   0200000.
-* this directory could be recover by undelete: 200000 = 0001 0000 0000 0000 0000
+* Assginment3 : Add for Assginment3 - I_RECOVERABLE   0004000.
+* This directory could be recover by undelete: 0004000 = 0000 1000 0000 0000
+* Use 0004000 because setuid(I_SET_UID_BIT) is only effective for a file. 
+* Therefore, for directory, define I_RECOVERABLE will not conflict with I_SET_UID_BIT.
 *****************************************************************************/
-#define I_RECOVERABLE   0200000
+#define I_RECOVERABLE   0004000
 
 /* Some limits. */
 #define MAX_INODE_NR ((ino_t) 037777777777)	/* largest inode number */

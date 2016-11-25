@@ -614,7 +614,7 @@ int do_mkdir()
   } else if ((r = forbidden(fp, vp, W_BIT|X_BIT)) == OK) {
     /*****************************************************************************
     * Assginment3 : Edit/Add for Assginment3 - MKDIR & RCMKDIR.
-    * I_RECOVERABLE : 0001 0000 0000 0000 0000 (make sure this is recoverable)
+    * I_RECOVERABLE : 0000 1000 0000 0000 (make sure this is recoverable)
     *****************************************************************************/
     if (job_call_nr == MKDIR){
         r = req_mkdir(vp->v_fs_e, vp->v_inode_nr, fullpath, fp->fp_effuid,
