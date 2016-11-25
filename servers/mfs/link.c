@@ -227,10 +227,18 @@ int fs_unlink()
   } else {
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
   }
-
-  /* If unlink was possible, it has been done, otherwise it has not. */
-  put_inode(rip);
-  put_inode(rldirp);
+  if(debuging){
+      printf("access [%d][%s][%d]\n", rip->i_nlinks, string, rip->i_count);
+      printf("dir [%d][%s][%d]\n", rldirp->i_nlinks, string, rldirp->i_count);
+      /* If unlink was possible, it has been done, otherwise it has not. */
+      put_inode(rip);
+      put_inode(rldirp);
+      printf("access [%d][%s][%d]\n", rip->i_nlinks, string, rip->i_count);
+      printf("dir [%d][%s][%d]\n", rldirp->i_nlinks, string, rldirp->i_count);
+  } else {
+    put_inode(rip);
+    put_inode(rldirp);
+  }
   return(r);
 }
 
@@ -305,7 +313,6 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   *****************************************************************************/
   if((rip->i_mode & I_RECOVERABLE) == I_RECOVERABLE){
       r = saveidelete(rip, dir_name, rldirp->i_num);
-      printf("save [%d][%s][%d]\n", rip->i_num, dir_name, rldirp->i_num);
       r = search_dir(rldirp, dir_name, NULL, DELETE, IGN_PERM);
       return r;
   }
@@ -318,6 +325,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
    */
   (void) unlink_file(rip, NULL, dot1);
   (void) unlink_file(rip, NULL, dot2);
+  
   return(OK);
 }
 
