@@ -813,6 +813,7 @@ dev_t parentdev;
     int i;
     
     for(i=0; i<iindex; i++){
+        printf("iname[%s][%s]\n", deltable[iindex].i_name, name);
         if(strcmp(deltable[iindex].i_name, name) == 0){
             idel->i_num = deltable[iindex].i_num;
             idel->i_dev = deltable[iindex].i_dev;
