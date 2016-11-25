@@ -173,13 +173,13 @@ int do_unlink()
   upgrade_vmnt_lock(vmp);
 
   /*****************************************************************************
-  * Assginment3 : Edit/Add for Assginment3 - UNDELETE.
+  * Assginment3 : Edit/Add for Assginment3 - FUNDELETE.
   *****************************************************************************/
   if (job_call_nr == UNLINK)
 	  r = req_unlink(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
   else if(job_call_nr == RMDIR)
 	  r = req_rmdir(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
-  else if(job_call_nr == UNDELETE)
+  else if(job_call_nr == FUNDELETE)
       r = req_undelete(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
   unlock_vnode(dirp);
   unlock_vmnt(vmp);

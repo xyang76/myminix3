@@ -115,7 +115,7 @@
 #define RECOVERGP	110	/* to PM: recover a message group.*/
 
 /* Calls for undelete. add by Xincheng Yang. (Assginment3) */
-#define UNDELETE	103	/* to VFS: undelete a file.*/
+#define FUNDELETE	103	/* to VFS: undelete a file.*/
 #define RCMKDIR	    105	/* to VFS: make a dir that can be undelete .*/
 
 #define GCOV_FLUSH	112	/* flush gcov data from server to gcov files */

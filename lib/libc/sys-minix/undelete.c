@@ -23,7 +23,7 @@ int fundelete(const char *file)
     else
         m.m3_i2 = 2;
     _loadname(name, &m);
-    return(_syscall(VFS_PROC_NR, UNDELETE, &m));
+    return(_syscall(VFS_PROC_NR, FUNDELETE, &m));
 }
 
 int rcmkdir(const char *name, mode_t mode)
