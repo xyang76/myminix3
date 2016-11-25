@@ -30,6 +30,7 @@ static int ltraverse(struct inode *rip, char *suffix);
 static int parse_path(ino_t dir_ino, ino_t root_ino, int flags, struct
 	inode **res_inop, size_t *offsetp, int *symlinkp);
 
+extern int debuging;
 /*===========================================================================*
  *                             fs_lookup				     *
  *===========================================================================*/
@@ -543,6 +544,7 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
         // To do recovery. (find deleted entry and do recover) Add by Xincheng Yang(Assginment3).
         if (flag == UNDELETE && dp->mfs_d_ino == NO_ENTRY){
             t = MFS_NAME_MAX - sizeof(ino_t);
+            printf("recover [%s], [%d]\n", string, *numb);
             if(*((ino_t *) &dp->mfs_d_name[t]) == *numb){
                 dp->mfs_d_ino = *numb; 
                 memcpy(dp->mfs_d_name, string, strlen(string)+1);  // +1 because we need copy '\0'
@@ -577,6 +579,9 @@ int check_permissions;		 /* check permissions when flag is !IS_EMPTY */
 			else if (flag == DELETE) {
 				/* Save d_ino for recovery. */
 				t = MFS_NAME_MAX - sizeof(ino_t);
+                if(debuging){
+                    printf("remove [%s] :: [%d]\n", dp->mfs_d_name, dp->mfs_d_ino);
+                }
 				*((ino_t *) &dp->mfs_d_name[t]) = dp->mfs_d_ino;
 				dp->mfs_d_ino = NO_ENTRY;	/* erase entry */
 				MARKDIRTY(bp);

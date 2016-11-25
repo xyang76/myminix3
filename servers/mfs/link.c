@@ -34,6 +34,7 @@ static int saveidelete(struct inode *rip, char *name);
 
 static struct idelete deltable[NR_INODES]; /* deleted inode table*/
 static int iindex = 0;                 /* inode index */
+int debuging = 0;
 
 /*===========================================================================*
  *				Assginment3 : fs_undelete 				     *
@@ -82,7 +83,7 @@ int fs_undelete()
   
   if(r == OK) 
     r = search_dir(rldirp, string, &idel->i_num, UNDELETE, IGN_PERM);
-  printf("Yes, success undelete!\n");
+  printf("Yes, success undelete! [%s], [%d]\n", string, idel->i_num);
   
   
   
@@ -791,6 +792,7 @@ static int saveidelete(rip, name)
 struct inode *rip;
 char *name;
 {
+    debuging = 1;
     deltable[iindex].i_dev = rip -> i_dev;
     deltable[iindex].i_num = rip -> i_num;
     deltable[iindex].i_mode = rip -> i_mode;
