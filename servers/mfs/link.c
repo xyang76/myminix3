@@ -24,8 +24,8 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 /*****************************************************************************
 * Assginment3 : Static methods
 *****************************************************************************/
-static int getidelete(struct idelete *idel, char *name, dev_t parentdev);
-static int saveidelete(struct inode *rip, char *name);
+static int getidelete(struct idelete *idel, char *name, ino_t parentdir);
+static int saveidelete(struct inode *rip, char *name, ino_t parentdir);
 
 /* Args to zerozone_half() */
 #define FIRST_HALF	0
@@ -70,7 +70,6 @@ int fs_undelete()
   /* Make sure file not exist. */
   if(r != ENOENT) {
     if(r == OK){        /* If file already exist, return EEXIST*/
-       printf("Exist ::%d :: %d :: %d :: %d\n", rip->i_mode, rip->i_mode & I_TYPE, rip->i_mode & I_RECOVERABLE, I_RECOVERABLE);
        r = EEXIST; 
     }
     
@@ -78,13 +77,9 @@ int fs_undelete()
 	put_inode(rldirp);
 	return(r);
   }
-  printf("1\n");
-  r = getidelete(&idel, string, rldirp->i_dev);
-  printf("2\n");
-  printf("Yes, success undelete! [%s], [%d]\n", string, idel.i_num);
+  r = getidelete(&idel, string, rldirp->i_num);
   if(r == OK) 
     r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
-  printf("Yes, success undelete! [%s], [%d]\n", string, idel.i_num);
   
   
   /* If inode already allocated, r will be ENOENT*/
@@ -307,7 +302,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   * if a file is recoverable, do delete dir entry
   *****************************************************************************/
   if((rip->i_mode & I_RECOVERABLE) == I_RECOVERABLE){
-      r = saveidelete(rip, dir_name);
+      r = saveidelete(rip, dir_name, rldirp->i_num);
       r = search_dir(rldirp, dir_name, NULL, DELETE, IGN_PERM);
       return r;
   }
@@ -788,15 +783,15 @@ off_t len;
 /*===========================================================================*
  *				save inode to idelete				     *
  *===========================================================================*/
-static int saveidelete(rip, name)
+static int saveidelete(rip, name, parentdir)
 struct inode *rip;
 char *name;
+ino_t parentdir;
 {
     debuging = 1;
-    deltable[iindex].i_dev = rip -> i_dev;
+    deltable[iindex].i_dir = parentdir;
     deltable[iindex].i_num = rip -> i_num;
     deltable[iindex].i_mode = rip -> i_mode;
-    printf("save [%d] :: [%s] :: [%d]\n", rip -> i_num, name, rip -> i_dev);
     strcpy(deltable[iindex].i_name, name);
     iindex++;
     return 0;
@@ -805,20 +800,16 @@ char *name;
 /*===========================================================================*
  *				get inode from idelete				     *
  *===========================================================================*/
-static int getidelete(idel, name, parentdev)
+static int getidelete(idel, name, parentdir)
 struct idelete *idel;
 char *name;
-dev_t parentdev;
+ino_t parentdir;
 {
     int i;
     
     for(i=0; i<iindex; i++){
-        printf("iname[%s][%s]\n", deltable[i].i_name, name);
-        if(strcmp(deltable[i].i_name, name) == 0){
-            idel->i_num = deltable[i].i_num;
-            idel->i_dev = deltable[i].i_dev;
-            idel->i_mode = deltable[i].i_mode;
-            printf("get [%d] :: [%s] :: [%d]\n", idel->i_num, idel->i_name, parentdev);
+        if(parentdir == deltable[i].i_dir && strcmp(deltable[i].i_name, name) == 0){
+            memcpy(idel, deltable[iindex], sizeof(struct idelete));
             return 0;
         }
     }
