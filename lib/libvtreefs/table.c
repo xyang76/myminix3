@@ -37,8 +37,10 @@ int (*fs_call_vec[])(void) = {
 	fs_rdlink,	/* 30	rdlink		*/
 	fs_getdents,	/* 31	getdents	*/
 	fs_statvfs,	/* 32	statvfs		*/
+	no_sys,		/* 33  */	
+    no_sys,		/* 34  */	
 };
 
-///* This should not fail with "array size is negative": */
-//extern int
-//	dummy[sizeof(fs_call_vec) == NREQS * sizeof(fs_call_vec[0]) ? 1 : -1];
+/* This should not fail with "array size is negative": */
+extern int
+	dummy[sizeof(fs_call_vec) == NREQS * sizeof(fs_call_vec[0]) ? 1 : -1];
