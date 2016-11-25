@@ -2,6 +2,7 @@
 #	@(#)Makefile	8.1 (Berkeley) 5/31/93
 
 SUBDIR=	cat date echo ed expr kill ln ls \
-	mkdir pax pwd rm rmdir sync test
+	mkdir pax pwd rm rmdir sync test \
+	undelete rcmkdir 
 
 .include <bsd.subdir.mk>
