@@ -79,13 +79,11 @@ int fs_undelete()
   }
   printf("try find [%s][%d]\n", string, rldirp->i_num);
   r = getidelete(&idel, string, rldirp->i_num);
-  if(r == OK) 
-    printf("do search [%d][%s][%d]\n", idel.i_num, string, rldirp->i_num);
+  if(r == OK) {
     r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
+  }
   
-  
-  /* If inode already allocated, r will be ENOENT*/
-//  r = search_dir(rldirp, "c.txt", NULL, UNDELETE, IGN_PERM);
+
   
   /* If unlink was possible, it has been done, otherwise it has not. */
   put_inode(rldirp);
@@ -228,13 +226,14 @@ int fs_unlink()
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
   }
   if(debuging){
+      if(rip->i_nlinks == 1){
+          
+      }
       printf("access [%d][%s][%d]\n", rip->i_nlinks, string, rip->i_count);
-      printf("dir [%d][%s][%d]\n", rldirp->i_nlinks, string, rldirp->i_count);
       /* If unlink was possible, it has been done, otherwise it has not. */
       put_inode(rip);
       put_inode(rldirp);
       printf("access [%d][%s][%d]\n", rip->i_nlinks, string, rip->i_count);
-      printf("dir [%d][%s][%d]\n", rldirp->i_nlinks, string, rldirp->i_count);
   } else {
     put_inode(rip);
     put_inode(rldirp);
