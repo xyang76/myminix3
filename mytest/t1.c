@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <lib.h>    
-#include <unistd.h>
-
+#include "testhelper.h"
+#include "minix/ipc.h"
 
 /**************************************************************
  *       test undelete

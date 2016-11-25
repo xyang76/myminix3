@@ -27,6 +27,7 @@ const char *file;
 //        m.m3_i2 = 2;
 //    _loadname(name, &m);
 //    return(_syscall(VFS_PROC_NR, UNDELETE, &m));
+    return 0;
 }
 
 int rcmkdir(const char *name, mode_t mode)
