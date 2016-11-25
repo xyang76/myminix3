@@ -13,28 +13,25 @@ int fundelete(const char *file)
     struct stat sb;
     message m;
     
-    printf("in fundelete\n");
-//    
-//    _DIAGASSERT(file != NULL);
-//
-//    if (lstat(file, &sb) < 0)
-//        return -1;
-//
-//    if (S_ISDIR(sb.st_mode))
-//        m.m3_i2 = 1;
-//    else
-//        m.m3_i2 = 2;
-//    _loadname(name, &m);
-//    return(_syscall(VFS_PROC_NR, UNDELETE, &m));
-    return 0;
+    _DIAGASSERT(file != NULL);
+
+    if (lstat(file, &sb) < 0)
+        return -1;
+
+    if (S_ISDIR(sb.st_mode))
+        m.m3_i2 = 1;
+    else
+        m.m3_i2 = 2;
+    _loadname(name, &m);
+    return(_syscall(VFS_PROC_NR, UNDELETE, &m));
 }
 
 int rcmkdir(const char *name, mode_t mode)
 {
-  message m;
+    message m;
 
-  m.m1_i1 = strlen(name) + 1;
-  m.m1_i2 = mode;
-  m.m1_p1 = (char *) __UNCONST(name);
-  return(_syscall(VFS_PROC_NR, RCMKDIR, &m));
+    m.m1_i1 = strlen(name) + 1;
+    m.m1_i2 = mode;
+    m.m1_p1 = (char *) __UNCONST(name);
+    return(_syscall(VFS_PROC_NR, RCMKDIR, &m));
 }
