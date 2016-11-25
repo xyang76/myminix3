@@ -21,6 +21,12 @@ static void zerozone_half(struct inode *rip, off_t pos, int half, int
 	zone_size);
 static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 
+/*****************************************************************************
+* Assginment3 : Static methods
+*****************************************************************************/
+static int getidelete(idel, name, parentdev);
+static int saveidelete(rip, name);
+
 /* Args to zerozone_half() */
 #define FIRST_HALF	0
 #define LAST_HALF	1
