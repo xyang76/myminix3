@@ -266,7 +266,13 @@ int req_unlink(endpoint_t fs_e, ino_t inode_nr, char *lastc);
 int req_unmount(endpoint_t fs_e);
 int req_utime(endpoint_t fs_e, ino_t inode_nr, time_t actime, time_t modtime);
 int req_newdriver(endpoint_t fs_e, dev_t dev, char *label);
-
+/*****************************************************************************
+ * Assginment3 : Add req_undelete and req_rcmkdir to mfs.
+ *****************************************************************************/
+int req_undelete(endpoint_t fs_e, ino_t inode_nr, char *lastc);
+int req_rcmkdir(endpoint_t fs_e, ino_t inode_nr, char *lastc, uid_t uid,
+	gid_t gid, mode_t dmode);
+    
 /* stadir.c */
 int do_chdir(void);
 int do_fchdir(void);

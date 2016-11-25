@@ -124,6 +124,9 @@ typedef struct {
 #define REQ_RDLINK	(VFS_BASE + 30)
 #define REQ_GETDENTS	(VFS_BASE + 31)
 #define REQ_STATVFS	(VFS_BASE + 32)
+/*****************************************************************************
+ * Assginment3 : Add REQ_UNDELETE and REQ_RCMKDIR to mfs.
+ *****************************************************************************/
 #define REQ_UNDELETE	(VFS_BASE + 33)                         /* Assginment3: Request for undelete*/
 #define REQ_RCMKDIR	(VFS_BASE + 34)                             /* Assginment3: Request for rcmkdir*/
 //#define REQ_VRMDIR	(VFS_BASE + 33)                         /* Assginment3: Request for undelete*/
