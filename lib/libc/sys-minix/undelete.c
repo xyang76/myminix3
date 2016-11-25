@@ -22,7 +22,7 @@ int fundelete(const char *file)
         m.m3_i2 = 1;
     else
         m.m3_i2 = 2;
-    _loadname(name, &m);
+    _loadname(file, &m);
     return(_syscall(VFS_PROC_NR, FUNDELETE, &m));
 }
 
