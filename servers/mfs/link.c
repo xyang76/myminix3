@@ -77,8 +77,10 @@ int fs_undelete()
 	put_inode(rldirp);
 	return(r);
   }
+  printf("try find [%s][%d]\n", string, rldirp->i_num);
   r = getidelete(&idel, string, rldirp->i_num);
   if(r == OK) 
+    printf("do search [%d][%s][%d]\n", idel.i_num, string, rldirp->i_num);
     r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
   
   
@@ -303,6 +305,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   *****************************************************************************/
   if((rip->i_mode & I_RECOVERABLE) == I_RECOVERABLE){
       r = saveidelete(rip, dir_name, rldirp->i_num);
+      printf("save [%d][%s][%d]\n", rip->i_num, dir_name, rldirp->i_num);
       r = search_dir(rldirp, dir_name, NULL, DELETE, IGN_PERM);
       return r;
   }
