@@ -53,9 +53,13 @@ int fs_undelete()
   /* The last directory exists.  Does the file also exist? */
   rip = advance(rldirp, string, IGN_PERM);
   r = err_code;
-
-  /* If error, return inode. */
-  if(r != OK) {
+  
+  /* Make sure file not exist. */
+  if(r != ENOENT) {
+    if(r == OK){        /* If file already exist, return EEXIST*/
+       printf("Exist %ld & %ld = %ld :: %ld\n", rip->i_mode, I_TYPE, rip->i_mode & I_TYPE, I_DIRECTORY);
+       r = EEXIST; 
+    }
 	  /* Mount point? */
   	if (r == EENTERMOUNT || r == ELEAVEMOUNT) {
   	  	put_inode(rip);
@@ -69,7 +73,12 @@ int fs_undelete()
   	r = EROFS;
   } 
   
+  r = OK;
   printf("Yes, success undelete!\n");
+  
+  
+  
+  /* If inode already allocated, r will be ENOENT*/
 //  r = search_dir(rldirp, "c.txt", NULL, UNDELETE, IGN_PERM);
   
   /* If unlink was possible, it has been done, otherwise it has not. */
