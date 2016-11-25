@@ -8,7 +8,7 @@
 __weak_alias(unlink, _unlink)
 #endif
 
-int fundelete(const char *file)
+int fundelete(const char *name)
 {
     message m;
 
