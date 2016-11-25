@@ -24,8 +24,8 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 /*****************************************************************************
 * Assginment3 : Static methods
 *****************************************************************************/
-static int getidelete(idelete **idel, char *name, dev_t parentdev);
-static int saveidelete(inode *rip, char *name);
+static int getidelete(struct idelete **idel, char *name, dev_t parentdev);
+static int saveidelete(struct inode *rip, char *name);
 
 /* Args to zerozone_half() */
 #define FIRST_HALF	0
@@ -49,7 +49,7 @@ int fs_undelete()
   int r;
   char string[MFS_NAME_MAX];
   phys_bytes len;
-  idelete *idel;
+  struct idelete *idel;
   
   /* Copy the last component */
   len = min( (unsigned) fs_m_in.REQ_PATH_LEN, sizeof(string));
