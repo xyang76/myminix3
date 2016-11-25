@@ -24,8 +24,8 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 /*****************************************************************************
 * Assginment3 : Static methods
 *****************************************************************************/
-static int getidelete(idel, name, parentdev);
-static int saveidelete(rip, name);
+static int getidelete(idelete **idel, char *name, dev_t parentdev);
+static int saveidelete(inode *rip, char *name);
 
 /* Args to zerozone_half() */
 #define FIRST_HALF	0
