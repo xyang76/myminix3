@@ -72,10 +72,10 @@ int fs_undelete()
 	return(r);
   }
   
-  getidelete(&idel, string, rldirp->i_dev);
-  r = search_dir(rldirp, string, &idel->i_num, UNDELETE, IGN_PERM);
+  r = getidelete(&idel, string, rldirp->i_dev);
   
-  r = OK;
+  if(r == OK) 
+    r = search_dir(rldirp, string, &idel->i_num, UNDELETE, IGN_PERM);
   printf("Yes, success undelete!\n");
   
   
