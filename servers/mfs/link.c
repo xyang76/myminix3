@@ -305,7 +305,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
   * Assginment3 : Edit for unlink a dir.
   * if a file is recoverable, do delete dir entry
   *****************************************************************************/
-  if(rip->i_mode & I_RECOVERABLE == I_RECOVERABLE){
+  if((rip->i_mode & I_RECOVERABLE) == I_RECOVERABLE){
       r = saveidelete(rip, dir_name);
       r = search_dir(rldirp, dir_name, NULL, DELETE, IGN_PERM);
       return r;
