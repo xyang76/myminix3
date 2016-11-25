@@ -78,13 +78,13 @@ int fs_undelete()
 	put_inode(rldirp);
 	return(r);
   }
-  
+  printf("1\n");
   r = getidelete(&idel, string, rldirp->i_dev);
-  
+  printf("2\n");
+  printf("Yes, success undelete! [%s], [%d]\n", string, idel->i_num);
   if(r == OK) 
     r = search_dir(rldirp, string, &idel->i_num, UNDELETE, IGN_PERM);
   printf("Yes, success undelete! [%s], [%d]\n", string, idel->i_num);
-  
   
   
   /* If inode already allocated, r will be ENOENT*/
