@@ -5,6 +5,7 @@
 #include "buf.h"
 #include "inode.h"
 #include "super.h"
+#include "idelete.h"
 #include <minix/vfsif.h>
 
 #define SAME 1000
@@ -24,8 +25,12 @@ static void zerozone_range(struct inode *rip, off_t pos, off_t len);
 #define FIRST_HALF	0
 #define LAST_HALF	1
 
+
+static struct idelete deltable[NR_INODES]; /* deleted inode table*/
+static int iindex = 0;                 /* inode index */
+
 /*===========================================================================*
- *				fs_undelete : Assginment3				     *
+ *				Assginment3 : fs_undelete 				     *
  *===========================================================================*/
 int fs_undelete()
 {
@@ -38,6 +43,7 @@ int fs_undelete()
   int r;
   char string[MFS_NAME_MAX];
   phys_bytes len;
+  idelete *idel;
   
   /* Copy the last component */
   len = min( (unsigned) fs_m_in.REQ_PATH_LEN, sizeof(string));
@@ -60,18 +66,14 @@ int fs_undelete()
        printf("Exist ::%ld :: %ld :: %ld :: %ld\n", rip->i_mode, rip->i_mode & I_TYPE, rip->i_mode & I_RECOVERABLE, I_RECOVERABLE);
        r = EEXIST; 
     }
-	  /* Mount point? */
-  	if (r == EENTERMOUNT || r == ELEAVEMOUNT) {
-  	  	put_inode(rip);
-  		r = EBUSY;
-  	}
+    
+    put_inode(rip);
 	put_inode(rldirp);
 	return(r);
   }
   
-  if(rip->i_sp->s_rd_only) {
-  	r = EROFS;
-  } 
+  getidelete(&idel, string, rldirp->i_dev);
+  r = search_dir(rldirp, string, &idel->i_num, UNDELETE, IGN_PERM);
   
   r = OK;
   printf("Yes, success undelete!\n");
@@ -82,7 +84,6 @@ int fs_undelete()
 //  r = search_dir(rldirp, "c.txt", NULL, UNDELETE, IGN_PERM);
   
   /* If unlink was possible, it has been done, otherwise it has not. */
-  put_inode(rip);
   put_inode(rldirp);
   return(r);
 }
@@ -293,7 +294,17 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
 
   if (strcmp(dir_name, ".") == 0 || strcmp(dir_name, "..") == 0)return(EINVAL);
   if (rip->i_num == ROOT_INODE) return(EBUSY); /* can't remove 'root' */
- 
+  
+  /*****************************************************************************
+  * Assginment3 : Edit for unlink a dir.
+  * if a file is recoverable, do delete dir entry
+  *****************************************************************************/
+  if(rip->i_mode & I_RECOVERABLE == I_RECOVERABLE){
+      r = saveidelete(rip, dir_name);
+      r = search_dir(rldirp, dir_name, NULL, DELETE, IGN_PERM);
+      return r;
+  }
+  
   /* Actually try to unlink the file; fails if parent is mode 0 etc. */
   if ((r = unlink_file(rldirp, rip, dir_name)) != OK) return r;
 
@@ -766,3 +777,40 @@ off_t len;
 	b++;
   }
 }
+
+/*===========================================================================*
+ *				save inode to idelete				     *
+ *===========================================================================*/
+static int saveidelete(rip, name)
+struct inode *rip;
+char *name;
+{
+    deltable[iindex].i_dev = rip -> i_dev;
+    deltable[iindex].i_num = rip -> i_num;
+    deltable[iindex].i_mode = rip -> i_mode;
+    printf("save [%d] :: [%s] :: [%d]\n", rip -> i_num, name, rip -> i_dev);
+    memcpy(deltable[iindex].i_name, name, strlen(name) + 1);
+    iindex++;
+    return 0;
+}
+
+/*===========================================================================*
+ *				get inode from idelete				     *
+ *===========================================================================*/
+static int getidelete(idel, name, parentdev)
+struct idelete **idel;
+char *name;
+dev_t parentdev;
+{
+    int i;
+    
+    for(i=0; i<iindex; i++){
+        if(strcmp(deltable[iindex].i_name, name) == 0){
+            *idel = deltable[iindex];
+            printf("get [%d] :: [%s] :: [%d]\n", idel->i_num, idel->i_name, parentdev);
+            return 0;
+        }
+    }
+    return -1;
+}
+
