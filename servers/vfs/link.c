@@ -175,8 +175,10 @@ int do_unlink()
 
   if (job_call_nr == UNLINK)
 	  r = req_unlink(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
-  else
+  else if(job_call_nr == RMDIR)
 	  r = req_rmdir(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
+  else if(job_call_nr == UNDELETE)
+      r = req_undelete(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
   unlock_vnode(dirp);
   unlock_vmnt(vmp);
   put_vnode(dirp);

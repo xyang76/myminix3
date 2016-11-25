@@ -24,6 +24,75 @@
 #include "path.h"
 #include "param.h"
 
+/*===========================================================================*
+ *				req_undelete	     			     *
+ *===========================================================================*/
+int req_undelete(fs_e, inode_nr, lastc)
+endpoint_t fs_e;
+ino_t inode_nr;
+char *lastc;
+{
+  cp_grant_id_t grant_id;
+  size_t len;
+  int r;
+  message m;
+
+  len = strlen(lastc) + 1;
+  grant_id = cpf_grant_direct(fs_e, (vir_bytes) lastc, len, CPF_READ);
+  if(grant_id == -1)
+	  panic("req_unlink: cpf_grant_direct failed");
+
+  /* Fill in request message */
+  m.m_type = REQ_UNLINK;
+  m.REQ_INODE_NR = inode_nr;
+  m.REQ_GRANT = grant_id;
+  m.REQ_PATH_LEN = len;
+
+  /* Send/rec request */
+  r = fs_sendrec(fs_e, &m);
+  cpf_revoke(grant_id);
+
+  return(r);
+}
+
+/*===========================================================================*
+ *				req_rcmkdir	      			     *
+ *===========================================================================*/
+int req_rcmkdir(
+  endpoint_t fs_e,
+  ino_t inode_nr,
+  char *lastc,
+  uid_t uid,
+  gid_t gid,
+  mode_t dmode
+)
+{
+  int r;
+  cp_grant_id_t grant_id;
+  size_t len;
+  message m;
+
+  len = strlen(lastc) + 1;
+  grant_id = cpf_grant_direct(fs_e, (vir_bytes)lastc, len, CPF_READ);
+  if(grant_id == -1)
+	  panic("req_mkdir: cpf_grant_direct failed");
+
+  /* Fill in request message */
+  m.m_type = REQ_MKDIR;
+  m.REQ_INODE_NR = inode_nr;
+  m.REQ_MODE = dmode;
+  m.REQ_UID = uid;
+  m.REQ_GID = gid;
+  m.REQ_GRANT = grant_id;
+  m.REQ_PATH_LEN = len;
+
+  /* Send/rec request */
+  r = fs_sendrec(fs_e, &m);
+  cpf_revoke(grant_id);
+
+  return(r);
+}
+
 
 /*===========================================================================*
  *			req_breadwrite					     *

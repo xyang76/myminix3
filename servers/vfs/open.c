@@ -612,7 +612,12 @@ int do_mkdir()
   if (!S_ISDIR(vp->v_mode)) {
 	r = ENOTDIR;
   } else if ((r = forbidden(fp, vp, W_BIT|X_BIT)) == OK) {
-	r = req_mkdir(vp->v_fs_e, vp->v_inode_nr, fullpath, fp->fp_effuid,
+    /* Edit/Add for Assginment3 - MKDIR & RCMKDIR*/
+    if (job_call_nr == MKDIR)
+        r = req_mkdir(vp->v_fs_e, vp->v_inode_nr, fullpath, fp->fp_effuid,
+		      fp->fp_effgid, bits);
+    else if (job_call_nr == RCMKDIR)
+        r = req_rcmkdir(vp->v_fs_e, vp->v_inode_nr, fullpath, fp->fp_effuid,
 		      fp->fp_effgid, bits);
   }
 
