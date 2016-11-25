@@ -13,7 +13,6 @@ const char *name;
 {
   message m;
   
-  printf("unlink %s\n", name);
   _loadname(name, &m);
   return(_syscall(VFS_PROC_NR, UNLINK, &m));
 }

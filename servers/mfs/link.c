@@ -793,8 +793,8 @@ ino_t parentdir;
 {
     debuging = 1;
     deltable[iindex].i_dir = parentdir;
-    deltable[iindex].i_num = rip -> i_num;
-    deltable[iindex].i_mode = rip -> i_mode;
+    deltable[iindex].i_num = rip->i_num;
+    deltable[iindex].i_mode = rip->i_mode;
     strcpy(deltable[iindex].i_name, name);
     iindex++;
     return 0;
@@ -812,8 +812,8 @@ ino_t parentdir;
     
     for(i=0; i<iindex; i++){
         if(parentdir == deltable[i].i_dir && strcmp(deltable[i].i_name, name) == 0){
-            printf("already find %d\n", deltable[iindex].i_num);
-            memcpy(idel, &deltable[iindex], sizeof(struct idelete));
+            printf("already find %d\n", deltable[i].i_num);
+            memcpy(idel, &deltable[i], sizeof(struct idelete));
             printf("already find %d\n", idel->i_num);
             return 0;
         }
