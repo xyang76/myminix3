@@ -614,13 +614,16 @@ int do_mkdir()
   } else if ((r = forbidden(fp, vp, W_BIT|X_BIT)) == OK) {
     /*****************************************************************************
     * Assginment3 : Edit/Add for Assginment3 - MKDIR & RCMKDIR.
+    * I_RECOVERABLE : 0001 0000 0000 0000 0000 (make sure this is recoverable)
     *****************************************************************************/
-    if (job_call_nr == MKDIR)
+    if (job_call_nr == MKDIR){
         r = req_mkdir(vp->v_fs_e, vp->v_inode_nr, fullpath, fp->fp_effuid,
 		      fp->fp_effgid, bits);
-    else if (job_call_nr == RCMKDIR)
+    } else if (job_call_nr == RCMKDIR){
+        bits = I_RECOVERABLE | bits;
         r = req_rcmkdir(vp->v_fs_e, vp->v_inode_nr, fullpath, fp->fp_effuid,
 		      fp->fp_effgid, bits);
+    }
   }
 
   unlock_vnode(vp);

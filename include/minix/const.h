@@ -127,6 +127,11 @@
 #define W_BIT           0000002	/* rWx protection bit */
 #define X_BIT           0000001	/* rwX protection bit */
 #define I_NOT_ALLOC     0000000	/* this inode is free */
+/*****************************************************************************
+* Assginment3 : Add for Assginment3 - I_RECOVERABLE   0200000.
+* this directory could be recover by undelete: 200000 = 0001 0000 0000 0000 0000
+*****************************************************************************/
+#define I_RECOVERABLE   0200000
 
 /* Some limits. */
 #define MAX_INODE_NR ((ino_t) 037777777777)	/* largest inode number */

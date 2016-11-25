@@ -57,7 +57,7 @@ int fs_undelete()
   /* Make sure file not exist. */
   if(r != ENOENT) {
     if(r == OK){        /* If file already exist, return EEXIST*/
-       printf("Exist %ld & %ld = %ld :: %ld\n", rip->i_mode, I_TYPE, rip->i_mode & I_TYPE, I_DIRECTORY);
+       printf("Exist ::%ld :: %ld :: %ld :: %ld\n", rip->i_mode, rip->i_mode & I_TYPE, rip->i_mode & I_RECOVERABLE, I_RECOVERABLE);
        r = EEXIST; 
     }
 	  /* Mount point? */
