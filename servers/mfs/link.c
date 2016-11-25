@@ -809,7 +809,9 @@ ino_t parentdir;
     
     for(i=0; i<iindex; i++){
         if(parentdir == deltable[i].i_dir && strcmp(deltable[i].i_name, name) == 0){
+            printf("already find %d\n", deltable[iindex].i_num);
             memcpy(idel, &deltable[iindex], sizeof(struct idelete));
+            printf("already find %d\n", idel->i_num);
             return 0;
         }
     }
