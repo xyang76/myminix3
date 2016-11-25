@@ -315,7 +315,7 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
       r = unlink_file(rldirp, rip, dir_name);
       rip->i_nlinks--;
       return r;
-  } else {
+  }
   
   /* Actually try to unlink the file; fails if parent is mode 0 etc. */
   if ((r = unlink_file(rldirp, rip, dir_name)) != OK) return r;
