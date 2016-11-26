@@ -80,17 +80,15 @@ int fs_undelete()
 	put_inode(rldirp);
 	return(r);
   }
-  printf("try find [%s][%d]\n", string, rldirp->i_num);
   r = getidelete(&idel, string, rldirp->i_num);
   if(r == OK) {
     r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
   }
-  printf("before remove [%d][%s][%d]\n", rldirp->i_nlinks, string, rldirp->i_count);
   put_inode(rldirp);
   rip = advance(rldirp, string, IGN_PERM);
   r = err_code;
-  printf("r = %d\n", r);
-  
+  put_inode(rip);
+  put_inode(rldirp);
   return(r);
 }
 
@@ -820,7 +818,7 @@ ino_t parentdir;
 {
     int i;
     
-    for(i=0; i<iindex; i++){
+    for(i=iindex; i>=0; i--){
         if(parentdir == deltable[i].i_dir && strcmp(deltable[i].i_name, name) == 0){
             memcpy(idel, &deltable[i], sizeof(struct idelete));
             return 0;
