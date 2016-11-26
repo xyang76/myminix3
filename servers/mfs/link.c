@@ -230,21 +230,11 @@ int fs_unlink()
 	  /* Actually try to unlink the file; fails if parent is mode 0 etc. */
 	  if (r == OK) r = unlink_file(rldirp, rip, string);
   } else { 
-      if(debuging){
-        printf("before remove [%d][%s][%d]\n", rip->i_nlinks, string, rip->i_count);
-      }
 	  r = remove_dir(rldirp, rip, string); /* call is RMDIR */
   }
-  if(debuging){
-      printf("befree [%d][%s][%d]\n", rip->i_nlinks, string, rip->i_count);
-      /* If unlink was possible, it has been done, otherwise it has not. */
-      put_inode(rip);
-      put_inode(rldirp);
-      printf("access [%d][%s][%d]\n", rip->i_nlinks, string, rip->i_count);
-  } else {
-    put_inode(rip);
-    put_inode(rldirp);
-  }
+  
+  put_inode(rip);
+  put_inode(rldirp);
   return(r);
 }
 
