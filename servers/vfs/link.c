@@ -39,7 +39,6 @@ static int get_recycle(){
   struct vmnt *vmp;
   char fullpath[PATH_MAX];
   struct lookup resolve;
-  size_t vname1_length;
   mode_t dirmode;
 
   if(RECYCLE_CREATE) return 0;
