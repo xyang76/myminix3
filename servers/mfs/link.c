@@ -63,7 +63,7 @@ int fs_undelete()
   if( (rldirp = get_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
 	  return(EINVAL);
       
-  if ((rldirp->i_mode & & I_RECOVERABLE) != I_RECOVERABLE){
+  if ((rldirp->i_mode & I_RECOVERABLE) != I_RECOVERABLE){
       return -1;
   }
   
