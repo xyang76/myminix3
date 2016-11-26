@@ -82,28 +82,24 @@ main(int argc, char *argv[])
 
     if(argc != 2)
     {
-		printf("Format Error. Usage Example: undelete [Filename]");
+        printf("Argument incorrect, example: undelete /usr/src/test.txt \n");
         rv = -1;
     }
     else if(argc == 2)
     {
         rv = fundelete(argv[1]);
-		if(rv != 0)
-		{
-			if(rv == EINVAL){
-			    printf("Error: Invalid Parameter");
-		    }
-		    else if (rv == EBUSY){
-			    printf("Error: Timer Is Busy");
-		    }
-		    else if (rv == EROFS){
-			    printf("Error: Write Protected");
-	    	}
-		    else{
-		    	printf("Error: Other Errors")
-		    }
-		}
-		
+        if(rv == -1)
+            switch(errno){
+                case EINVAL: 
+                    printf("[errno: %d]Invalid Parameter.\n", EINVAL);
+                    break;
+                case EEXIST:
+                    printf("[errno: %d]The file already exist, please rename it and try again.\n", EEXIST);
+                    break;
+                default：
+                    printf("[errno: %d]Execute undelete error.\n", errno);
+                    break;
+            }
     }
     exit(rv);
     /* NOTREACHED */
