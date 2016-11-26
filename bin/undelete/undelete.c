@@ -102,6 +102,7 @@ main(int argc, char *argv[])
             }
     }
     exit(rv);
+    return rv;
     /* NOTREACHED */
 }
 
