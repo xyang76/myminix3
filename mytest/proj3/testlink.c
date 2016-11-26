@@ -17,5 +17,5 @@ int main()
     gets(name2);
     printf("name1: [%s] :: name2: [%s]\n", name1, name2);
     rv = link(name1, name2);
-    printf("value %d\n", rv);
+    printf("value %d\n", errno);
 }

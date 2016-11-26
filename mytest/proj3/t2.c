@@ -2,6 +2,7 @@
 #include <string.h>
 #include <lib.h>    
 #include <unistd.h>
+#include <testhelper.h>
 
 /**************************************************************
  *       test undelete
