@@ -76,7 +76,6 @@ int fs_undelete()
     if(r == OK){        /* If file already exist, return EEXIST*/
        r = EEXIST; 
     }
-    
     put_inode(rip);
 	put_inode(rldirp);
 	return(r);
@@ -86,9 +85,12 @@ int fs_undelete()
   if(r == OK) {
     r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
   }
-  
-  /* If unlink was possible, it has been done, otherwise it has not. */
+  printf("before remove [%d][%s][%d]\n", rldirp->i_nlinks, string, rldirp->i_count);
   put_inode(rldirp);
+  rip = advance(rldirp, string, IGN_PERM);
+  r = err_code;
+  printf("r = %d\n", r);
+  
   return(r);
 }
 
@@ -820,9 +822,7 @@ ino_t parentdir;
     
     for(i=0; i<iindex; i++){
         if(parentdir == deltable[i].i_dir && strcmp(deltable[i].i_name, name) == 0){
-            printf("already find %d\n", deltable[i].i_num);
             memcpy(idel, &deltable[i], sizeof(struct idelete));
-            printf("already find %d\n", idel->i_num);
             return 0;
         }
     }
