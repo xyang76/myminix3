@@ -77,6 +77,9 @@ static int get_recycle(){
  *===========================================================================*/
 int do_undelete(){
     printf("undelete\n");
+    if(0){
+        get_recycle();
+    }
     return do_unlink();
 }
 
