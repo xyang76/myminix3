@@ -216,10 +216,10 @@ int fs_unlink()
   
   /*****************************************************************************
   * Assginment3 : Edit for unlink a dir.
-  * if a file is recoverable, save its node.
+  * if a file is recoverable, save its node. 
   *****************************************************************************/
   if((rldirp->i_mode & I_RECOVERABLE) == I_RECOVERABLE){
-      r = saveidelete(rip, dir_name, rldirp->i_num);
+      r = saveidelete(rip, string, rldirp->i_num);
       rip->i_nlinks++;
   }
   
