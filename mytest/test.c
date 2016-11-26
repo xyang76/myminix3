@@ -12,9 +12,9 @@ int main()
 {
 	FILE *fp;
 	int rv;
-	rv = rcmkdir("/usr/src/mytest",S_IRWXU);
+	rv = rcmkdir("/usr/src/mytest/t1",S_IRWXU);
 	ASSERT_EQUAL(rv, 0);
-	rv = chdir("/usr/src/mytest");
+	rv = chdir("/usr/src/mytest/t1");
 	ASSERT_EQUAL(rv, 0);
 	fp = fopen("file.txt","w+");
 	if(fp == NULL) printf("fopen error\n");
