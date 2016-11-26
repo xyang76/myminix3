@@ -64,7 +64,7 @@ int fs_undelete()
 	  return(EINVAL);
       
   if ((rldirp->i_mode & I_RECOVERABLE) != I_RECOVERABLE){
-      return -1;
+      return (EPERM);
   }
   
   /* The last directory exists.  Does the file also exist? */
@@ -84,10 +84,6 @@ int fs_undelete()
   if(r == OK) {
     r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
   }
-  put_inode(rldirp);
-  rip = advance(rldirp, string, IGN_PERM);
-  r = err_code;
-  put_inode(rip);
   put_inode(rldirp);
   return(r);
 }

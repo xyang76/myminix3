@@ -96,6 +96,13 @@ main(int argc, char *argv[])
                 case EEXIST:
                     printf("[errno: %d]The file already exist, please rename it and try again.\n", EEXIST);
                     break;
+                case ENOENT:
+                    printf("[errno: %d]Can not find deleted file in this directory, ", EEXIST);
+                    printf("probably the inode was reused or not a valid filename. \n");
+                    break;
+                case EPERM:
+                    printf("[errno: %d]This direcotory do not support undelete. \n", EPERM);
+                    break;
                 default:
                     printf("[errno: %d]Execute undelete error.\n", errno);
                     break;
