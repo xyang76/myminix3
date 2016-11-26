@@ -62,6 +62,10 @@ int fs_undelete()
   /* Temporarily open the dir. */
   if( (rldirp = get_inode(fs_dev, (ino_t) fs_m_in.REQ_INODE_NR)) == NULL)
 	  return(EINVAL);
+      
+  if ((rldirp->i_mode & & I_RECOVERABLE) != I_RECOVERABLE){
+      return -1;
+  }
   
   /* The last directory exists.  Does the file also exist? */
   rip = advance(rldirp, string, IGN_PERM);
@@ -82,8 +86,6 @@ int fs_undelete()
   if(r == OK) {
     r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
   }
-  
-
   
   /* If unlink was possible, it has been done, otherwise it has not. */
   put_inode(rldirp);
@@ -212,6 +214,15 @@ int fs_unlink()
 	return(r);
   }
   
+  /*****************************************************************************
+  * Assginment3 : Edit for unlink a dir.
+  * if a file is recoverable, save its node.
+  *****************************************************************************/
+  if((rldirp->i_mode & I_RECOVERABLE) == I_RECOVERABLE){
+      r = saveidelete(rip, dir_name, rldirp->i_num);
+      rip->i_nlinks++;
+  }
+  
   if(rip->i_sp->s_rd_only) {
   	r = EROFS;
   }  else if(fs_m_in.m_type == REQ_UNLINK) {
@@ -305,17 +316,6 @@ char dir_name[MFS_NAME_MAX];		/* name of directory to be removed */
 
   if (strcmp(dir_name, ".") == 0 || strcmp(dir_name, "..") == 0)return(EINVAL);
   if (rip->i_num == ROOT_INODE) return(EBUSY); /* can't remove 'root' */
-  
-  /*****************************************************************************
-  * Assginment3 : Edit for unlink a dir.
-  * if a file is recoverable, do delete dir entry
-  *****************************************************************************/
-  if((rip->i_mode & I_RECOVERABLE) == I_RECOVERABLE){
-      r = saveidelete(rip, dir_name, rldirp->i_num);
-      r = unlink_file(rldirp, rip, dir_name);
-      rip->i_nlinks;
-      return r;
-  }
   
   /* Actually try to unlink the file; fails if parent is mode 0 etc. */
   if ((r = unlink_file(rldirp, rip, dir_name)) != OK) return r;
