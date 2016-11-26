@@ -85,6 +85,13 @@ int fs_undelete()
     r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
   }
   put_inode(rldirp);
+  rip = advance(rldirp, string, IGN_PERM);
+  r = err_code;
+  if (r == OK){
+    rip->i_count=0;  
+    put_inode(rip);
+  }
+  put_inode(rldirp);
   return(r);
 }
 
