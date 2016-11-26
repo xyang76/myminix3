@@ -88,7 +88,7 @@ int fs_undelete()
   rip = advance(rldirp, string, IGN_PERM);
   r = err_code;
   if (r == OK){
-    rip->i_count=0;  
+    rip->i_count=1;  
     put_inode(rip);
   }
   put_inode(rldirp);
