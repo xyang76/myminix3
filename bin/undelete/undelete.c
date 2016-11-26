@@ -75,14 +75,37 @@ __RCSID("$NetBSD: rm.c,v 1.50 2011/08/29 14:48:46 joerg Exp $");
 int
 main(int argc, char *argv[])
 {
-	int rv;
+    int rv;
 
-	setprogname(argv[0]);
-	(void)setlocale(LC_ALL, "");
+    setprogname(argv[0]);
+    (void)setlocale(LC_ALL, "");
 
-	printf("undelete\n");
-
-	exit(rv);
-	/* NOTREACHED */
+    if(argc != 2)
+    {
+		printf("Format Error. Usage Example: undelete [Filename]");
+        rv = -1;
+    }
+    else if(argc == 2)
+    {
+        rv = fundelete(argv[1]);
+		if(rv != OK)
+		{
+			if(rv == EINVAL){
+			    printf("Error: Invalid Parameter");
+		    }
+		    else if (rv == EBUSY){
+			    printf("Error: Timer Is Busy");
+		    }
+		    else if (rv == EROFS){
+			    printf("Error: Write Protected");
+	    	}
+		    else{
+		    	printf("Error: Other Errors")
+		    }
+		}
+		
+    }
+    exit(rv);
+    /* NOTREACHED */
 }
 
