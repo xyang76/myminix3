@@ -96,7 +96,7 @@ main(int argc, char *argv[])
                 case EEXIST:
                     printf("[errno: %d]The file already exist, please rename it and try again.\n", EEXIST);
                     break;
-                default：
+                default:
                     printf("[errno: %d]Execute undelete error.\n", errno);
                     break;
             }
