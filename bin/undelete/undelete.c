@@ -88,7 +88,7 @@ main(int argc, char *argv[])
     else if(argc == 2)
     {
         rv = fundelete(argv[1]);
-		if(rv != OK)
+		if(rv != 0)
 		{
 			if(rv == EINVAL){
 			    printf("Error: Invalid Parameter");
