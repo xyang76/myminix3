@@ -12,7 +12,7 @@ int main()
 {
 	FILE *fp;
 	int rv;
-	rv = rcmkdir("/usr/src/mytest/t1",S_IRWXU);
+	rv = rcmkdir("/usr/src/mytest/t1", 0777);
 	ASSERT_EQUAL(rv, 0);
 	rv = chdir("/usr/src/mytest/t1");
 	ASSERT_EQUAL(rv, 0);
