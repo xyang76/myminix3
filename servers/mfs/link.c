@@ -72,15 +72,15 @@ int fs_undelete()
     if(r == OK){        /* If file already exist, return EEXIST*/
        r = EEXIST; 
     }
-    
     put_inode(rip);
 	put_inode(rldirp);
 	return(r);
   }
   printf("try find [%s][%d]\n", string, rldirp->i_num);
   r = getidelete(&idel, string, rldirp->i_num);
-  if(r == OK) {
-    r = search_dir(rldirp, string, &idel.i_num, UNDELETE, IGN_PERM);
+  if(r != OK) {
+      put_inode(rldirp);
+      return (r);
   }
   
 

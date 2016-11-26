@@ -26,6 +26,53 @@
 #include "param.h"
 #include "scratchpad.h"
 
+static int RECYCLE_CREATE = 0;
+static int get_recycle();
+
+/*===========================================================================*
+ *				get recycle node				     *
+ *===========================================================================*/
+static int get_recycle(){
+  mode_t bits;			
+  int r;
+  struct vnode *vp;
+  struct vmnt *vmp;
+  char fullpath[PATH_MAX];
+  struct lookup resolve;
+  vir_bytes vname1;
+  size_t vname1_length;
+  mode_t dirmode;
+
+  if(RECYCLE_CREATE) return 0;
+
+  // Do create
+  dirmode = (mode_t) 0777;
+  strcpy(fullpath, "/root/.recycle");
+
+  lookup_init(&resolve, fullpath, PATH_NOFLAGS, &vmp, &vp);
+  resolve.l_vmnt_lock = VMNT_WRITE;
+  resolve.l_vnode_lock = VNODE_WRITE;
+
+  bits = I_DIRECTORY | (dirmode & RWX_MODES & fp->fp_umask);
+  if ((vp = last_dir(&resolve, fp)) == NULL) return(err_code);
+
+  /* Make sure that the object is a directory */
+  if (!S_ISDIR(vp->v_mode)) {
+	r = ENOTDIR;
+  } else if ((r = forbidden(fp, vp, W_BIT|X_BIT)) == OK) {
+    r = req_mkdir(vp->v_fs_e, vp->v_inode_nr, fullpath, fp->fp_effuid,
+          fp->fp_effgid, bits);
+  }
+
+  unlock_vnode(vp);
+  unlock_vmnt(vmp);
+  put_vnode(vp);
+  
+  if(r == OK || r == EEXIST){
+     RECYCLE_CREATE = 1; 
+  }
+  return(r);
+}
 
 /*===========================================================================*
  *				do_undelete : Assginment3				     *
@@ -84,9 +131,12 @@ int do_link()
   else
 	r = forbidden(fp, dirp, W_BIT | X_BIT);
 
-  if (r == OK)
+  if (r == OK){
+    printf("link %d, %d, %s, %d\n", vp->v_fs_e, dirp->v_inode_nr, fullpath, vp->v_inode_nr);
 	r = req_link(vp->v_fs_e, dirp->v_inode_nr, fullpath,
 		     vp->v_inode_nr);
+
+  }
 
   unlock_vnode(vp);
   unlock_vnode(dirp);
@@ -175,9 +225,10 @@ int do_unlink()
   /*****************************************************************************
   * Assginment3 : Edit/Add for Assginment3 - FUNDELETE.
   *****************************************************************************/
-  if (job_call_nr == UNLINK)
+  if (job_call_nr == UNLINK){
+      printf("unlink %d, %d, %s\n", dirp->v_fs_e, dirp->v_inode_nr, fullpath);
 	  r = req_unlink(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
-  else if(job_call_nr == RMDIR)
+  } else if(job_call_nr == RMDIR)
 	  r = req_rmdir(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
   else if(job_call_nr == FUNDELETE)
       r = req_undelete(dirp->v_fs_e, dirp->v_inode_nr, fullpath);
