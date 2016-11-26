@@ -3,7 +3,7 @@
 #include <string.h>
 #include <lib.h>    
 #include <unistd.h>
-#include <testhelper.h>
+#include "testhelper.h"
 
 /**************************************************************
  *       test undelete
@@ -11,7 +11,7 @@
 int main()
 {
 	FILE *fp;
-	int rv;
+	int rv;
 	rv = rcmkdir("/usr/src/mytest/t1", 0777);
 	ASSERT_EQUAL(rv, 0);
 	rv = chdir("/usr/src/mytest/t1");
